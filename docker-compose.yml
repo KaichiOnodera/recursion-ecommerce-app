@@ -12,7 +12,7 @@ services:
     stdin_open: true
 
   db:
-    image: mysql:5.7
+    image: mysql:8.0
     volumes:
       - mysql_data:/var/lib/mysql/
     environment:
