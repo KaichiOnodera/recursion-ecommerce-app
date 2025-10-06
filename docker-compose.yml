@@ -1,10 +1,14 @@
+version: "3.8"
 
 services:
   api:
-    build: ./api
-    command: npm start
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: express-api
+    command: npm run dev
     ports:
-      - '3001:3000'
+      - "3001:3000"
     volumes:
       - ./api:/app
       - /app/node_modules   # node_modules をコンテナ内に保持
@@ -17,19 +21,25 @@ services:
       - mysql_data:/var/lib/mysql/
     environment:
       MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: ecommerce
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
     ports:
-      - '3306:3306'
+      - "3306:3306"
 
   front:
-    build: ./front
+    build:
+      context: ./front
+      dockerfile: Dockerfile
+    container_name: react-front
     volumes:
       - ./front:/app
       - node_modules:/app/node_modules
     ports:
-      - '8080:8080'
+      - "8080:3000"
     tty: true
     stdin_open: true
-    command: npm run serve
+    command: npm start
 
 volumes:
   mysql_data:

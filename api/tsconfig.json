@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    /* Language and Environment */
+    "target": "es2016",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+
+    /* Output Settings */
+    "outDir": "./dist",        // ここにビルド後のJSを出力
+    "rootDir": "./src"         // TypeScriptのソースがあるフォルダ
+  },
+  "include": ["src/**/*"]      // src以下の.tsファイルを全てコンパイル対象にする
+}
