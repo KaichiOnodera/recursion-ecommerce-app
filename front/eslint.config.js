@@ -7,6 +7,9 @@ const reactHooks = require('eslint-plugin-react-hooks');
 module.exports = [
   js.configs.recommended,
   {
+    ignores: ['**/*.test.{js,jsx,ts,tsx}', '**/*.spec.{js,jsx,ts,tsx}']
+  },
+  {
     files: ['**/*.{js,jsx,ts,tsx}'],
     languageOptions: {
       parser: typescriptParser,
@@ -20,7 +23,9 @@ module.exports = [
       globals: {
         browser: true,
         es2021: true,
-        node: true
+        node: true,
+        document: 'readonly',
+        HTMLElement: 'readonly'
       }
     },
     plugins: {
@@ -43,7 +48,7 @@ module.exports = [
     },
     settings: {
       react: {
-        version: 'detect'
+        version: '19.2.0'
       }
     }
   }
