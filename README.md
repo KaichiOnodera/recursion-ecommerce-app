@@ -16,13 +16,6 @@
 docker-compose up
 ```
 
-**データベース接続情報:**
-- ホスト: localhost
-- ポート: 3306
-- データベース: ecommerce
-- ユーザー: user
-- パスワード: password
-
 ### 2. APIサーバーのセットアップ
 
 ```bash
