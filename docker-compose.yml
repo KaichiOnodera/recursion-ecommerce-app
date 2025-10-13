@@ -1,11 +1,24 @@
 version: "3.8"
 
 services:
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: express-api
+    command: npm run dev
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./api:/app
+      - /app/node_modules   # node_modules をコンテナ内に保持
+    tty: true
+    stdin_open: true
+
   db:
     image: mysql:8.0
     volumes:
       - mysql_data:/var/lib/mysql/
-    # MUST: 本番デプロイ前に機密情報は環境変数化する
     environment:
       MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: ecommerce
@@ -13,7 +26,21 @@ services:
       MYSQL_PASSWORD: password
     ports:
       - "3306:3306"
-    restart: unless-stopped
+
+  front:
+    build:
+      context: ./front
+      dockerfile: Dockerfile
+    container_name: react-front
+    volumes:
+      - ./front:/app
+      - node_modules:/app/node_modules
+    ports:
+      - "8080:3000"
+    tty: true
+    stdin_open: true
+    command: npm start
 
 volumes:
   mysql_data:
+  node_modules:
