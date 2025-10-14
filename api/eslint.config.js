@@ -59,7 +59,7 @@ module.exports = [
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/prefer-nullish-coalescing': 'error',
       '@typescript-eslint/prefer-optional-chain': 'error',
-      '@typescript-eslint/prefer-const': 'error',
+      'prefer-const': 'error',
       'prettier/prettier': 'error',
       ...prettierConfig.rules,
     },
