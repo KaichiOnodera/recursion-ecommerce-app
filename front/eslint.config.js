@@ -3,6 +3,8 @@ const typescript = require('@typescript-eslint/eslint-plugin');
 const typescriptParser = require('@typescript-eslint/parser');
 const react = require('eslint-plugin-react');
 const reactHooks = require('eslint-plugin-react-hooks');
+const prettierConfig = require('eslint-config-prettier');
+const prettierPlugin = require('eslint-plugin-prettier');
 
 module.exports = [
   js.configs.recommended,
@@ -31,7 +33,8 @@ module.exports = [
     plugins: {
       '@typescript-eslint': typescript,
       'react': react,
-      'react-hooks': reactHooks
+      'react-hooks': reactHooks,
+      prettier: prettierPlugin,
     },
     rules: {
       ...typescript.configs.recommended.rules,
@@ -39,12 +42,12 @@ module.exports = [
       ...reactHooks.configs.recommended.rules,
       'no-console': 'warn',
       'no-debugger': 'error',
-      'prefer-const': 'error',
       'no-var': 'error',
       'react/react-in-jsx-scope': 'off',
-      '@typescript-eslint/no-unused-vars': 'error',
       '@typescript-eslint/explicit-function-return-type': 'warn',
-      '@typescript-eslint/no-explicit-any': 'warn'
+      '@typescript-eslint/no-explicit-any': 'warn',
+      'prettier/prettier': 'error',
+      ...prettierConfig.rules,
     },
     settings: {
       react: {
