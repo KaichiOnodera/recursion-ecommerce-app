@@ -1,4 +1,5 @@
-const typescriptEslint = require('@typescript-eslint/eslint-plugin');
+const js = require('@eslint/js');
+const typescript = require('@typescript-eslint/eslint-plugin');
 const typescriptParser = require('@typescript-eslint/parser');
 const prettierConfig = require('eslint-config-prettier');
 const prettierPlugin = require('eslint-plugin-prettier');
@@ -15,15 +16,13 @@ const nodeGlobals = {
   exports: 'readonly',
 };
 
-const commonRules = {
-  'no-console': 'warn',
-  'no-debugger': 'error',
-  'no-var': 'error',
-};
-
 module.exports = [
+  js.configs.recommended,
   {
-    files: ['**/*.ts', '**/*.tsx'],
+    ignores: ['**/*.test.{js,jsx,ts,tsx}', '**/*.spec.{js,jsx,ts,tsx}']
+  },
+  {
+    files: ['**/*.{js,jsx,ts,tsx}'],
     languageOptions: {
       parser: typescriptParser,
       parserOptions: {
@@ -34,11 +33,14 @@ module.exports = [
       globals: nodeGlobals,
     },
     plugins: {
-      '@typescript-eslint': typescriptEslint,
+      '@typescript-eslint': typescript,
       prettier: prettierPlugin,
     },
     rules: {
-      ...commonRules,
+      ...typescript.configs.recommended.rules,
+      'no-console': 'warn',
+      'no-debugger': 'error',
+      'no-var': 'error',
       'no-unused-vars': 'off',
       'no-undef': 'off',
       'no-redeclare': 'off',
@@ -62,18 +64,6 @@ module.exports = [
       'prefer-const': 'error',
       'prettier/prettier': 'error',
       ...prettierConfig.rules,
-    },
-  },
-  {
-    files: ['**/*.js'],
-    languageOptions: {
-      ecmaVersion: 'latest',
-      sourceType: 'commonjs',
-      globals: nodeGlobals,
-    },
-    rules: {
-      ...commonRules,
-      'prefer-const': 'error',
     },
   },
 ];
