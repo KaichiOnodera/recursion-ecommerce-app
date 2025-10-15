@@ -1,0 +1,33 @@
+{
+  "name": "recursion-ecommerce-app",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "prepare": "husky install",
+    "lint": "npm run lint --workspaces",
+    "format": "npm run format --workspaces"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.46.0",
+    "@typescript-eslint/parser": "^8.46.0",
+    "eslint": "^9.37.0",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.2.10"
+  },
+  "lint-staged": {
+    "api/src/**/*.{ts,tsx,js,jsx}": [
+      "cd api && npm run lint:fix",
+      "cd api && npm run format"
+    ],
+    "front/src/**/*.{ts,tsx,js,jsx,css}": [
+      "cd front && npm run lint:fix",
+      "cd front && npm run format"
+    ]
+  },
+  "workspaces": [
+    "api",
+    "front"
+  ]
+}
