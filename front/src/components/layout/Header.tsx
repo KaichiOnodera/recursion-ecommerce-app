@@ -1,6 +1,11 @@
 import React from 'react';
 import { HeaderProps } from '../../types';
-import { FaShoppingCart, FaSearch, FaHeart, FaUser } from 'react-icons/fa';
+import {
+  ShoppingCartIcon,
+  HeartIcon,
+  UserIcon,
+  MagnifyingGlassIcon,
+} from '@heroicons/react/24/outline';
 
 const Header: React.FC<HeaderProps> = ({
   logo = 'ECサイト',
@@ -33,19 +38,19 @@ const Header: React.FC<HeaderProps> = ({
           <div className="flex items-center space-x-4">
             {/* 検索アイコン */}
             <button className="p-2 text-gray-700">
-              <FaSearch className="w-5 h-5" />
+              <MagnifyingGlassIcon className="w-5 h-5" />
             </button>
             {/* ウィッシュリストアイコン */}
             <button className="p-2 text-gray-700">
-              <FaHeart className="w-5 h-5" />
+              <HeartIcon className="w-5 h-5" />
             </button>
             {/* ユーザーアイコン */}
             <button className="p-2 text-gray-700">
-              <FaUser className="w-5 h-5" />
+              <UserIcon className="w-5 h-5" />
             </button>
             {/* カートアイコン */}
             <button className="p-2 text-gray-700">
-              <FaShoppingCart className="w-5 h-5" />
+              <ShoppingCartIcon className="w-5 h-5" />
             </button>
           </div>
         </div>
