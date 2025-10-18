@@ -11,6 +11,6 @@ const itemRepository = new ItemRepository(prisma);
 const getItemsInteractor = new GetItemsInteractor(itemRepository);
 const getItemsController = new GetItemsController(getItemsInteractor);
 
-itemsRouter.get("/items", getItemsController.execute);
+itemsRouter.get("/", getItemsController.execute.bind(getItemsController));
 
 export { itemsRouter };
