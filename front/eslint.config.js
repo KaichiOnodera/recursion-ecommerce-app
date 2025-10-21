@@ -26,8 +26,11 @@ module.exports = [
         browser: true,
         es2021: true,
         node: true,
+        fetch: 'readonly',
+        console: 'readonly',
         document: 'readonly',
-        HTMLElement: 'readonly'
+        HTMLElement: 'readonly',
+        window: 'readonly'
       }
     },
     plugins: {

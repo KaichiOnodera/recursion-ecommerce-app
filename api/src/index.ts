@@ -1,23 +1,32 @@
-import express, { Request, Response } from "express";
-import { config } from "dotenv";
+import express, { Request, Response } from 'express';
+import { config } from 'dotenv';
+import cors from 'cors';
 
 // Load environment variables from .env file
 config();
 
 // Initialize Prisma Client
-import { PrismaClient } from "@prisma/client";
-import { itemsRouter } from "./contexts/items";
- 
+import { PrismaClient } from '@prisma/client';
+import { itemsRouter } from './contexts/items';
 
 const prisma = new PrismaClient();
 
 const app = express();
 
-app.get("/", async (_req: Request, res: Response) => {
-  res.send("Hello World!");
+app.use(
+  cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  }),
+);
+
+app.use(express.json());
+
+app.get('/', async (_req: Request, res: Response) => {
+  res.send('Hello World!');
 });
 
-app.use("/items", itemsRouter);
+app.use('/items', itemsRouter);
 
 app.listen(8000, '0.0.0.0', () => {
   console.log('Server running on port 8000');
@@ -34,4 +43,3 @@ process.on('SIGTERM', async () => {
   await prisma.$disconnect();
   process.exit(0);
 });
-
