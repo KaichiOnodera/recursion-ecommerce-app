@@ -1,15 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import ProductCard from '../components/ui/ProductCard';
 import { Item } from '@shared/schemas/item';
+import axios from 'axios';
+
+interface ItemsResponse {
+  items: Item[];
+}
 
 export const ProductList: React.FC = () => {
   const [items, setItems] = useState<Item[]>([]);
 
   useEffect(() => {
     const fetchItems = async (): Promise<void> => {
-      const response = await fetch('http://localhost:8000/items');
-      const data = await response.json();
-      setItems(data.items);
+      const response = await axios.get<ItemsResponse>(
+        'http://localhost:8000/items',
+      );
+      setItems(response.data.items);
     };
 
     fetchItems();
