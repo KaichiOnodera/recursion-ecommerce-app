@@ -7,8 +7,8 @@ config();
 // Initialize Prisma Client
 import { PrismaClient } from "@prisma/client";
 import { itemsRouter } from "./contexts/items";
+import { UsersRouter as usersRouter } from "./contexts/users";
  
-
 const prisma = new PrismaClient();
 
 const app = express();
@@ -18,6 +18,8 @@ app.get("/", async (_req: Request, res: Response) => {
 });
 
 app.use("/items", itemsRouter);
+
+app.use("/users", usersRouter);
 
 app.listen(8000, '0.0.0.0', () => {
   console.log('Server running on port 8000');

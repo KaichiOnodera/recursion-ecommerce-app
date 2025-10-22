@@ -8,6 +8,8 @@
     "format": "npm run format --workspaces"
   },
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/jsonwebtoken": "^9.0.10",
     "@typescript-eslint/eslint-plugin": "^8.46.0",
     "@typescript-eslint/parser": "^8.46.0",
     "eslint": "^9.37.0",
@@ -29,5 +31,9 @@
   "workspaces": [
     "api",
     "front"
-  ]
+  ],
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "jsonwebtoken": "^9.0.2"
+  }
 }
