@@ -12,6 +12,7 @@
     "@types/node": "^16.18.126",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
+    "axios": "^1.12.2",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-scripts": "5.0.1",
@@ -19,6 +20,7 @@
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
+    "@types/axios": "^0.9.36",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "husky": "^9.1.7",
