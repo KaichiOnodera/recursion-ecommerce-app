@@ -1,6 +1,12 @@
 import React from 'react';
+import { Routes, Route, BrowserRouter } from 'react-router';
 import './App.css';
+
+// レイアウト関係
 import Header from './components/layout/Header';
+
+// ページ関係
+import { Home } from './pages/Home';
 import { ProductList } from './pages/ProductList';
 
 function App(): React.JSX.Element {
@@ -8,7 +14,12 @@ function App(): React.JSX.Element {
     <div className="bg-blue-100 min-h-screen">
       <Header />
       <div className="container mx-auto p-4">
-        <ProductList />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/products" element={<ProductList />} />
+          </Routes>
+        </BrowserRouter>
       </div>
     </div>
   );
