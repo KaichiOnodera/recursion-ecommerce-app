@@ -8,6 +8,10 @@ import Header from './components/layout/Header';
 // ページ関係
 import { Home } from './pages/Home';
 import { ProductList } from './pages/ProductList';
+import { UserLogin } from './pages/auth/UserLogin';
+import { UserSignup } from './pages/auth/UserSignup';
+import { AdminLogin } from './pages/auth/AdminLogin';
+import { AdminSignup } from './pages/auth/AdminSignup';
 
 function App(): React.JSX.Element {
   return (
@@ -18,6 +22,10 @@ function App(): React.JSX.Element {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/products" element={<ProductList />} />
+            <Route path="/auth/user/login" element={<UserLogin />} />
+            <Route path="/auth/user/signup" element={<UserSignup />} />
+            <Route path="/auth/admin/login" element={<AdminLogin />} />
+            <Route path="/auth/admin/signup" element={<AdminSignup />} />
           </Routes>
         </BrowserRouter>
       </div>
