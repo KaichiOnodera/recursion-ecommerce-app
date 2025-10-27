@@ -31,7 +31,7 @@ export class UserLoginController {
       if (!email || !password) {
         return res
           .status(400)
-          .json({ message: 'メールとパスワードが必要です' });
+          .json({ message: 'Email and password are required' });
       }
 
       // USERロールのみ受け付ける

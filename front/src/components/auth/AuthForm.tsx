@@ -42,7 +42,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
     } catch (err: any) {
       // axiosのエラーレスポンスからメッセージを取得
       const errorMessage =
-        err.response?.data?.message || err.message || 'ログインに失敗しました';
+        err.response?.data?.message || err.message || 'Login failed';
       setError(errorMessage);
     }
   };

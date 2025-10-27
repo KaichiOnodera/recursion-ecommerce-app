@@ -31,7 +31,7 @@ export class AdminLoginController {
       if (!email || !password) {
         return res
           .status(400)
-          .json({ message: 'メールとパスワードが必要です' });
+          .json({ message: 'Email and password are required' });
       }
 
       // ADMINロールのみ受け付ける
