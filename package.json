@@ -29,5 +29,8 @@
   "workspaces": [
     "api",
     "front"
-  ]
+  ],
+  "dependencies": {
+    "jose": "^6.1.0"
+  }
 }
