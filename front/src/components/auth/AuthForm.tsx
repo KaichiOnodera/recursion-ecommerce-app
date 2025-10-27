@@ -1,18 +1,50 @@
 import React, { useState } from 'react';
+import { AuthApiService } from '../../services/api/auth';
+import { useNavigate } from 'react-router';
 
 interface AuthFormProps {
   mode: 'login' | 'signup';
   userType: 'admin' | 'user';
+  onSuccess?: () => void;
 }
 
-export const AuthForm: React.FC<AuthFormProps> = ({ mode, userType }) => {
+export const AuthForm: React.FC<AuthFormProps> = ({
+  mode,
+  userType,
+  onSuccess,
+}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+
+    try {
+      if (mode === 'login') {
+        // userTypeに応じて適切なAPIを呼び出す
+        if (userType === 'admin') {
+          await AuthApiService.loginAsAdmin({ email, password });
+        } else {
+          await AuthApiService.loginAsUser({ email, password });
+        }
+
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          navigate('/');
+        }
+      }
+    } catch (err: any) {
+      // axiosのエラーレスポンスからメッセージを取得
+      const errorMessage =
+        err.response?.data?.message || err.message || 'ログインに失敗しました';
+      setError(errorMessage);
+    }
   };
 
   return (
@@ -21,6 +53,12 @@ export const AuthForm: React.FC<AuthFormProps> = ({ mode, userType }) => {
         {userType === 'admin' ? '管理者' : 'ユーザー'}
         {mode === 'login' ? 'ログイン' : 'サインアップ'}
       </h2>
+
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          {error}
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* サインアップ時のみ表示 */}

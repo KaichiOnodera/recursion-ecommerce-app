@@ -12,8 +12,8 @@ const Header: React.FC<HeaderProps> = ({
   navigationItems = [
     { label: 'ホーム', href: '/' },
     { label: '商品', href: '/products' },
-    { label: 'ログイン', href: '/login' },
-    { label: '新規登録', href: '/register' },
+    { label: 'ログイン', href: '/auth/user/login' },
+    { label: '新規登録', href: '/auth/user/signup' },
   ],
 }) => {
   return (
