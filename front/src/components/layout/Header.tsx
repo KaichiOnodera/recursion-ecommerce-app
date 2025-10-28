@@ -1,5 +1,6 @@
 import React from 'react';
 import { HeaderProps } from '../../types';
+import { LogoutButton } from '../auth/LogoutButton';
 import {
   ShoppingCartIcon,
   HeartIcon,
@@ -32,6 +33,7 @@ const Header: React.FC<HeaderProps> = ({
                 {item.label}
               </a>
             ))}
+            <LogoutButton className="text-gray-500" />
           </nav>
 
           {/* アイコン */}

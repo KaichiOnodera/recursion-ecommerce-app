@@ -15,10 +15,10 @@ import { AdminSignup } from './pages/auth/AdminSignup';
 
 function App(): React.JSX.Element {
   return (
-    <div className="bg-blue-100 min-h-screen">
-      <Header />
-      <div className="container mx-auto p-4">
-        <BrowserRouter>
+    <BrowserRouter>
+      <div className="bg-blue-100 min-h-screen">
+        <Header />
+        <div className="container mx-auto p-4">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/products" element={<ProductList />} />
@@ -27,9 +27,9 @@ function App(): React.JSX.Element {
             <Route path="/auth/admin/login" element={<AdminLogin />} />
             <Route path="/auth/admin/signup" element={<AdminSignup />} />
           </Routes>
-        </BrowserRouter>
+        </div>
       </div>
-    </div>
+    </BrowserRouter>
   );
 }
 
