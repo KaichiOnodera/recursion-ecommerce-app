@@ -11,7 +11,7 @@ const ISSUER = 'recursion-ecommerce-app';
 const AUDIENCE = 'api';
 
 // JWTトークンの生成
-export const signJWT = async (payload: JWTPayload): Promise<string> => {
+export const generateJWT = async (payload: JWTPayload): Promise<string> => {
   const secret = new TextEncoder().encode(JWT_SECRET);
   const alg = 'HS256';
 
