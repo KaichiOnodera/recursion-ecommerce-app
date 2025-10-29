@@ -72,7 +72,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
                 className="block px-2 py-1"
                 onChange={(e) => setLastName(e.target.value)}
                 required
-              ></input>
+              />
             </div>
             <div>
               <label className="block">名前</label>
@@ -82,7 +82,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
                 className="block px-2 py-1"
                 onChange={(e) => setFirstName(e.target.value)}
                 required
-              ></input>
+              />
             </div>
           </div>
         )}
@@ -96,7 +96,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
             className="block px-3 py-1"
             onChange={(e) => setEmail(e.target.value)}
             required
-          ></input>
+          />
         </div>
 
         {/* パスワード */}
@@ -108,7 +108,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
             className="block px-3 py-1"
             onChange={(e) => setPassword(e.target.value)}
             required
-          ></input>
+          />
         </div>
 
         {/* 送信ボタン */}
