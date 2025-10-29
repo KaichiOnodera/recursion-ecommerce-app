@@ -1,6 +1,5 @@
 import { Item } from '@shared/schemas/item';
-
-const API_BASE_URL = 'http://localhost:8000';
+import { API_BASE_URL } from './config';
 
 export interface ItemsResponse {
   items: Item[];
