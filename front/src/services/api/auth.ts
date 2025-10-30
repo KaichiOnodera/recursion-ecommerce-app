@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { API_BASE_URL } from './config';
+import { User } from '@shared/schemas/user';
 
 export interface LoginRequest {
   email: string;
@@ -7,11 +8,7 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-  user: {
-    id: number;
-    email: string;
-    role: string;
-  };
+  user: User;
 }
 
 export class AuthApiService {
