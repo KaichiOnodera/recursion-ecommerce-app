@@ -26,12 +26,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
 
     try {
       if (mode === 'login') {
-        // userTypeに応じて適切なAPIを呼び出す
-        if (userType === 'admin') {
-          await AuthApiService.loginAsAdmin({ email, password });
-        } else {
-          await AuthApiService.loginAsUser({ email, password });
-        }
+        await AuthApiService.login({ email, password });
 
         if (onSuccess) {
           onSuccess();
