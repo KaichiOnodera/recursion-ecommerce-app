@@ -35,10 +35,19 @@ export const verifyJWT = async (token: string): Promise<JWTPayload> => {
     audience: AUDIENCE,
   });
 
+  if (
+    typeof payload.userId !== 'number' ||
+    typeof payload.email !== 'string' ||
+    (payload.role !== 'USER' && payload.role !== 'ADMIN') ||
+    typeof payload.version !== 'string'
+  ) {
+    throw new Error('Invalid token payload');
+  }
+
   return {
-    userId: payload.userId as number,
-    email: payload.email as string,
-    role: payload.role as 'USER' | 'ADMIN',
-    version: payload.version as string,
+    userId: payload.userId,
+    email: payload.email,
+    role: payload.role,
+    version: payload.version,
   };
 };
