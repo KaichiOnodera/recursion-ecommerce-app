@@ -1,6 +1,7 @@
 import { ILoginInteractor } from '../usecases/ILoginInteractor';
 import { IUserRepository } from '../domains/repositories/IUserRepository';
-import { signJWT } from '../../../utils/jwt';
+import { generateJWT, TOKEN_VERSION } from '../../../utils/jwt';
+import { User } from '@shared/schemas/user';
 
 export class LoginInteractor implements ILoginInteractor {
   constructor(private readonly userRepository: IUserRepository) {}
@@ -11,7 +12,7 @@ export class LoginInteractor implements ILoginInteractor {
     expectedRole?: 'USER' | 'ADMIN',
   ): Promise<{
     token: string;
-    user: { id: number; email: string; role: string };
+    user: User;
   }> {
     const user = await this.userRepository.findByEmail(email);
     if (!user) {
@@ -29,10 +30,11 @@ export class LoginInteractor implements ILoginInteractor {
       );
     }
 
-    const token = await signJWT({
+    const token = await generateJWT({
       userId: user.id,
       email: user.email,
       role: user.role,
+      version: TOKEN_VERSION,
     });
 
     return {

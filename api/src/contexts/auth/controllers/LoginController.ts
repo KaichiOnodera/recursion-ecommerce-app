@@ -1,29 +1,22 @@
 import express from 'express';
 import { ILoginInteractor } from '../usecases/ILoginInteractor';
+import { PostRes } from '@shared/types/posts';
 
 interface LoginRequest {
   email: string;
   password: string;
 }
 
-interface LoginResponse {
-  user: {
-    id: number;
-    email: string;
-    role: string;
-  };
-}
-
 interface ErrorResponse {
   message: string;
 }
 
-export class AdminLoginController {
+export class LoginController {
   constructor(private readonly loginInteractor: ILoginInteractor) {}
 
   async execute(
-    req: express.Request<null, LoginResponse, LoginRequest>,
-    res: express.Response<LoginResponse | ErrorResponse>,
+    req: express.Request<null, PostRes['auth/login'], LoginRequest>,
+    res: express.Response<PostRes['auth/login'] | ErrorResponse>,
   ) {
     try {
       const { email, password } = req.body;
@@ -34,12 +27,7 @@ export class AdminLoginController {
           .json({ message: 'Email and password are required' });
       }
 
-      // ADMINロールのみ受け付ける
-      const result = await this.loginInteractor.execute(
-        email,
-        password,
-        'ADMIN',
-      );
+      const result = await this.loginInteractor.execute(email, password);
 
       res.cookie('token', result.token, {
         httpOnly: true,

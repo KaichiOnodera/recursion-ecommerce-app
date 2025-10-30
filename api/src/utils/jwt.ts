@@ -4,8 +4,10 @@ export interface JWTPayload {
   userId: number;
   email: string;
   role: 'USER' | 'ADMIN';
+  version: string;
 }
 
+export const TOKEN_VERSION = '1.0';
 const JWT_SECRET = process.env.JWT_SECRET ?? 'invalid';
 const ISSUER = 'recursion-ecommerce-app';
 const AUDIENCE = 'api';
@@ -15,7 +17,7 @@ export const generateJWT = async (payload: JWTPayload): Promise<string> => {
   const secret = new TextEncoder().encode(JWT_SECRET);
   const alg = 'HS256';
 
-  return await new SignJWT({ ...payload })
+  return await new SignJWT({ ...payload, version: TOKEN_VERSION })
     .setProtectedHeader({ alg })
     .setIssuedAt()
     .setIssuer(ISSUER)
@@ -37,5 +39,6 @@ export const verifyJWT = async (token: string): Promise<JWTPayload> => {
     userId: payload.userId as number,
     email: payload.email as string,
     role: payload.role as 'USER' | 'ADMIN',
+    version: payload.version as string,
   };
 };

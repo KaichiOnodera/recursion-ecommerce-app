@@ -15,21 +15,9 @@ export interface LoginResponse {
 }
 
 export class AuthApiService {
-  static async loginAsUser(data: LoginRequest): Promise<LoginResponse> {
+  static async login(data: LoginRequest): Promise<LoginResponse> {
     const response = await axios.post<LoginResponse>(
-      `${API_BASE_URL}/auth/user/login`,
-      data,
-      {
-        withCredentials: true,
-      },
-    );
-
-    return response.data;
-  }
-
-  static async loginAsAdmin(data: LoginRequest): Promise<LoginResponse> {
-    const response = await axios.post<LoginResponse>(
-      `${API_BASE_URL}/auth/admin/login`,
+      `${API_BASE_URL}/auth/login`,
       data,
       {
         withCredentials: true,

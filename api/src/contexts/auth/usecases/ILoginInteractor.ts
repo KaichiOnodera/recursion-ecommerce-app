@@ -1,3 +1,5 @@
+import { User } from '@shared/schemas/user';
+
 export interface ILoginInteractor {
   execute(
     email: string,
@@ -5,6 +7,6 @@ export interface ILoginInteractor {
     expectedRole?: 'USER' | 'ADMIN',
   ): Promise<{
     token: string;
-    user: { id: number; email: string; role: string };
+    user: User;
   }>;
 }
