@@ -1,13 +1,14 @@
 import { User } from "../domains/entities/User";
 
 export interface ICreateUserRequest {
-    lastName: string;
-    firstName: string;
-    email: string;
-    password: string;
-    role: number;
+  lastName: string;
+  firstName: string;
+  email: string;
+  password: string;
+  isResigned:boolean;
+  role: number;
 }
 
 export interface ICreateUserInteractor {
-    execute(request: ICreateUserRequest): Promise<User>;
+  execute(input: ICreateUserRequest): Promise<User>;
 }

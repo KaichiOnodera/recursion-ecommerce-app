@@ -1,3 +1,4 @@
+//Define Constant table for User
 export  type User = { 
   readonly id: number,
   readonly lastName:string,

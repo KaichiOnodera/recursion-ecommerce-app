@@ -1,41 +1,40 @@
-import { GetUsersController } from "./controllers/GetUsersController";
-import { UserRepository } from "./infrastructures/repositories/IUserRepository";
-import { PrismaClient } from "@prisma/client";
-import { CreateUserInteractor } from "./interactors/CreateUserInteractor";
-import { CreateUserController } from "./controllers/CreateUserController";
-import { GenerateTokenInteractor } from "./usecases/IGenerateTokenInteracotr";
 import express from "express";
+import { PrismaClient } from "@prisma/client";
+import { UserRepository } from "./infrastructures/repositories/UserRepository";
 
-class GetUsersInteractor {
-  private userRepository: any;
-  constructor(userRepository: any) {
-	this.userRepository = userRepository;
-  }
+import { GetUsersInteractor } from "./interactors/GetUsersInteractor";
+import { CreateUserInteractor } from "./interactors/CreateUserIntreractor";
+import { UpdateUserInteractor } from "./interactors/UpdateUserInteractor";
+import { DeleteUserInteractor } from "./interactors/DeleteUserInterector";
 
-  async execute() {
-	// delegate to repository - adjust method name to match your repository implementation
-	if (typeof this.userRepository.findAll === "function") {
-	  return await this.userRepository.findAll();
-	}
-	if (typeof this.userRepository.getAll === "function") {
-	  return await this.userRepository.getAll();
-	}
-	// fallback: return empty array to avoid runtime errors
-	return [];
-  }
-}
+import { GetUsersController } from "./controllers/GetUsersController";
+import { CreateUserController } from "./controllers/CreateUserController";
+import { UpdateUserController } from "./controllers/UpdateUserController";
+import { DeleteUserController } from "./controllers/DeleteUserController";
 
 const UsersRouter = express.Router();
 
+// Core dependencies
 const prisma = new PrismaClient();
 const userRepository = new UserRepository(prisma);
+
+
 const getUsersInteractor = new GetUsersInteractor(userRepository);
+const createUserInteractor = new CreateUserInteractor(userRepository);
+const updateUserInteractor = new UpdateUserInteractor(userRepository);
+const deleteUserInteractor = new DeleteUserInteractor(userRepository);
+
+// Controllers
 const getUsersController = new GetUsersController(getUsersInteractor);
-const createUserInteractor = new CreateUserInteractor(userRepository, generateTokenInteractor);
-export const createUserController = new CreateUserController(createUserInteractor);
+const createUserController = new CreateUserController(createUserInteractor);
+const updateUserController = new UpdateUserController(updateUserInteractor);
+const deleteUserController = new DeleteUserController(deleteUserInteractor);
 
-
+// Routes
 UsersRouter.get("/", getUsersController.execute.bind(getUsersController));
-UsersRouter.post("/signup", CreateUserController.execute.bind(CreateUserController));
+UsersRouter.post("/signup", createUserController.execute.bind(createUserController));
+UsersRouter.put("/:id", updateUserController.execute.bind(updateUserController));
+UsersRouter.delete("/:id",deleteUserController.execute.bind(deleteUserController));
+
 
 export { UsersRouter };
