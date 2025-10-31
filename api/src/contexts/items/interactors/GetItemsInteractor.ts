@@ -1,6 +1,6 @@
-import { IGetItemsInteractor } from "../usecases/IGetItemsInteractor";
-import { IItemRepository } from "../domains/repositories/IItemRepository";
-import { Item } from "../domains/entities/Item";
+import { IGetItemsInteractor } from '../usecases/IGetItemsInteractor';
+import { IItemRepository } from '../domains/repositories/IItemRepository';
+import { Item } from '../domains/entities/Item';
 
 export class GetItemsInteractor implements IGetItemsInteractor {
   constructor(private readonly itemRepository: IItemRepository) {}
