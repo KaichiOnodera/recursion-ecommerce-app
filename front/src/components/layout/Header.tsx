@@ -1,5 +1,6 @@
 import React from 'react';
 import { HeaderProps } from '../../types';
+import { LogoutButton } from '../auth/LogoutButton';
 import {
   ShoppingCartIcon,
   HeartIcon,
@@ -12,8 +13,8 @@ const Header: React.FC<HeaderProps> = ({
   navigationItems = [
     { label: 'ホーム', href: '/' },
     { label: '商品', href: '/products' },
-    { label: 'ログイン', href: '/login' },
-    { label: '新規登録', href: '/register' },
+    { label: 'ログイン', href: '/auth/user/login' },
+    { label: '新規登録', href: '/auth/user/signup' },
   ],
 }) => {
   return (
@@ -32,6 +33,7 @@ const Header: React.FC<HeaderProps> = ({
                 {item.label}
               </a>
             ))}
+            <LogoutButton className="text-gray-500" />
           </nav>
 
           {/* アイコン */}

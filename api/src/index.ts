@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import { config } from 'dotenv';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
 // Load environment variables from .env file
 config();
@@ -8,6 +9,7 @@ config();
 // Initialize Prisma Client
 import { PrismaClient } from '@prisma/client';
 import { itemsRouter } from './contexts/items';
+import { authRouter } from './contexts/auth';
 
 const prisma = new PrismaClient();
 
@@ -20,16 +22,20 @@ app.use(
   }),
 );
 
+app.use(cookieParser());
 app.use(express.json());
 
 app.get('/', async (_req: Request, res: Response) => {
   res.send('Hello World!');
 });
 
+app.use('/auth', authRouter);
 app.use('/items', itemsRouter);
 
 app.listen(8000, '0.0.0.0', () => {
+  // eslint-disable-next-line no-console
   console.log('Server running on port 8000');
+  // eslint-disable-next-line no-console
   console.log('Database URL:', process.env.DATABASE_URL);
 });
 
