@@ -9,6 +9,7 @@ config();
 // Initialize Prisma Client
 import { PrismaClient } from '@prisma/client';
 import { itemsRouter } from './contexts/items';
+import { adminItemsRouter } from './contexts/items/admin';
 import { authRouter } from './contexts/auth';
 
 const prisma = new PrismaClient();
@@ -31,6 +32,7 @@ app.get('/', async (_req: Request, res: Response) => {
 
 app.use('/auth', authRouter);
 app.use('/items', itemsRouter);
+app.use('/admin/items', adminItemsRouter);
 
 app.listen(8000, '0.0.0.0', () => {
   // eslint-disable-next-line no-console
