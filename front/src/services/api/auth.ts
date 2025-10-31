@@ -1,19 +1,12 @@
 import axios from 'axios';
 import { API_BASE_URL } from './config';
-import { User } from '@shared/schemas/user';
-
-export interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-export interface LoginResponse {
-  user: User;
-}
+import { PostReq, PostRes } from '@shared/types/posts';
 
 export class AuthApiService {
-  static async login(data: LoginRequest): Promise<LoginResponse> {
-    const response = await axios.post<LoginResponse>(
+  static async login(
+    data: PostReq['auth/login'],
+  ): Promise<PostRes['auth/login']> {
+    const response = await axios.post<PostRes['auth/login']>(
       `${API_BASE_URL}/auth/login`,
       data,
       {
