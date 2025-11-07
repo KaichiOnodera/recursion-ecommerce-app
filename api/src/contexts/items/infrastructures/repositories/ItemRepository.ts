@@ -31,7 +31,7 @@ export class ItemRepository implements IItemRepository {
     description?: string,
     type?: number,
   ): Promise<Item | null> {
-    // アイテムが存在するか確認
+    // アイテムが存在するか
     const existingItem = await this.prisma.items.findUnique({
       where: { id },
     });
@@ -40,7 +40,7 @@ export class ItemRepository implements IItemRepository {
       return null;
     }
 
-    // 更新データを構築（undefinedのフィールドは除外）
+    // 更新データの構築
     const updateData: {
       name?: string;
       description?: string;
@@ -51,7 +51,7 @@ export class ItemRepository implements IItemRepository {
     if (description !== undefined) updateData.description = description;
     if (type !== undefined) updateData.type = type;
 
-    // アイテムを更新
+    // アイテムの更新
     const item = await this.prisma.items.update({
       where: { id },
       data: updateData,
