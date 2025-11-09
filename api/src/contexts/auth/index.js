@@ -1,0 +1,18 @@
+"use strict";
+exports.__esModule = true;
+exports.authRouter = void 0;
+var LoginController_1 = require("./controllers/LoginController");
+var LogoutController_1 = require("./controllers/LogoutController");
+var LoginInteractor_1 = require("./interactors/LoginInteractor");
+var UserRepository_1 = require("./infrastructures/repositories/UserRepository");
+var client_1 = require("@prisma/client");
+var express_1 = require("express");
+var authRouter = express_1["default"].Router();
+exports.authRouter = authRouter;
+var prisma = new client_1.PrismaClient();
+var userRepository = new UserRepository_1.UserRepository(prisma);
+var loginInteractor = new LoginInteractor_1.LoginInteractor(userRepository);
+var loginController = new LoginController_1.LoginController(loginInteractor);
+var logoutController = new LogoutController_1.LogoutController();
+authRouter.post('/login', loginController.execute.bind(loginController));
+authRouter.post('/logout', logoutController.execute.bind(logoutController));
