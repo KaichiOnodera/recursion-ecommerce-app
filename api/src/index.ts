@@ -1,26 +1,43 @@
-import express, { Request, Response } from "express";
-import { config } from "dotenv";
+import express, { Request, Response } from 'express';
+import { config } from 'dotenv';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
 // Load environment variables from .env file
 config();
 
 // Initialize Prisma Client
-import { PrismaClient } from "@prisma/client";
-import { itemsRouter } from "./contexts/items";
-
+import { PrismaClient } from '@prisma/client';
+import { itemsRouter } from './contexts/items';
+import { adminItemsRouter } from './contexts/items/admin';
+import { authRouter } from './contexts/auth';
 
 const prisma = new PrismaClient();
 
 const app = express();
 
-app.get("/", async (_req: Request, res: Response) => {
-  res.send("Hello World!");
+app.use(
+  cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  }),
+);
+
+app.use(cookieParser());
+app.use(express.json());
+
+app.get('/', async (_req: Request, res: Response) => {
+  res.send('Hello World!');
 });
 
-app.use("/items", itemsRouter);
+app.use('/auth', authRouter);
+app.use('/items', itemsRouter);
+app.use('/admin/items', adminItemsRouter);
 
 app.listen(8000, '0.0.0.0', () => {
+  // eslint-disable-next-line no-console
   console.log('Server running on port 8000');
+  // eslint-disable-next-line no-console
   console.log('Database URL:', process.env.DATABASE_URL);
 });
 
