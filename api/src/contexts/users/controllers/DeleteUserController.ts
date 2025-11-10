@@ -17,6 +17,7 @@ export class DeleteUserController {
       return res.status(200).json({
         success: true,
         message: "User deleted successfully",
+        
       });
     } catch (error: any) {
       console.error("Error deleting user:", error);
