@@ -9,6 +9,6 @@ export class DeleteUserInteractor {
       throw new Error("User not found");
     }
 
-    await this.userRepository.delete(id);
+    await this.userRepository.update(id, { deletedAt: new Date() });
   }
 }
