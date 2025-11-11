@@ -24,4 +24,39 @@ export class ItemRepository implements IItemRepository {
 
     return item;
   }
+
+  async update(
+    id: number,
+    name?: string,
+    description?: string,
+    type?: number,
+  ): Promise<Item | null> {
+    // アイテムが存在するか
+    const existingItem = await this.prisma.items.findUnique({
+      where: { id },
+    });
+
+    if (!existingItem) {
+      return null;
+    }
+
+    // 更新データの構築
+    const updateData: {
+      name?: string;
+      description?: string;
+      type?: number;
+    } = {};
+
+    if (name !== undefined) updateData.name = name;
+    if (description !== undefined) updateData.description = description;
+    if (type !== undefined) updateData.type = type;
+
+    // アイテムの更新
+    const item = await this.prisma.items.update({
+      where: { id },
+      data: updateData,
+    });
+
+    return item;
+  }
 }
