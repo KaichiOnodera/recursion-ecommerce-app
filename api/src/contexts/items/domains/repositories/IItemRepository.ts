@@ -9,4 +9,5 @@ export interface IItemRepository {
     description?: string,
     type?: number,
   ): Promise<Item | null>;
+  delete(id: number): Promise<Item | null>;
 }

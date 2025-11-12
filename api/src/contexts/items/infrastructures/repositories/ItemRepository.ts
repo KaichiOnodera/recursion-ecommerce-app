@@ -31,16 +31,12 @@ export class ItemRepository implements IItemRepository {
     description?: string,
     type?: number,
   ): Promise<Item | null> {
-    // アイテムが存在するか
-    const existingItem = await this.prisma.items.findUnique({
-      where: { id },
-    });
+    const existingItem = await this.findById(id);
 
     if (!existingItem) {
       return null;
     }
 
-    // 更新データの構築
     const updateData: {
       name?: string;
       description?: string;
@@ -51,12 +47,31 @@ export class ItemRepository implements IItemRepository {
     if (description !== undefined) updateData.description = description;
     if (type !== undefined) updateData.type = type;
 
-    // アイテムの更新
     const item = await this.prisma.items.update({
       where: { id },
       data: updateData,
     });
 
     return item;
+  }
+
+  async delete(id: number): Promise<Item | null> {
+    const existingItem = await this.findById(id);
+
+    if (!existingItem) {
+      return null;
+    }
+
+    const item = await this.prisma.items.delete({
+      where: { id },
+    });
+
+    return item;
+  }
+
+  private async findById(id: number): Promise<Item | null> {
+    return await this.prisma.items.findUnique({
+      where: { id },
+    });
   }
 }
