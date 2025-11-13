@@ -2,6 +2,8 @@ import { CreateItemController } from './controllers/CreateItemController';
 import { CreateItemInteractor } from './interactors/CreateItemInteractor';
 import { UpdateItemController } from './controllers/UpdateItemController';
 import { UpdateItemInteractor } from './interactors/UpdateItemInteractor';
+import { DeleteItemController } from './controllers/DeleteItemController';
+import { DeleteItemInteractor } from './interactors/DeleteItemInteractor';
 import { ItemRepository } from '../infrastructures/repositories/ItemRepository';
 import { PrismaClient } from '@prisma/client';
 import express from 'express';
@@ -23,6 +25,9 @@ const createItemController = new CreateItemController(createItemInteractor);
 const updateItemInteractor = new UpdateItemInteractor(itemRepository);
 const updateItemController = new UpdateItemController(updateItemInteractor);
 
+const deleteItemInteractor = new DeleteItemInteractor(itemRepository);
+const deleteItemController = new DeleteItemController(deleteItemInteractor);
+
 adminItemsRouter.post(
   '/',
   createItemController.execute.bind(createItemController),
@@ -31,6 +36,11 @@ adminItemsRouter.post(
 adminItemsRouter.patch(
   '/:id',
   updateItemController.execute.bind(updateItemController),
+);
+
+adminItemsRouter.delete(
+  '/:id',
+  deleteItemController.execute.bind(deleteItemController),
 );
 
 export { adminItemsRouter };
