@@ -4,6 +4,8 @@ import { UpdateItemController } from './controllers/UpdateItemController';
 import { UpdateItemInteractor } from './interactors/UpdateItemInteractor';
 import { DeleteItemController } from './controllers/DeleteItemController';
 import { DeleteItemInteractor } from './interactors/DeleteItemInteractor';
+import { GetItemsController } from './controllers/GetItemsController';
+import { GetItemsInteractor } from '../interactors/GetItemsInteractor';
 import { ItemRepository } from '../infrastructures/repositories/ItemRepository';
 import { PrismaClient } from '@prisma/client';
 import express from 'express';
@@ -27,6 +29,11 @@ const updateItemController = new UpdateItemController(updateItemInteractor);
 
 const deleteItemInteractor = new DeleteItemInteractor(itemRepository);
 const deleteItemController = new DeleteItemController(deleteItemInteractor);
+
+const getItemsInteractor = new GetItemsInteractor(itemRepository);
+const getItemsController = new GetItemsController(getItemsInteractor);
+
+adminItemsRouter.get('/', getItemsController.execute.bind(getItemsController));
 
 adminItemsRouter.post(
   '/',
