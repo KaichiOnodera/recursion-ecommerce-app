@@ -12,6 +12,7 @@ import { UserLogin } from './pages/auth/UserLogin';
 import { UserSignup } from './pages/auth/UserSignup';
 import { AdminLogin } from './pages/auth/AdminLogin';
 import { AdminSignup } from './pages/auth/AdminSignup';
+import { AdminProductList } from './pages/admin/AdminProductList';
 
 function App(): React.JSX.Element {
   return (
@@ -26,6 +27,7 @@ function App(): React.JSX.Element {
             <Route path="/auth/user/signup" element={<UserSignup />} />
             <Route path="/auth/admin/login" element={<AdminLogin />} />
             <Route path="/auth/admin/signup" element={<AdminSignup />} />
+            <Route path="/admin/products" element={<AdminProductList />} />
           </Routes>
         </div>
       </div>
