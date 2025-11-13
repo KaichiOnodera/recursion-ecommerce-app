@@ -14,9 +14,12 @@ export class ItemsApiService {
   }
 
   static async getAdminItems(): Promise<ItemsResponse> {
-    const response = await axios.get<ItemsResponse>(`${API_BASE_URL}/items`, {
-      withCredentials: true,
-    });
+    const response = await axios.get<ItemsResponse>(
+      `${API_BASE_URL}/admin/items`,
+      {
+        withCredentials: true,
+      },
+    );
 
     return response.data;
   }
