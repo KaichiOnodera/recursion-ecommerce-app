@@ -30,7 +30,7 @@ export const AdminProductList: React.FC = () => {
       </div>
       <div className="grid grid-cols-4 gap-4">
         {items.map((item) => (
-          <ProductCard key={item.id} item={item} />
+          <ProductCard key={item.id} item={item} isAdmin={true} />
         ))}
       </div>
     </div>
