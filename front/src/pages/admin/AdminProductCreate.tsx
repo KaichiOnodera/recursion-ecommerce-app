@@ -20,7 +20,7 @@ export const AdminProductCreate: React.FC = () => {
         type,
       });
 
-      navigate('/products');
+      navigate('/admin/products');
     } finally {
       setIsSubmitting(false);
     }
@@ -84,7 +84,7 @@ export const AdminProductCreate: React.FC = () => {
             </button>
             <button
               type="button"
-              onClick={() => navigate('/products')}
+              onClick={() => navigate('/admin/products')}
               className="bg-gray-300 rounded-md text-gray-700 py-3 px-6 hover:bg-gray-400"
             >
               キャンセル
