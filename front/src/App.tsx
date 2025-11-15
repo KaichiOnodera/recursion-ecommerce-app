@@ -12,7 +12,10 @@ import { UserLogin } from './pages/auth/UserLogin';
 import { UserSignup } from './pages/auth/UserSignup';
 import { AdminLogin } from './pages/auth/AdminLogin';
 import { AdminSignup } from './pages/auth/AdminSignup';
+import { AdminProductList } from './pages/admin/AdminProductList';
 import { AdminProductCreate } from './pages/admin/AdminProductCreate';
+import { AdminProductEdit } from './pages/admin/AdminProductEdit';
+import { AdminProductDelete } from './pages/admin/AdminProductDelete';
 
 function App(): React.JSX.Element {
   return (
@@ -30,6 +33,15 @@ function App(): React.JSX.Element {
             <Route
               path="/admin/products/new"
               element={<AdminProductCreate />}
+            />
+            <Route path="/admin/products" element={<AdminProductList />} />
+            <Route
+              path="/admin/products/:id/edit"
+              element={<AdminProductEdit />}
+            />
+            <Route
+              path="/admin/products/:id/delete"
+              element={<AdminProductDelete />}
             />
           </Routes>
         </div>
