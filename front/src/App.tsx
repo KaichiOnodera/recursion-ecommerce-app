@@ -13,6 +13,7 @@ import { UserSignup } from './pages/auth/UserSignup';
 import { AdminLogin } from './pages/auth/AdminLogin';
 import { AdminSignup } from './pages/auth/AdminSignup';
 import { AdminProductList } from './pages/admin/AdminProductList';
+import { AdminProductEdit } from './pages/admin/AdminProductEdit';
 import { AdminProductDelete } from './pages/admin/AdminProductDelete';
 
 function App(): React.JSX.Element {
@@ -29,6 +30,10 @@ function App(): React.JSX.Element {
             <Route path="/auth/admin/login" element={<AdminLogin />} />
             <Route path="/auth/admin/signup" element={<AdminSignup />} />
             <Route path="/admin/products" element={<AdminProductList />} />
+            <Route
+              path="/admin/products/:id/edit"
+              element={<AdminProductEdit />}
+            />
             <Route
               path="/admin/products/:id/delete"
               element={<AdminProductDelete />}

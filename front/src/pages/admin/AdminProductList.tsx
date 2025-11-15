@@ -31,7 +31,7 @@ export const AdminProductList: React.FC = () => {
       <div className="grid grid-cols-4 gap-4">
         {items.map((item) => (
           <div key={item.id}>
-            <ProductCard item={item} />
+            <ProductCard item={item} isAdmin={true} />
             <button
               onClick={() => navigate(`/admin/products/${item.id}/delete`)}
               className="mt-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
