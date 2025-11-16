@@ -7,6 +7,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Inventory {
+  id        Int      @id @default(autoincrement())
+  amount    Int      @default(0)
+  itemId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  item Items @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@index([itemId])
+}
+
 model Items {
   id            Int      @id @default(autoincrement())
   name          String
@@ -18,6 +30,7 @@ model Items {
   updatedAt     DateTime @updatedAt
 
   ItemImages ItemImages[]
+  Inventory  Inventory[]
 }
 
 model ItemImages {
