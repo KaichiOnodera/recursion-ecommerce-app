@@ -7,6 +7,32 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Cart {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      Users       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cartItems CartItems[]
+}
+
+model CartItems {
+  id        Int      @id @default(autoincrement())
+  cartId    Int
+  itemId    Int
+  amount    Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  cart Cart  @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  item Items @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@unique([cartId, itemId])
+  @@index([cartId])
+  @@index([itemId])
+}
+
 model Inventory {
   id        Int      @id @default(autoincrement())
   amount    Int      @default(0)
@@ -31,6 +57,7 @@ model Items {
 
   ItemImages ItemImages[]
   Inventory  Inventory[]
+  CartItems  CartItems[]
 }
 
 model ItemImages {
@@ -56,6 +83,8 @@ model Users {
   role       UserRole @default(USER)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+
+  Cart Cart?
 }
 
 enum UserRole {
