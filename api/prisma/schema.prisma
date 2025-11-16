@@ -15,6 +15,7 @@ model Cart {
 
   user      Users       @relation(fields: [userId], references: [id], onDelete: Cascade)
   cartItems CartItems[]
+  orders    Orders[]
 }
 
 model CartItems {
@@ -58,6 +59,7 @@ model Items {
   ItemImages ItemImages[]
   Inventory  Inventory[]
   CartItems  CartItems[]
+  OrderItems OrderItems[]
 }
 
 model ItemImages {
@@ -73,6 +75,43 @@ model ItemImages {
   @@index([itemId])
 }
 
+model Orders {
+  id         Int      @id @default(autoincrement())
+  userId     Int?
+  cartId     Int?
+  lastName   String
+  firstName  String
+  email      String
+  address    String
+  totalPrice Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user       Users?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  cart       Cart?        @relation(fields: [cartId], references: [id], onDelete: SetNull)
+  orderItems OrderItems[]
+
+  @@index([userId])
+  @@index([cartId])
+}
+
+model OrderItems {
+  id        Int      @id @default(autoincrement())
+  orderId   Int
+  itemId    Int?
+  itemName  String
+  itemPrice Int
+  amount    Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  order Orders @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  item  Items? @relation(fields: [itemId], references: [id], onDelete: SetNull)
+
+  @@unique([orderId, itemId])
+  @@index([orderId])
+}
+
 model Users {
   id         Int      @id @default(autoincrement())
   lastName   String
@@ -84,7 +123,8 @@ model Users {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
-  Cart Cart?
+  Cart   Cart?
+  orders Orders[]
 }
 
 enum UserRole {
