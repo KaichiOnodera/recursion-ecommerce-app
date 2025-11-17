@@ -7,14 +7,13 @@ import { DeleteItemInteractor } from './interactors/DeleteItemInteractor';
 import { GetItemsController } from './controllers/GetItemsController';
 import { GetItemsInteractor } from '../interactors/GetItemsInteractor';
 import { ItemRepository } from '../infrastructures/repositories/ItemRepository';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../../../libs/prisma';
 import express from 'express';
 import { verifyAccessToken } from '../../../middlewares/verifyAccesToken';
 import { verifyAdmin } from '../../../middlewares/verifyAdmin';
 
 const adminItemsRouter = express.Router();
 
-const prisma = new PrismaClient();
 const itemRepository = new ItemRepository(prisma);
 
 // 認証チェック

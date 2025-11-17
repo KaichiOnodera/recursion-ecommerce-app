@@ -2,12 +2,11 @@ import { LoginController } from './controllers/LoginController';
 import { LogoutController } from './controllers/LogoutController';
 import { LoginInteractor } from './interactors/LoginInteractor';
 import { UserRepository } from './infrastructures/repositories/UserRepository';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../../libs/prisma';
 import express from 'express';
 
 const authRouter = express.Router();
 
-const prisma = new PrismaClient();
 const userRepository = new UserRepository(prisma);
 const loginInteractor = new LoginInteractor(userRepository);
 const loginController = new LoginController(loginInteractor);

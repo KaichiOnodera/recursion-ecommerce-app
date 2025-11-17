@@ -6,13 +6,10 @@ import cookieParser from 'cookie-parser';
 // Load environment variables from .env file
 config();
 
-// Initialize Prisma Client
-import { PrismaClient } from '@prisma/client';
 import { itemsRouter } from './contexts/items';
 import { adminItemsRouter } from './contexts/items/admin';
 import { authRouter } from './contexts/auth';
-
-const prisma = new PrismaClient();
+import { prisma } from './libs/prisma';
 
 const app = express();
 
