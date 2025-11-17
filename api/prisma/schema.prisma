@@ -7,30 +7,15 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum UserRole {
-  USER
-  ADMIN
-}
-
-model Users {
-  id         Int      @id @default(autoincrement())
-  lastName   String
-  firstName  String
-  email      String   @unique
-  password   String
-  isResigned Boolean  @default(false)
-  role       UserRole @default(USER)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-}
-
 model Items {
-  id          Int      @id @default(autoincrement())
-  name        String
-  description String
-  type        Int      @default(1)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            Int      @id @default(autoincrement())
+  name          String
+  description   String
+  type          Int      @default(1)
+  displayStatus String   @default("private")
+  price         Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   ItemImages ItemImages[]
 }
@@ -46,4 +31,21 @@ model ItemImages {
   item Items @relation(fields: [itemId], references: [id])
 
   @@index([itemId])
+}
+
+model Users {
+  id         Int      @id @default(autoincrement())
+  lastName   String
+  firstName  String
+  email      String   @unique
+  password   String
+  isResigned Boolean  @default(false)
+  role       UserRole @default(USER)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+enum UserRole {
+  USER
+  ADMIN
 }
