@@ -11,7 +11,7 @@ export class UpdateUserProfileController {
         return res.status(400).json({ message: "User ID must be a number" });
       }
 
-      const { lastName, firstName, email, password, role } = req.body;
+      const { lastName, firstName, email, password } = req.body;
 
       const updateData: any = {};
       if (lastName) updateData.lastName = lastName;
