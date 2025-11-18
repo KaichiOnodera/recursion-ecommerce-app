@@ -16,9 +16,7 @@ export class UpdateUserController {
       const updateData: any = {};
       if (lastName) updateData.lastName = lastName;
       if (firstName) updateData.firstName = firstName;
-      if (email) updateData.email = email;
       if (password) updateData.password = password;
-      if (role) updateData.role = role;
 
       const updatedUser = await this.updateUserInteractor.execute({
         id: userId,
