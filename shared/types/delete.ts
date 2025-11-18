@@ -1,4 +1,4 @@
-import { Item } from "@shared/schemas/item"
+import { Item } from "../schemas/item"
 
 export type DeleteReq = {
     'admin/items/:id': {}

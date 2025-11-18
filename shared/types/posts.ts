@@ -1,5 +1,5 @@
-import { User } from "@shared/schemas/user"
-import { Item } from "@shared/schemas/item"
+import { User } from "../schemas/user"
+import { Item } from "../schemas/item"
 
 export type PostReq = {
     'auth/login': {
