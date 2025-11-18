@@ -1,18 +1,17 @@
 import { IUserRepository } from "../domains/repositories/IUserRepository";
 import { User } from "../domains/entities/User";
 
-export interface UpdateUserInput {
+export interface UpdateUserProfileInput {
   id: number;
   name?: string;
   email?: string;
   password?: string;
-  role?: number;
 }
 
-export class UpdateUserInteractor {
+export class UpdateUserProfileInteractor {
   constructor(private readonly userRepository: IUserRepository) {}
 
-  async execute(input: UpdateUserInput): Promise<User> {
+  async execute(input: UpdateUserProfileInput): Promise<User> {
     const { id, ...updateData } = input;
 
     //validation for user
@@ -22,8 +21,8 @@ export class UpdateUserInteractor {
     }
 
     //exec update
-    const updatedUser = await this.userRepository.update(id, updateData);
+    const UpdateUserProfile = await this.userRepository.update(id, updateData);
 
-    return updatedUser;
+    return UpdateUserProfile;
   }
 }

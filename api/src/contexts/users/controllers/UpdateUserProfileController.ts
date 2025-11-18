@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { UpdateUserInteractor } from "../interactors/UpdateUserInteractor";
+import { UpdateUserProfileInteractor } from "../interactors/UpdateUserProfileInteractor";
 
-export class UpdateUserController {
-  constructor(private readonly updateUserInteractor: UpdateUserInteractor) {}
+export class UpdateUserProfileController {
+  constructor(private readonly updateUserProfileInteractor: UpdateUserProfileInteractor) {}
 
   async execute(req: Request, res: Response) {
     try {
@@ -18,14 +18,14 @@ export class UpdateUserController {
       if (firstName) updateData.firstName = firstName;
       if (password) updateData.password = password;
 
-      const updatedUser = await this.updateUserInteractor.execute({
+      const updatedUserProfile = await this.updateUserProfileInteractor.execute({
         id: userId,
         ...updateData,
       });
 
       return res.status(200).json({
         success: true,
-        data: updatedUser,
+        data: updatedUserProfile,
       });
     } catch (error: any) {
       console.error("Error updating user:", error);
