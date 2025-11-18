@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router';
 import { HeaderProps } from '../../types';
 import { LogoutButton } from '../auth/LogoutButton';
 import {
@@ -23,15 +24,21 @@ const Header: React.FC<HeaderProps> = ({
         <div className="flex justify-between items-center">
           {/* ロゴ */}
           <div className="flex items-center">
-            <h1 className="text-xl font-bold text-gray-900">{logo}</h1>
+            <Link to="/">
+              <h1 className="text-xl font-bold text-gray-900">{logo}</h1>
+            </Link>
           </div>
 
           {/* ナビゲーション */}
           <nav className="flex items-center space-x-6">
             {navigationItems.map((item) => (
-              <a key={item.href} href={item.href} className="text-gray-700">
+              <Link
+                key={item.href}
+                to={item.href}
+                className="text-gray-700 hover:text-gray-900"
+              >
                 {item.label}
-              </a>
+              </Link>
             ))}
             <LogoutButton className="text-gray-500" />
           </nav>

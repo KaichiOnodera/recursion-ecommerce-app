@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { AuthApiService } from '../../services/api/auth';
 import { useNavigate } from 'react-router';
+import { useUser } from '../../contexts/UserContext';
 
 interface AuthFormProps {
   mode: 'login' | 'signup';
@@ -19,6 +20,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
   const [lastName, setLastName] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { setUser } = useUser();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,7 +28,14 @@ export const AuthForm: React.FC<AuthFormProps> = ({
 
     try {
       if (mode === 'login') {
-        await AuthApiService.login({ email, password });
+        const response = await AuthApiService.login({ email, password });
+
+        if (response.user) {
+          setUser({
+            id: response.user.id,
+            role: response.user.role,
+          });
+        }
 
         if (onSuccess) {
           onSuccess();
