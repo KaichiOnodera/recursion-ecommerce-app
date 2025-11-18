@@ -21,6 +21,7 @@ export class UpdateUserProfileController {
       const updatedUserProfile = await this.updateUserProfileInteractor.execute({
         id: userId,
         ...updateData,
+
       });
 
       return res.status(200).json({
