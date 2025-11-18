@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { apiClient } from './apiClient';
 import { Item } from '@shared/schemas/item';
 import { DeleteRes } from '@shared/types/delete';
 import { API_BASE_URL } from './config';
@@ -11,18 +11,13 @@ export interface ItemsResponse {
 
 export class ItemsApiService {
   static async getItems(): Promise<ItemsResponse> {
-    const response = await fetch(`${API_BASE_URL}/items`);
+    const response = await apiClient.get<ItemsResponse>('/items');
 
-    return await response.json();
+    return response.data;
   }
 
   static async getAdminItems(): Promise<ItemsResponse> {
-    const response = await axios.get<ItemsResponse>(
-      `${API_BASE_URL}/admin/items`,
-      {
-        withCredentials: true,
-      },
-    );
+    const response = await apiClient.get<ItemsResponse>('/admin/items');
 
     return response.data;
   }
@@ -30,12 +25,9 @@ export class ItemsApiService {
   static async createItem(
     data: PostReq['admin/items'],
   ): Promise<PostRes['admin/items']> {
-    const response = await axios.post<PostRes['admin/items']>(
-      `${API_BASE_URL}/admin/items`,
+    const response = await apiClient.post<PostRes['admin/items']>(
+      '/admin/items',
       data,
-      {
-        withCredentials: true,
-      },
     );
 
     return response.data;
@@ -45,20 +37,16 @@ export class ItemsApiService {
     id: number,
     data: PatchReq['admin/items/:id'],
   ): Promise<PatchRes['admin/items/:id']> {
-    const response = await axios.patch<PatchRes['admin/items/:id']>(
-      `${API_BASE_URL}/admin/items/${id}`,
+    const response = await apiClient.patch<PatchRes['admin/items/:id']>(
+      `/admin/items/${id}`,
       data,
-      { withCredentials: true },
     );
     return response.data;
   }
 
   static async deleteItem(id: number): Promise<DeleteRes['admin/items/:id']> {
-    const response = await axios.delete<DeleteRes['admin/items/:id']>(
-      `${API_BASE_URL}/admin/items/${id}`,
-      {
-        withCredentials: true,
-      },
+    const response = await apiClient.delete<DeleteRes['admin/items/:id']>(
+      `/admin/items/${id}`,
     );
 
     return response.data;
