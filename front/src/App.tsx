@@ -2,6 +2,8 @@ import React from 'react';
 import { Routes, Route, BrowserRouter } from 'react-router';
 import './App.css';
 
+import { UserContextProvider } from './contexts/UserContext';
+
 // レイアウト関係
 import Header from './components/layout/Header';
 
@@ -19,34 +21,36 @@ import { AdminProductDelete } from './pages/admin/AdminProductDelete';
 
 function App(): React.JSX.Element {
   return (
-    <BrowserRouter>
-      <div className="bg-blue-100 min-h-screen">
-        <Header />
-        <div className="container mx-auto p-4">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/products" element={<ProductList />} />
-            <Route path="/auth/user/login" element={<UserLogin />} />
-            <Route path="/auth/user/signup" element={<UserSignup />} />
-            <Route path="/auth/admin/login" element={<AdminLogin />} />
-            <Route path="/auth/admin/signup" element={<AdminSignup />} />
-            <Route
-              path="/admin/products/new"
-              element={<AdminProductCreate />}
-            />
-            <Route path="/admin/products" element={<AdminProductList />} />
-            <Route
-              path="/admin/products/:id/edit"
-              element={<AdminProductEdit />}
-            />
-            <Route
-              path="/admin/products/:id/delete"
-              element={<AdminProductDelete />}
-            />
-          </Routes>
+    <UserContextProvider>
+      <BrowserRouter>
+        <div className="bg-blue-100 min-h-screen">
+          <Header />
+          <div className="container mx-auto p-4">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/products" element={<ProductList />} />
+              <Route path="/auth/user/login" element={<UserLogin />} />
+              <Route path="/auth/user/signup" element={<UserSignup />} />
+              <Route path="/auth/admin/login" element={<AdminLogin />} />
+              <Route path="/auth/admin/signup" element={<AdminSignup />} />
+              <Route
+                path="/admin/products/new"
+                element={<AdminProductCreate />}
+              />
+              <Route path="/admin/products" element={<AdminProductList />} />
+              <Route
+                path="/admin/products/:id/edit"
+                element={<AdminProductEdit />}
+              />
+              <Route
+                path="/admin/products/:id/delete"
+                element={<AdminProductDelete />}
+              />
+            </Routes>
+          </div>
         </div>
-      </div>
-    </BrowserRouter>
+      </BrowserRouter>
+    </UserContextProvider>
   );
 }
 
