@@ -1,17 +1,25 @@
-import { Request, Response } from "express";
+import express from "express";     
+import { verifyJWT } from "src/utils/jwt";
+import { AuthenticatedRequest } from "src/middlewares/verifyAccesToken";        
 import { UpdateUserProfileInteractor } from "../interactors/UpdateUserProfileInteractor";
 
-export class UpdateUserProfileController {
-  constructor(private readonly updateUserProfileInteractor: UpdateUserProfileInteractor) {}
+export class UpdateUserProfileController{
+  constructor(private readonly updateUserProfileInteractor: UpdateUserProfileInteractor) {};
 
-  async execute(req: Request, res: Response) {
+  async execute(req: AuthenticatedRequest, res: express.Response) {
     try {
       const userId = parseInt(req.params.id, 10);
       if (isNaN(userId)) {
         return res.status(400).json({ message: "User ID must be a number" });
       }
 
-      const { lastName, firstName, email, password, role } = req.body;
+    const authenticatedUser = await verifyJWT (req.cookies?.token || '');
+    if (authenticatedUser.userId !== userId) {
+        return res.status(403).json({ message: "Forbidden: you can only update your own profile" });
+    }
+
+
+    const { lastName, firstName, email, password} = req.body;
 
       const updateData: any = {};
       if (lastName) updateData.lastName = lastName;
