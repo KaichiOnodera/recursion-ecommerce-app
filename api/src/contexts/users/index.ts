@@ -44,9 +44,8 @@ UsersRouter.put("/users/:id",
     }
 );
 UsersRouter.delete("/:id",
-    verifyAccessToken,(req,res) => {
-        deleteUserController.execute.bind(deleteUserController)
-    }
+    verifyAccessToken,
+    deleteUserController.execute.bind(deleteUserController)
 );
 
 
