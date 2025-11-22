@@ -1,6 +1,7 @@
 import express from "express";
 import { PrismaClient } from "@prisma/client";
 import { UserRepository } from "./infrastructures/repositories/UserRepository";
+import { verifyAccessToken } from "src/middlewares/verifyAccesToken";
 
 import { GetUserByIdInteractor } from "./interactors/GetUserByIdInteractor";
 import { CreateUserInteractor } from "./interactors/CreateUserInteractor";
@@ -27,14 +28,26 @@ const deleteUserInteractor = new DeleteUserInteractor(userRepository);
 // Controllers
 const getUserByIdController = new GetUserByIdController(getUserByIdInteractor);
 const createUserController = new CreateUserController(createUserInteractor);
-const updateUserController = new UpdateUserProfileController(updateUserInteractor);
+const updateUserProfileController = new UpdateUserProfileController(updateUserInteractor);
 const deleteUserController = new DeleteUserController(deleteUserInteractor);
 
 // Routes
-UsersRouter.get("/",getUserByIdController.execute.bind(getUserByIdController));
+UsersRouter.get("/",
+    verifyAccessToken,(req, res) => {
+        getUserByIdController.execute(req, res);
+    }
+);
 UsersRouter.post("/signup", createUserController.execute.bind(createUserController));
-UsersRouter.put("/:id", updateUserController.execute.bind(updateUserController));
-UsersRouter.delete("/:id",deleteUserController.execute.bind(deleteUserController));
+UsersRouter.put("/users/:id",
+    verifyAccessToken, (req, res) => {
+        updateUserProfileController.execute(req, res);
+    }
+);
+UsersRouter.delete("/:id",
+    verifyAccessToken,(req,res) => {
+        deleteUserController.execute.bind(deleteUserController)
+    }
+);
 
 
 export { UsersRouter };
