@@ -1,6 +1,6 @@
 import express from "express";
 import { GetRes } from "@shared/types/gets";
-import { IGetUsersInteractor } from "../usecases/IGetUsersInteractor";
+import { IGetUsersInteractor } from "../usecases/IGetUserByIdInteractor";
 
 export class GetUsersController {
     constructor(private readonly getUsersInteractor: IGetUsersInteractor) {}

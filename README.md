@@ -54,3 +54,40 @@ npm start
 ### マイグレーション管理
 - 既存のマイグレーションを適用: `npx prisma migrate dev`
 - 新しいマイグレーションを作成: `npx prisma migrate dev --name <migration_name>`
+
+### APIテスト
+1. **テスト用データベースの起動**
+
+```bash
+cp .env.test.example .env.test
+docker compose -f docker-compose.test.yml up -d db-test
+```
+
+2. **テスト環境のマイグレーション実行**
+
+```bash
+cd api
+npm run migrate:test
+```
+
+3. **（オプション）テスト用シードデータの投入**
+
+```bash
+npm run seed:test
+```
+
+#### テストの実行
+
+- **すべてのAPIテストを実行**
+
+```bash
+cd api
+npm run test:api
+```
+
+- **特定のテストファイルのみ実行**
+
+```bash
+cd api
+npm run test:api -- api/src/contexts/hoge/items.test.ts
+```

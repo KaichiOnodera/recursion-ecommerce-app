@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE `Items` ADD COLUMN `displayStatus` VARCHAR(191) NOT NULL DEFAULT 'private',
+    ADD COLUMN `price` INTEGER NOT NULL DEFAULT 0;

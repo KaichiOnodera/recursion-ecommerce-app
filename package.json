@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "prepare": "husky install",
+    "prepare": "husky",
     "lint": "npm run lint --workspaces",
     "format": "npm run format --workspaces"
   },
@@ -18,12 +18,12 @@
   },
   "lint-staged": {
     "api/src/**/*.{ts,tsx,js,jsx}": [
-      "cd api && npm run lint:fix",
-      "cd api && npm run format"
+      "bash -c 'cd api && npm run lint:fix'",
+      "bash -c 'cd api && npm run format'"
     ],
     "front/src/**/*.{ts,tsx,js,jsx,css}": [
-      "cd front && npm run lint:fix",
-      "cd front && npm run format"
+      "bash -c 'cd front && npm run lint:fix'",
+      "bash -c 'cd front && npm run format'"
     ]
   },
   "workspaces": [
