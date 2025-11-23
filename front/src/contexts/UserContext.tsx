@@ -4,8 +4,10 @@ import React, {
   useState,
   useCallback,
   useMemo,
+  useEffect,
   ReactNode,
 } from 'react';
+import { AuthApiService } from '../services/api/auth';
 
 export interface UserInfo {
   id: number | null;
@@ -40,6 +42,27 @@ export const UserContextProvider: React.FC<UserContextProviderProps> = ({
     email: null,
     role: null,
   });
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await AuthApiService.getMe();
+        if (response.user) {
+          setUserState({
+            id: response.user.id,
+            lastName: response.user.lastName,
+            firstName: response.user.firstName,
+            email: response.user.email,
+            role: response.user.role,
+          });
+        }
+      } catch (error) {
+        console.error('Failed to fetch user:', error);
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   const setUser = useCallback((userInfo: UserInfo) => {
     setUserState(userInfo);
