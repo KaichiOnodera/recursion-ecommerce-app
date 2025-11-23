@@ -5,10 +5,10 @@ export class GetInventoryController{
     constructor(private readonly getInventorytInteractor: GetInventorytInteractor){}
 
     async execute(
-        _req: express.Request<{itemId: string}>,
+        req: express.Request<{itemId: string}>,
         res: express.Response<any>
     ){
-        const itemId = parseInt(_req.params.itemId);
+        const itemId = parseInt(req.params.itemId);
 
         const inventory = await this.getInventorytInteractor.execute(Number(itemId));
         
