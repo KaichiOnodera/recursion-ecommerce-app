@@ -41,6 +41,8 @@ export class LoginInteractor implements ILoginInteractor {
       token,
       user: {
         id: user.id,
+        lastName: user.lastName,
+        firstName: user.firstName,
         email: user.email,
         role: user.role,
       },

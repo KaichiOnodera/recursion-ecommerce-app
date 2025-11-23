@@ -33,6 +33,9 @@ export const AuthForm: React.FC<AuthFormProps> = ({
         if (response.user) {
           setUser({
             id: response.user.id,
+            lastName: response.user.lastName,
+            firstName: response.user.firstName,
+            email: response.user.email,
             role: response.user.role,
           });
         }
