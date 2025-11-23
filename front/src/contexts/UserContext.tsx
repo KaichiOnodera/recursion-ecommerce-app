@@ -9,6 +9,9 @@ import React, {
 
 export interface UserInfo {
   id: number | null;
+  lastName: string | null;
+  firstName: string | null;
+  email: string | null;
   role: 'USER' | 'ADMIN' | null;
 }
 
@@ -32,6 +35,9 @@ export const UserContextProvider: React.FC<UserContextProviderProps> = ({
 }) => {
   const [user, setUserState] = useState<UserInfo>({
     id: null,
+    lastName: null,
+    firstName: null,
+    email: null,
     role: null,
   });
 
@@ -40,11 +46,23 @@ export const UserContextProvider: React.FC<UserContextProviderProps> = ({
   }, []);
 
   const clearUser = useCallback(() => {
-    setUserState({ id: null, role: null });
+    setUserState({
+      id: null,
+      lastName: null,
+      firstName: null,
+      email: null,
+      role: null,
+    });
   }, []);
 
   const isLoggedIn = useCallback((): boolean => {
-    return user.id !== null && user.role !== null;
+    return (
+      user.id !== null &&
+      user.lastName !== null &&
+      user.firstName !== null &&
+      user.email !== null &&
+      user.role !== null
+    );
   }, [user]);
 
   const isAdmin = useCallback((): boolean => {
