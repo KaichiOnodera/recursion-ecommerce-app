@@ -3,7 +3,8 @@ import { User } from "../domains/entities/User";
 
 export interface UpdateUserProfileInput {
   id: number;
-  name?: string;
+  lastName?: string;
+  firstName?: string;
   email?: string;
   password?: string;
 }
