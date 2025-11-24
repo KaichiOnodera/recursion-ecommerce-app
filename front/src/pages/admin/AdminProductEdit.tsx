@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import { ItemsApiService } from '../../services/api/items';
+import { getAdminItems, updateItem } from '../../services/api/items';
 import { Item } from '@shared/schemas/item';
 
 export const AdminProductEdit: React.FC = () => {
@@ -18,7 +18,7 @@ export const AdminProductEdit: React.FC = () => {
         return;
       }
 
-      const response = await ItemsApiService.getAdminItems();
+      const response = await getAdminItems();
       const item = response.items.find((i: Item) => i.id === parseInt(id));
 
       if (!item) {
@@ -44,7 +44,7 @@ export const AdminProductEdit: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      await ItemsApiService.updateItem(parseInt(id), {
+      await updateItem(parseInt(id), {
         name,
         description,
         type,

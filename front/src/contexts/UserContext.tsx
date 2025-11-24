@@ -7,7 +7,7 @@ import React, {
   useEffect,
   ReactNode,
 } from 'react';
-import { AuthApiService } from '../services/api/auth';
+import { getMe } from '../services/api/auth';
 
 export interface UserInfo {
   id: number | null;
@@ -46,7 +46,7 @@ export const UserContextProvider: React.FC<UserContextProviderProps> = ({
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await AuthApiService.getMe();
+        const response = await getMe();
         if (response.user) {
           setUserState({
             id: response.user.id,

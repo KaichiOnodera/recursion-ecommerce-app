@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import ProductCard from '../components/ui/ProductCard';
 import { Item } from '@shared/schemas/item';
-import { ItemsApiService } from '../services/api/items';
+import { getItems } from '../services/api/items';
 
 export const ProductList: React.FC = () => {
   const [items, setItems] = useState<Item[]>([]);
 
   useEffect(() => {
     const fetchItems = async (): Promise<void> => {
-      const response = await ItemsApiService.getItems();
+      const response = await getItems();
       setItems(response.items);
     };
 

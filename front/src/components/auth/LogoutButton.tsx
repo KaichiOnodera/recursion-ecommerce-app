@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router';
-import { AuthApiService } from '../../services/api/auth';
+import { logout } from '../../services/api/auth';
 import { useUser } from '../../contexts/UserContext';
 
 interface LogoutButtonProps {
@@ -17,7 +17,7 @@ export const LogoutButton: React.FC<LogoutButtonProps> = ({
 
   const handleLogout = async () => {
     try {
-      await AuthApiService.logout();
+      await logout();
       clearUser();
 
       if (onLogout) {

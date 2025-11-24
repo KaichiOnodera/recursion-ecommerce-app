@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import ProductCard from '../../components/ui/ProductCard';
 import { Item } from '@shared/schemas/item';
-import { ItemsApiService } from '../../services/api/items';
+import { getAdminItems } from '../../services/api/items';
 
 export const AdminProductList: React.FC = () => {
   const [items, setItems] = useState<Item[]>([]);
@@ -10,7 +10,7 @@ export const AdminProductList: React.FC = () => {
 
   useEffect(() => {
     const fetchItems = async (): Promise<void> => {
-      const response = await ItemsApiService.getAdminItems();
+      const response = await getAdminItems();
       setItems(response.items);
     };
 

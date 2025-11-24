@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AuthApiService } from '../../services/api/auth';
+import { login } from '../../services/api/auth';
 import { useNavigate } from 'react-router';
 import { useUser } from '../../contexts/UserContext';
 
@@ -28,7 +28,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
 
     try {
       if (mode === 'login') {
-        const response = await AuthApiService.login({ email, password });
+        const response = await login({ email, password });
 
         if (response.user) {
           setUser({

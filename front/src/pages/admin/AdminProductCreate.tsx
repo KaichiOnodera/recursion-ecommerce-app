@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { ItemsApiService } from '../../services/api/items';
+import { createItem } from '../../services/api/items';
 
 export const AdminProductCreate: React.FC = () => {
   const [name, setName] = useState('');
@@ -14,7 +14,7 @@ export const AdminProductCreate: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      await ItemsApiService.createItem({
+      await createItem({
         name,
         description,
         type,
