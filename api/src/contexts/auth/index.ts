@@ -2,6 +2,7 @@ import { LoginController } from './controllers/LoginController';
 import { LogoutController } from './controllers/LogoutController';
 import { MeController } from './controllers/meController';
 import { LoginInteractor } from './interactors/LoginInteractor';
+import { VerifyUserInteractor } from './interactors/VerifyUserInteractor';
 import { GetMeInteractor } from './interactors/GetMeInteractor';
 import { UserRepository } from './infrastructures/repositories/UserRepository';
 import { prisma } from '../../libs/prisma';
@@ -12,6 +13,7 @@ const authRouter = express.Router();
 
 const userRepository = new UserRepository(prisma);
 const loginInteractor = new LoginInteractor(userRepository);
+const verifyUserInteractor = new VerifyUserInteractor(userRepository);
 const loginController = new LoginController(loginInteractor);
 const logoutController = new LogoutController();
 const getMeInteractor = new GetMeInteractor(userRepository);
@@ -25,4 +27,4 @@ authRouter.get(
   meController.execute.bind(meController),
 );
 
-export { authRouter };
+export { authRouter, verifyUserInteractor };

@@ -32,7 +32,7 @@ app.use('/auth', authRouter);
 app.use('/items', itemsRouter);
 app.use('/admin/items', adminItemsRouter);
 
-app.use("/users", usersRouter);
+app.use('/users', usersRouter);
 
 app.listen(8000, '0.0.0.0', () => {
   // eslint-disable-next-line no-console

@@ -1,4 +1,4 @@
-import { IUserRepository } from "../domains/repositories/IUserRepository";
+import { IUserRepository } from '../domains/repositories/IUserRepository';
 
 export class DeleteUserInteractor {
   constructor(private readonly userRepository: IUserRepository) {}
@@ -6,7 +6,7 @@ export class DeleteUserInteractor {
   async execute(id: number): Promise<void> {
     const existingUser = await this.userRepository.findById(id);
     if (!existingUser) {
-      throw new Error("User not found");
+      throw new Error('User not found');
     }
 
     await this.userRepository.update(id, { isResigned: true });
