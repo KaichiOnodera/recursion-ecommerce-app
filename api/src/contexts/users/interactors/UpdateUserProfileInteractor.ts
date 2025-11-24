@@ -1,5 +1,5 @@
-import { IUserRepository } from "../domains/repositories/IUserRepository";
-import { User } from "../domains/entities/User";
+import { IUserRepository } from '../domains/repositories/IUserRepository';
+import { User } from '../domains/entities/User';
 
 export interface UpdateUserProfileInput {
   id: number;
@@ -17,7 +17,7 @@ export class UpdateUserProfileInteractor {
     //validation for user
     const existingUser = await this.userRepository.findById(id);
     if (!existingUser) {
-      throw new Error("User not found");
+      throw new Error('User not found');
     }
 
     //exec update
