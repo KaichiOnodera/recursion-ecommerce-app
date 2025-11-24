@@ -1,15 +1,15 @@
-import { Item } from "../schemas/item"
+import { Item } from '../schemas/item';
 
 export type PatchReq = {
-    'admin/items/:id': {
-        name?: string
-        description?: string
-        type?: number
-    }
-}
+  'admin/items/:id': {
+    name?: string;
+    description?: string;
+    type?: number;
+  };
+};
 
 export type PatchRes = {
-    'admin/items/:id': {
-        item: Item
-    }
-}
+  'admin/items/:id': {
+    item: Item;
+  };
+};
