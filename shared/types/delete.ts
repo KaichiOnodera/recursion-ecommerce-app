@@ -1,9 +1,9 @@
-import { Item } from "../schemas/item"
+import { Item } from '../schemas/item';
 
 export type DeleteReq = {
-    'admin/items/:id': {}
-}
+  'admin/items/:id': Record<string, never>;
+};
 
 export type DeleteRes = {
-    'admin/items/:id': { item: Item }
-}
+  'admin/items/:id': { item: Item };
+};
