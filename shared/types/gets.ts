@@ -1,4 +1,5 @@
 import { Item } from "../schemas/item"
+import { User } from "../schemas/user"
 
 export type GetRes = {
     '/items': {
@@ -6,5 +7,8 @@ export type GetRes = {
     },
     '/admin/items': {
         items: Item[]
+    },
+    '/auth/me': {
+        user: User
     }
 }

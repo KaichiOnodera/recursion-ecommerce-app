@@ -26,4 +26,26 @@ export class UserRepository implements IUserRepository {
       updatedAt: user.updatedAt,
     };
   }
+
+  async findById(id: number): Promise<User | null> {
+    const user = await this.prisma.users.findUnique({
+      where: {
+        id,
+        isResigned: false,
+      },
+    });
+
+    if (!user) return null;
+
+    return {
+      id: user.id,
+      lastName: user.lastName,
+      firstName: user.firstName,
+      email: user.email,
+      password: user.password,
+      role: user.role,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
+  }
 }
