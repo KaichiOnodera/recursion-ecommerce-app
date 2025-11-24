@@ -9,8 +9,7 @@ import { GetItemsInteractor } from '../interactors/GetItemsInteractor';
 import { ItemRepository } from '../infrastructures/repositories/ItemRepository';
 import { prisma } from '../../../libs/prisma';
 import express from 'express';
-import { verifyAccessToken } from '../../../middlewares/verifyAccesToken';
-import { verifyAdmin } from '../../../middlewares/verifyAdmin';
+import { verifyAccessToken, verifyAdmin } from '../../../middlewares';
 
 const adminItemsRouter = express.Router();
 

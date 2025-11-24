@@ -1,7 +1,6 @@
 import express from 'express';
 import { verifyJWT, JWTPayload } from '../utils/jwt';
 import { IVerifyUserInteractor } from '../contexts/auth/usecases/IVerifyUserInteractor';
-import { verifyUserInteractor } from '../contexts/auth';
 
 export interface AuthenticatedRequest extends express.Request {
   user?: JWTPayload;
@@ -45,5 +44,3 @@ export const createVerifyAccessToken = (
     }
   };
 };
-
-export const verifyAccessToken = createVerifyAccessToken(verifyUserInteractor);
