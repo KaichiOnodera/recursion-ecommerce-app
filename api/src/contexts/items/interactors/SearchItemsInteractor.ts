@@ -1,6 +1,7 @@
 import {
   ISearchItemsInteractor,
   SearchItemsParams,
+  SearchSortType,
 } from '../usecases/ISearchItemsInteractor';
 import { IItemRepository } from '../domains/repositories/IItemRepository';
 import { ItemQuery } from '../domains/repositories/ItemQuery';
@@ -35,19 +36,19 @@ export class SearchItemsInteractor implements ISearchItemsInteractor {
 
     // ソート条件
     switch (sort) {
-      case 'newest':
+      case SearchSortType.newest:
         query.orderBy = { createdAt: 'desc' };
         break;
-      case 'price_asc':
+      case SearchSortType.price_asc:
         query.orderBy = { price: 'asc' };
         break;
-      case 'price_desc':
+      case SearchSortType.price_desc:
         query.orderBy = { price: 'desc' };
         break;
-      case 'name_asc':
+      case SearchSortType.name_asc:
         query.orderBy = { name: 'asc' };
         break;
-      case 'name_desc':
+      case SearchSortType.name_desc:
         query.orderBy = { name: 'desc' };
         break;
       default:
