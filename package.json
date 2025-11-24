@@ -24,10 +24,15 @@
     "front/src/**/*.{ts,tsx,js,jsx,css}": [
       "bash -c 'cd front && npm run lint:fix'",
       "bash -c 'cd front && npm run format'"
+    ],
+    "shared/**/*.{ts,tsx,js,jsx}": [
+      "bash -c 'cd shared && npm run lint:fix'",
+      "bash -c 'cd shared && npm run format'"
     ]
   },
   "workspaces": [
     "api",
-    "front"
+    "front",
+    "shared"
   ]
 }
