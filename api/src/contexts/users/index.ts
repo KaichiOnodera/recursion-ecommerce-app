@@ -13,16 +13,16 @@ import { DeleteUserController } from './controllers/DeleteUserController';
 
 const UsersRouter = express.Router();
 
-// Core dependencies
+// Core
 const prisma = new PrismaClient();
 const userRepository = new UserRepository(prisma);
 
+// Interactors
 const createUserInteractor = new CreateUserInteractor(userRepository);
 const updateUserInteractor = new UpdateUserProfileInteractor(userRepository);
 const deleteUserInteractor = new DeleteUserInteractor(userRepository);
 
 // Controllers
-
 const createUserController = new CreateUserController(createUserInteractor);
 const updateUserProfileController = new UpdateUserProfileController(
   updateUserInteractor,
@@ -34,9 +34,11 @@ UsersRouter.post(
   '/signup',
   createUserController.execute.bind(createUserController),
 );
+
 UsersRouter.put('/users/:id', verifyAccessToken, (req, res) => {
   updateUserProfileController.execute(req, res);
 });
+
 UsersRouter.delete(
   '/:id',
   verifyAccessToken,
