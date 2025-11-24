@@ -3,6 +3,7 @@ export type Item = {
   readonly name: string;
   readonly description: string;
   readonly type: number;
+  readonly price: number;
   readonly createdAt: Date;
   readonly updatedAt: Date;
 };

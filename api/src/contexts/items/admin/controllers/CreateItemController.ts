@@ -32,6 +32,7 @@ export class CreateItemController {
       name: item.name,
       description: item.description,
       type: item.type,
+      price: item.price,
       createdAt: item.createdAt,
       updatedAt: item.updatedAt,
     };
