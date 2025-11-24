@@ -7,7 +7,7 @@ import { GetMeInteractor } from './interactors/GetMeInteractor';
 import { UserRepository } from './infrastructures/repositories/UserRepository';
 import { prisma } from '../../libs/prisma';
 import express from 'express';
-import { verifyAccessToken } from '../../middlewares/verifyAccesToken';
+import { verifyAccessToken } from '../../middlewares';
 
 const authRouter = express.Router();
 
