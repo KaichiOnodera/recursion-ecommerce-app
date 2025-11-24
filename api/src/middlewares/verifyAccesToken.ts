@@ -1,9 +1,7 @@
 import express from 'express';
 import { verifyJWT, JWTPayload } from '../utils/jwt';
 import { IVerifyUserInteractor } from '../contexts/auth/usecases/IVerifyUserInteractor';
-import { VerifyUserInteractor } from '../contexts/auth/interactors/VerifyUserInteractor';
-import { UserRepository } from '../contexts/auth/infrastructures/repositories/UserRepository';
-import { prisma } from '../libs/prisma';
+import { verifyUserInteractor } from '../contexts/auth';
 
 export interface AuthenticatedRequest extends express.Request {
   user?: JWTPayload;
@@ -48,6 +46,4 @@ export const createVerifyAccessToken = (
   };
 };
 
-const userRepository = new UserRepository(prisma);
-const verifyUserInteractor = new VerifyUserInteractor(userRepository);
 export const verifyAccessToken = createVerifyAccessToken(verifyUserInteractor);
