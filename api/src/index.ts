@@ -10,6 +10,7 @@ import { itemsRouter } from './contexts/items';
 import { adminItemsRouter } from './contexts/items/admin';
 import { authRouter } from './contexts/auth';
 import { prisma } from './libs/prisma';
+import { UsersRouter as usersRouter } from './contexts/users';
 
 const app = express();
 
@@ -30,6 +31,8 @@ app.get('/', async (_req: Request, res: Response) => {
 app.use('/auth', authRouter);
 app.use('/items', itemsRouter);
 app.use('/admin/items', adminItemsRouter);
+
+app.use("/users", usersRouter);
 
 app.listen(8000, '0.0.0.0', () => {
   // eslint-disable-next-line no-console
