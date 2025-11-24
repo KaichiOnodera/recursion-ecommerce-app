@@ -7,32 +7,59 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum UserRole {
-  USER
-  ADMIN
+model Cart {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      Users       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cartItems CartItems[]
+  orders    Orders[]
 }
 
-model Users {
-  id         Int      @id @default(autoincrement())
-  lastName   String
-  firstName  String
-  email      String   @unique
-  password   String
-  isResigned Boolean  @default(false)
-  role       UserRole @default(USER)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+model CartItems {
+  id        Int      @id @default(autoincrement())
+  cartId    Int
+  itemId    Int
+  amount    Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  cart Cart  @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  item Items @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@unique([cartId, itemId])
+  @@index([cartId])
+  @@index([itemId])
+}
+
+model Inventory {
+  id        Int      @id @default(autoincrement())
+  amount    Int      @default(0)
+  itemId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  item Items @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@index([itemId])
 }
 
 model Items {
-  id          Int      @id @default(autoincrement())
-  name        String
-  description String
-  type        Int      @default(1)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            Int      @id @default(autoincrement())
+  name          String
+  description   String
+  type          Int      @default(1)
+  displayStatus String   @default("private")
+  price         Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   ItemImages ItemImages[]
+  Inventory  Inventory[]
+  CartItems  CartItems[]
+  OrderItems OrderItems[]
 }
 
 model ItemImages {
@@ -46,4 +73,61 @@ model ItemImages {
   item Items @relation(fields: [itemId], references: [id])
 
   @@index([itemId])
+}
+
+model Orders {
+  id         Int      @id @default(autoincrement())
+  userId     Int?
+  cartId     Int?
+  lastName   String
+  firstName  String
+  email      String
+  address    String
+  totalPrice Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user       Users?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  cart       Cart?        @relation(fields: [cartId], references: [id], onDelete: SetNull)
+  orderItems OrderItems[]
+
+  @@index([userId])
+  @@index([cartId])
+}
+
+model OrderItems {
+  id        Int      @id @default(autoincrement())
+  orderId   Int
+  itemId    Int?
+  itemName  String
+  itemPrice Int
+  amount    Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  order Orders @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  item  Items? @relation(fields: [itemId], references: [id], onDelete: SetNull)
+
+  @@unique([orderId, itemId])
+  @@index([orderId])
+}
+
+model Users {
+  id         Int      @id @default(autoincrement())
+  lastName   String
+  firstName  String
+  email      String   @unique
+  password   String
+  isResigned Boolean  @default(false)
+  role       UserRole @default(USER)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  Cart   Cart?
+  orders Orders[]
+}
+
+enum UserRole {
+  USER
+  ADMIN
 }
