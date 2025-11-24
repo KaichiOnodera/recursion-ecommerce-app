@@ -8,14 +8,16 @@ export class UpdateUserProfileController{
 
   async execute(req: AuthenticatedRequest, res: express.Response) {
     try {
-      const userId = parseInt(req.params.id, 10);
-      if (isNaN(userId)) {
-        return res.status(400).json({ message: "User ID must be a number" });
+      const authenticatedUser = req.user;
+      if (!authenticatedUser) {
+        return res.status(401).json({ message: "Authentication required" });
       }
 
-    const authenticatedUser = await verifyJWT (req.cookies?.token || '');
-    if (authenticatedUser.userId !== userId) {
-        return res.status(403).json({ message: "Forbidden: you can only update your own profile" });
+      const userId = authenticatedUser.userId;
+      const user = await this.getUserByIdInteractor.execute(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
     }
 
 
