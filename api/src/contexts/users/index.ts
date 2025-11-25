@@ -1,14 +1,19 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import { UserRepository } from './infrastructures/repositories/UserRepository';
-import { verifyAccessToken } from 'src/middlewares/verifyAccesToken';
+import { verifyAccessToken, verifyAdmin } from '../../middlewares';
+import { adminItemsRouter } from '../items/admin';
+
+adminItemsRouter.use(verifyAccessToken);
+adminItemsRouter.use(verifyAdmin);
+
 
 import { CreateUserInteractor } from './interactors/CreateUserInteractor';
-import { UpdateUserProfileInteractor } from './interactors/UpdateUserProfileInteractor';
+// import { UpdateUserProfileInteractor } from './interactors/UpdateUserProfileInteractor';
 import { DeleteUserInteractor } from './interactors/DeleteUserInteractor';
 
 import { CreateUserController } from './controllers/CreateUserController';
-import { UpdateUserProfileController } from './controllers/UpdateUserProfileController';
+// import { UpdateUserProfileController } from './controllers/UpdateUserProfileController';
 import { DeleteUserController } from './controllers/DeleteUserController';
 
 const UsersRouter = express.Router();
