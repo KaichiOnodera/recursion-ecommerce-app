@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import { ItemsApiService } from '../../services/api/items';
+import { getAdminItems, deleteItem } from '../../services/api/items';
 import { Item } from '@shared/schemas/item';
 
 export const AdminProductDelete: React.FC = () => {
@@ -16,7 +16,7 @@ export const AdminProductDelete: React.FC = () => {
       }
 
       // 商品一覧から対象のIDの商品を格納
-      const response = await ItemsApiService.getAdminItems();
+      const response = await getAdminItems();
       const foundItem = response.items.find((i) => i.id === parseInt(id));
 
       if (foundItem) {
@@ -33,7 +33,7 @@ export const AdminProductDelete: React.FC = () => {
     setDeleting(true);
 
     try {
-      await ItemsApiService.deleteItem(parseInt(id));
+      await deleteItem(parseInt(id));
       navigate('/admin/products');
     } finally {
       setDeleting(false);
