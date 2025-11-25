@@ -18,15 +18,15 @@ const prisma = new PrismaClient();
 const userRepository = new UserRepository(prisma);
 
 const createUserInteractor = new CreateUserInteractor(userRepository);
-const updateUserInteractor = new UpdateUserProfileInteractor(userRepository);
+// const updateUserInteractor = new UpdateUserProfileInteractor(userRepository);
 const deleteUserInteractor = new DeleteUserInteractor(userRepository);
 
 // Controllers
 
 const createUserController = new CreateUserController(createUserInteractor);
-const updateUserProfileController = new UpdateUserProfileController(
-  updateUserInteractor,
-);
+// const updateUserProfileController = new UpdateUserProfileController(
+//   updateUserInteractor,
+// );
 const deleteUserController = new DeleteUserController(deleteUserInteractor);
 
 // Routes
@@ -34,9 +34,9 @@ UsersRouter.post(
   '/signup',
   createUserController.execute.bind(createUserController),
 );
-UsersRouter.put('/users/:id', verifyAccessToken, (req, res) => {
-  updateUserProfileController.execute(req, res);
-});
+// UsersRouter.put('/users/:id', verifyAccessToken, (req, res) => {
+//   updateUserProfileController.execute(req, res);
+// });
 UsersRouter.delete(
   '/:id',
   verifyAccessToken,

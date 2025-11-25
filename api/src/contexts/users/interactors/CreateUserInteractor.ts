@@ -1,6 +1,6 @@
 import { IUserRepository } from '../domains/repositories/IUserRepository';
 import { User } from '../domains/entities/User';
-import { hashPassword } from '../../../utils/hashPassword';
+import { hashPassword } from '../../utils/hashPassword';
 import { ICreateUserRequest } from '../usecases/ICreateUserInteractor';
 
 export class CreateUserInteractor {
