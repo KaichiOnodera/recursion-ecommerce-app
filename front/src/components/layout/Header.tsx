@@ -12,7 +12,6 @@ import {
 const Header: React.FC<HeaderProps> = ({
   logo = 'ECサイト',
   navigationItems = [
-    { label: 'ホーム', href: '/' },
     { label: '商品', href: '/products' },
     { label: 'ログイン', href: '/auth/user/login' },
     { label: '新規登録', href: '/auth/user/signup' },
@@ -24,7 +23,7 @@ const Header: React.FC<HeaderProps> = ({
         <div className="flex justify-between items-center">
           {/* ロゴ */}
           <div className="flex items-center">
-            <Link to="/">
+            <Link to="/products">
               <h1 className="text-xl font-bold text-gray-900">{logo}</h1>
             </Link>
           </div>

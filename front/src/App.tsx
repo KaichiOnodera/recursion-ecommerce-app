@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, BrowserRouter } from 'react-router';
+import { Routes, Route, BrowserRouter, Navigate } from 'react-router';
 import './App.css';
 
 import { UserContextProvider } from './contexts/UserContext';
@@ -8,7 +8,6 @@ import { UserContextProvider } from './contexts/UserContext';
 import Header from './components/layout/Header';
 
 // ページ関係
-import { Home } from './pages/Home';
 import { ProductList } from './pages/ProductList';
 import { UserLogin } from './pages/auth/UserLogin';
 import { UserSignup } from './pages/auth/UserSignup';
@@ -27,7 +26,7 @@ function App(): React.JSX.Element {
           <Header />
           <div className="container mx-auto p-4">
             <Routes>
-              <Route path="/" element={<Home />} />
+              <Route path="/" element={<Navigate to="/products" replace />} />
               <Route path="/products" element={<ProductList />} />
               <Route path="/auth/user/login" element={<UserLogin />} />
               <Route path="/auth/user/signup" element={<UserSignup />} />
