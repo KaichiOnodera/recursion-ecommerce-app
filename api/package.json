@@ -25,7 +25,8 @@
     "express": "^5.1.0",
     "jose": "^6.1.0",
     "mysql2": "^2.3.3",
-    "prisma": "^6.17.1"
+    "prisma": "^6.17.1",
+    "stripe": "^20.0.0"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.10",
