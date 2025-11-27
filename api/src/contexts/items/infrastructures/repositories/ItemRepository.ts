@@ -153,30 +153,18 @@ export class ItemRepository implements IItemRepository {
     };
   }
 
-  async delete(id: number): Promise<Item | null> {
+  async delete(id: number): Promise<boolean> {
     const existingItem = await this.findById(id);
 
     if (!existingItem) {
-      return null;
+      return false;
     }
 
-    const item = await this.prisma.items.delete({
+    await this.prisma.items.delete({
       where: { id },
     });
 
-    return {
-      id: item.id,
-      name: item.name,
-      description: item.description,
-      type: item.type,
-      price: item.price,
-      displayStatus: item.displayStatus,
-      inventory: {
-        amount: 0,
-      },
-      createdAt: item.createdAt,
-      updatedAt: item.updatedAt,
-    };
+    return true;
   }
 
   async findById(id: number): Promise<Item | null> {
