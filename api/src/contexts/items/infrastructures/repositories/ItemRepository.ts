@@ -9,20 +9,44 @@ export class ItemRepository implements IItemRepository {
   async findAll(): Promise<Item[]> {
     const items = await this.prisma.items.findMany({
       orderBy: { createdAt: 'desc' },
+      include: {
+        Inventory: true,
+      },
     });
 
-    return items;
-  }
-
-  async find(query?: ItemQuery): Promise<Item[]> {
-    const prismaQuery = this.buildPrismaQuery(query);
-    const items = await this.prisma.items.findMany(prismaQuery);
     return items.map((item) => ({
       id: item.id,
       name: item.name,
       description: item.description,
       type: item.type,
       price: item.price,
+      displayStatus: item.displayStatus,
+      inventory: {
+        amount: item.Inventory?.[0]?.amount ?? 0,
+      },
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt,
+    }));
+  }
+
+  async find(query?: ItemQuery): Promise<Item[]> {
+    const prismaQuery = this.buildPrismaQuery(query);
+    const items = await this.prisma.items.findMany({
+      ...prismaQuery,
+      include: {
+        Inventory: true,
+      },
+    });
+    return items.map((item) => ({
+      id: item.id,
+      name: item.name,
+      description: item.description,
+      type: item.type,
+      price: item.price,
+      displayStatus: item.displayStatus,
+      inventory: {
+        amount: item.Inventory?.[0]?.amount ?? 0,
+      },
       createdAt: item.createdAt,
       updatedAt: item.updatedAt,
     }));
@@ -68,7 +92,19 @@ export class ItemRepository implements IItemRepository {
       },
     });
 
-    return item;
+    return {
+      id: item.id,
+      name: item.name,
+      description: item.description,
+      type: item.type,
+      price: item.price,
+      displayStatus: item.displayStatus,
+      inventory: {
+        amount: 0,
+      },
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt,
+    };
   }
 
   async update(
@@ -98,7 +134,23 @@ export class ItemRepository implements IItemRepository {
       data: updateData,
     });
 
-    return item;
+    const inventory = await this.prisma.inventory.findFirst({
+      where: { itemId: item.id },
+    });
+
+    return {
+      id: item.id,
+      name: item.name,
+      description: item.description,
+      type: item.type,
+      price: item.price,
+      displayStatus: item.displayStatus,
+      inventory: {
+        amount: inventory?.amount ?? 0,
+      },
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt,
+    };
   }
 
   async delete(id: number): Promise<Item | null> {
@@ -112,12 +164,43 @@ export class ItemRepository implements IItemRepository {
       where: { id },
     });
 
-    return item;
+    return {
+      id: item.id,
+      name: item.name,
+      description: item.description,
+      type: item.type,
+      price: item.price,
+      displayStatus: item.displayStatus,
+      inventory: {
+        amount: 0,
+      },
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt,
+    };
   }
 
-  private async findById(id: number): Promise<Item | null> {
-    return await this.prisma.items.findUnique({
+  async findById(id: number): Promise<Item | null> {
+    const item = await this.prisma.items.findFirst({
       where: { id },
+      include: {
+        Inventory: true,
+      },
     });
+
+    return item
+      ? {
+          id: item.id,
+          name: item.name,
+          description: item.description,
+          type: item.type,
+          price: item.price,
+          displayStatus: item.displayStatus,
+          inventory: {
+            amount: item.Inventory?.[0]?.amount ?? 0,
+          },
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
+        }
+      : null;
   }
 }
