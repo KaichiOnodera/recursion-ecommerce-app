@@ -2,7 +2,6 @@ import { PrismaClient } from '@prisma/client';
 import { IUserRepository } from '../../domains/repositories/IUserRepository';
 import { User } from '../../domains/entities/User';
 
-// Used for acutall Implementation
 export class UserRepository implements IUserRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
@@ -15,13 +14,21 @@ export class UserRepository implements IUserRepository {
   }
 
   async create(
-    data: Omit<User, 'id' | 'createdAt' | 'updatedAt'>,
+    data: Omit<User, 'id' | 'createdAt' | 'updatedAt'>
   ): Promise<User> {
     return this.prisma.users.create({ data });
   }
 
-  async update(id: number, data: Partial<User>): Promise<User> {
-    return this.prisma.users.update({ where: { id }, data });
+  async update(
+    id: number,
+    data: Partial<Omit<User, 'id' | 'createdAt' | 'updatedAt'>>
+  ): Promise<User> {
+    return this.prisma.users.update({
+      where: { id },
+      data: {
+        ...data,
+      },
+    });
   }
 
   async delete(id: number): Promise<void> {

@@ -1,3 +1,5 @@
+import { UserRole } from "@prisma/client";
+
 //Define Constant table for User
 export type User = {
   readonly id: number;
@@ -5,7 +7,7 @@ export type User = {
   readonly firstName: string;
   readonly email: string;
   readonly password: string;
-  readonly role: string;
+  readonly role: UserRole;
   readonly isResigned: boolean;
   readonly createdAt: Date;
   readonly updatedAt: Date;
