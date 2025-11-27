@@ -1,5 +1,6 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { IItemRepository } from '../../domains/repositories/IItemRepository';
+import { ItemQuery } from '../../domains/repositories/ItemQuery';
 import { Item } from '../../domains/entities/Item';
 
 export class ItemRepository implements IItemRepository {
@@ -11,6 +12,51 @@ export class ItemRepository implements IItemRepository {
     });
 
     return items;
+  }
+
+  async find(query?: ItemQuery): Promise<Item[]> {
+    const prismaQuery = this.buildPrismaQuery(query);
+    const items = await this.prisma.items.findMany(prismaQuery);
+    return items.map((item) => ({
+      id: item.id,
+      name: item.name,
+      description: item.description,
+      type: item.type,
+      price: item.price,
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt,
+    }));
+  }
+
+  private buildPrismaQuery(query?: ItemQuery): Prisma.ItemsFindManyArgs {
+    const prismaQuery: Prisma.ItemsFindManyArgs = {};
+
+    if (query?.where) {
+      prismaQuery.where = {};
+      if (query.where.name?.contains) {
+        prismaQuery.where.name = {
+          contains: query.where.name.contains,
+        };
+      }
+      if (query.where.displayStatus?.not) {
+        prismaQuery.where.displayStatus = {
+          not: query.where.displayStatus.not,
+        };
+      }
+    }
+
+    if (query?.orderBy) {
+      prismaQuery.orderBy = query.orderBy;
+    }
+
+    if (query?.skip !== undefined) {
+      prismaQuery.skip = query.skip;
+    }
+    if (query?.take !== undefined) {
+      prismaQuery.take = query.take;
+    }
+
+    return prismaQuery;
   }
 
   async create(name: string, description: string, type: number): Promise<Item> {
