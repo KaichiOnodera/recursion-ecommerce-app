@@ -14,14 +14,14 @@ export class UserRepository implements IUserRepository {
   }
 
   async create(
-    data: Omit<User, 'id' | 'createdAt' | 'updatedAt'>
+    data: Omit<User, 'id' | 'createdAt' | 'updatedAt'>,
   ): Promise<User> {
     return this.prisma.users.create({ data });
   }
 
   async update(
     id: number,
-    data: Partial<Omit<User, 'id' | 'createdAt' | 'updatedAt'>>
+    data: Partial<Omit<User, 'id' | 'createdAt' | 'updatedAt'>>,
   ): Promise<User> {
     return this.prisma.users.update({
       where: { id },

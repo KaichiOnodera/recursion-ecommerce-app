@@ -1,4 +1,4 @@
-import { UserRole } from "@prisma/client";
+import { UserRole } from '@prisma/client';
 
 //Define Constant table for User
 export type User = {

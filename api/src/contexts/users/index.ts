@@ -7,7 +7,6 @@ import { adminItemsRouter } from '../items/admin';
 adminItemsRouter.use(verifyAccessToken);
 adminItemsRouter.use(verifyAdmin);
 
-
 import { CreateUserInteractor } from './interactors/CreateUserInteractor';
 import { UpdateUserProfileInteractor } from './interactors/UpdateUserProfileInteractor';
 import { DeleteUserInteractor } from './interactors/DeleteUserInteractor';
