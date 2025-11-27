@@ -1,4 +1,5 @@
 import express from 'express';
+import { AuthenticatedRequest } from 'src/middlewares';
 import { IUpdateUserProfileInteractor } from '../usecases/IUpdateUserProfileInteractor';
 import { UpdateUserProfileInput } from '../interactors/UpdateUserProfileInteractor';
 
@@ -7,9 +8,9 @@ export class UpdateUserProfileController {
     private readonly updateUserProfileInteractor: IUpdateUserProfileInteractor,
   ) {}
 
-  async execute(req: express.Request, res: express.Response) {
+  async execute(req: AuthenticatedRequest, res: express.Response) {
     try {
-      const userId = parseInt(req.params.id, 10);
+      const userId = Number(req.user?.userId);
       if (isNaN(userId)) {
         return res.status(400).json({ message: 'User ID must be a number' });
       }

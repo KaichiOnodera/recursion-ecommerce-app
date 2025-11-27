@@ -38,7 +38,7 @@ UsersRouter.post(
   '/signup',
   createUserController.execute.bind(createUserController),
 );
-UsersRouter.put('/users/:id', verifyAccessToken, (req, res) => {
+UsersRouter.put('/profile', verifyAccessToken, (req, res) => {
   updateUserProfileController.execute(req, res);
 });
 UsersRouter.delete(
