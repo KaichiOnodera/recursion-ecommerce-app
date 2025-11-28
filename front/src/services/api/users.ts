@@ -1,27 +1,13 @@
 import { apiClient } from './apiClient';
+import { PostReq, PostRes } from '@shared/types/posts';
 
-export interface SignupRequest {
-  lastName: string;
-  firstName: string;
-  email: string;
-  password: string;
-}
-
-export interface User {
-  id: number;
-  lastName: string;
-  firstName: string;
-  email: string;
-  role: 'USER' | 'ADMIN';
-  isResigned: boolean;
-}
-
-export interface SignupResponse {
-  createdUser: User;
-}
-
-export async function signup(data: SignupRequest): Promise<SignupResponse> {
-  const response = await apiClient.post<SignupResponse>('/users/signup', data);
+export async function signup(
+  data: PostReq['users/signup'],
+): Promise<PostRes['users/signup']> {
+  const response = await apiClient.post<PostRes['users/signup']>(
+    '/users/signup',
+    data,
+  );
 
   return response.data;
 }
