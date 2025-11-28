@@ -1,5 +1,6 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { IItemRepository } from '../../domains/repositories/IItemRepository';
+import { ItemQuery } from '../../domains/repositories/ItemQuery';
 import { Item } from '../../domains/entities/Item';
 
 export class ItemRepository implements IItemRepository {
@@ -8,9 +9,78 @@ export class ItemRepository implements IItemRepository {
   async findAll(): Promise<Item[]> {
     const items = await this.prisma.items.findMany({
       orderBy: { createdAt: 'desc' },
+      include: {
+        Inventory: true,
+      },
     });
 
-    return items;
+    return items.map((item) => ({
+      id: item.id,
+      name: item.name,
+      description: item.description,
+      type: item.type,
+      price: item.price,
+      displayStatus: item.displayStatus,
+      inventory: {
+        amount: item.Inventory?.[0]?.amount ?? 0,
+      },
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt,
+    }));
+  }
+
+  async find(query?: ItemQuery): Promise<Item[]> {
+    const prismaQuery = this.buildPrismaQuery(query);
+    const items = await this.prisma.items.findMany({
+      ...prismaQuery,
+      include: {
+        Inventory: true,
+      },
+    });
+    return items.map((item) => ({
+      id: item.id,
+      name: item.name,
+      description: item.description,
+      type: item.type,
+      price: item.price,
+      displayStatus: item.displayStatus,
+      inventory: {
+        amount: item.Inventory?.[0]?.amount ?? 0,
+      },
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt,
+    }));
+  }
+
+  private buildPrismaQuery(query?: ItemQuery): Prisma.ItemsFindManyArgs {
+    const prismaQuery: Prisma.ItemsFindManyArgs = {};
+
+    if (query?.where) {
+      prismaQuery.where = {};
+      if (query.where.name?.contains) {
+        prismaQuery.where.name = {
+          contains: query.where.name.contains,
+        };
+      }
+      if (query.where.displayStatus?.not) {
+        prismaQuery.where.displayStatus = {
+          not: query.where.displayStatus.not,
+        };
+      }
+    }
+
+    if (query?.orderBy) {
+      prismaQuery.orderBy = query.orderBy;
+    }
+
+    if (query?.skip !== undefined) {
+      prismaQuery.skip = query.skip;
+    }
+    if (query?.take !== undefined) {
+      prismaQuery.take = query.take;
+    }
+
+    return prismaQuery;
   }
 
   async create(name: string, description: string, type: number): Promise<Item> {
@@ -22,7 +92,19 @@ export class ItemRepository implements IItemRepository {
       },
     });
 
-    return item;
+    return {
+      id: item.id,
+      name: item.name,
+      description: item.description,
+      type: item.type,
+      price: item.price,
+      displayStatus: item.displayStatus,
+      inventory: {
+        amount: 0,
+      },
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt,
+    };
   }
 
   async update(
@@ -52,26 +134,61 @@ export class ItemRepository implements IItemRepository {
       data: updateData,
     });
 
-    return item;
+    const inventory = await this.prisma.inventory.findFirst({
+      where: { itemId: item.id },
+    });
+
+    return {
+      id: item.id,
+      name: item.name,
+      description: item.description,
+      type: item.type,
+      price: item.price,
+      displayStatus: item.displayStatus,
+      inventory: {
+        amount: inventory?.amount ?? 0,
+      },
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt,
+    };
   }
 
-  async delete(id: number): Promise<Item | null> {
+  async delete(id: number): Promise<boolean> {
     const existingItem = await this.findById(id);
 
     if (!existingItem) {
-      return null;
+      return false;
     }
 
-    const item = await this.prisma.items.delete({
+    await this.prisma.items.delete({
       where: { id },
     });
 
-    return item;
+    return true;
   }
 
-  private async findById(id: number): Promise<Item | null> {
-    return await this.prisma.items.findUnique({
+  async findById(id: number): Promise<Item | null> {
+    const item = await this.prisma.items.findFirst({
       where: { id },
+      include: {
+        Inventory: true,
+      },
     });
+
+    return item
+      ? {
+          id: item.id,
+          name: item.name,
+          description: item.description,
+          type: item.type,
+          price: item.price,
+          displayStatus: item.displayStatus,
+          inventory: {
+            amount: item.Inventory?.[0]?.amount ?? 0,
+          },
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
+        }
+      : null;
   }
 }

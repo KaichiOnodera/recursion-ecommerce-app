@@ -8,6 +8,9 @@ export type GetRes = {
   '/admin/items': {
     items: Item[];
   };
+  '/items/search': {
+    items: Item[];
+  };
   '/auth/me': {
     user: User;
   };
