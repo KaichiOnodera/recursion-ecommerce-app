@@ -57,7 +57,7 @@ export async function deleteItem(
 }
 
 export async function getAdminItem(id: number): Promise<ItemResponse> {
-  const response = await apiClient.get<ItemResponse>(`/admin/items/${id}`);
+  const response = await apiClient.get<GetRes['admin/items/:id']>(`/admin/items/${id}`);
   return response.data;
 }
 
