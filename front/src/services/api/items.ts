@@ -8,10 +8,6 @@ export interface ItemsResponse {
   items: Item[];
 }
 
-export interface ItemResponse {
-  item: Item;
-}
-
 export async function getItems(): Promise<ItemsResponse> {
   const response = await apiClient.get<ItemsResponse>('/items');
 
