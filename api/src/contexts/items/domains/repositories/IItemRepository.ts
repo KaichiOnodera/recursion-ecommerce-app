@@ -1,10 +1,10 @@
-import { Item } from '../entities/Item';
+import { DisplayStatus, Item } from '../entities/Item';
 import { ItemQuery } from './ItemQuery';
 
 export interface IItemRepository {
   findAll(): Promise<Item[]>;
   find(query?: ItemQuery): Promise<Item[]>;
-  findById(id: number): Promise<Item | null>;
+  findById(id: number, displayStatus?: DisplayStatus): Promise<Item | null>;
   create(name: string, description: string, type: number): Promise<Item>;
   update(
     id: number,
