@@ -8,6 +8,10 @@ export interface ItemsResponse {
   items: Item[];
 }
 
+export interface ItemResponse {
+  item: Item;
+}
+
 export async function getItems(): Promise<ItemsResponse> {
   const response = await apiClient.get<ItemsResponse>('/items');
 
@@ -49,5 +53,15 @@ export async function deleteItem(
     `/admin/items/${id}`,
   );
 
+  return response.data;
+}
+
+export async function getAdminItem(id: number): Promise<ItemResponse> {
+  const response = await apiClient.get<ItemResponse>(`/admin/items/${id}`);
+  return response.data;
+}
+
+export async function getItem(id: number): Promise<ItemResponse> {
+  const response = await apiClient.get<ItemResponse>(`/item/${id}`);
   return response.data;
 }

@@ -11,4 +11,10 @@ export type GetRes = {
   '/auth/me': {
     user: User;
   };
+  'admin/items/:id': {
+    item: Item;
+  };
+  'items/:id': {
+    item: Item;
+  };
 };
