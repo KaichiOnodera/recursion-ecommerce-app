@@ -30,7 +30,8 @@ module.exports = [
         console: 'readonly',
         document: 'readonly',
         HTMLElement: 'readonly',
-        window: 'readonly'
+        window: 'readonly',
+        URLSearchParams: 'readonly'
       }
     },
     plugins: {

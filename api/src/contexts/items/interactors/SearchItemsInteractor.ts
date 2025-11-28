@@ -1,8 +1,5 @@
-import {
-  ISearchItemsInteractor,
-  SearchItemsParams,
-  SearchSortType,
-} from '../usecases/ISearchItemsInteractor';
+import { ISearchItemsInteractor } from '../usecases/ISearchItemsInteractor';
+import { SearchItemsParams, SearchSortType } from '@shared/schemas/item';
 import { IItemRepository } from '../domains/repositories/IItemRepository';
 import { ItemQuery } from '../domains/repositories/ItemQuery';
 import { Item } from '../domains/entities/Item';
