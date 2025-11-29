@@ -2,6 +2,7 @@ import { ILoginInteractor } from '../usecases/ILoginInteractor';
 import { IUserRepository } from '../domains/repositories/IUserRepository';
 import { generateJWT, TOKEN_VERSION } from '../../../utils/jwt';
 import { User } from '@shared/schemas/user';
+import { comparePassword } from '../../../contexts/utils/hashPassword';
 
 export class LoginInteractor implements ILoginInteractor {
   constructor(private readonly userRepository: IUserRepository) {}
@@ -19,7 +20,8 @@ export class LoginInteractor implements ILoginInteractor {
       throw new Error('Invalid email or password');
     }
 
-    if (password !== user.password) {
+    const isPasswordValid = await comparePassword(password, user.password);
+    if (!isPasswordValid) {
       throw new Error('Invalid email or password');
     }
 
