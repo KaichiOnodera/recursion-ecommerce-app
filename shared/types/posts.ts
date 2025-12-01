@@ -10,6 +10,7 @@ export type PostReq = {
     name: string;
     description: string;
     type: number;
+    price: number;
   };
   'users/signup': {
     lastName: string;
