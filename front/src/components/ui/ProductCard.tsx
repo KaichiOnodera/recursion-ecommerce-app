@@ -21,7 +21,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ item, isAdmin = false }) => {
       <div className="p-4">
         <h2>{item.name}</h2>
         <p> {item.description} </p>
-        <p>値段</p>
+        <p> {item.price} </p>
 
         {/* 管理者用の編集ボタン */}
         {isAdmin && (
