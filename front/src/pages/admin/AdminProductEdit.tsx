@@ -117,7 +117,7 @@ export const AdminProductEdit: React.FC = () => {
               required
               min="0"
               step="1"
-              placeholder="価格を入力してください"
+              placeholder="価格を円単位で入力してください"
             />
             <p className="mt-1 text-sm text-gray-500">価格の入力</p>
           </div>
