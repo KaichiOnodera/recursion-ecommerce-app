@@ -17,6 +17,12 @@ export type PostReq = {
     email: string;
     password: string;
   };
+  '/cart': {
+    items: {
+      id: number;
+      amount: number;
+    }[];
+  };
 };
 
 export type PostRes = {
@@ -28,5 +34,16 @@ export type PostRes = {
   };
   'users/signup': {
     createdUser: User;
+  };
+  '/cart': {
+    items: Array<{
+      id: number;
+      name: string;
+      description: string;
+      type: number;
+      price: number;
+      displayStatus: string;
+      amount: number;
+    }>;
   };
 };
