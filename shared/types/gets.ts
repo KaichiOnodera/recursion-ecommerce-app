@@ -19,6 +19,7 @@ export type GetRes = {
   };
   'items/:id': {
     item: Item;
+  };
   '/cart': {
     items: {
       id: number;
