@@ -1,10 +1,7 @@
 import express from 'express';
 import { GetRes } from '@shared/types/gets';
-import {
-  ISearchItemsInteractor,
-  SearchItemsParams,
-  SearchSortType,
-} from '../usecases/ISearchItemsInteractor';
+import { ISearchItemsInteractor } from '../usecases/ISearchItemsInteractor';
+import { SearchItemsParams, SearchSortType } from '@shared/schemas/item';
 
 type SearchParamsResult =
   | { success: true; params: SearchItemsParams }

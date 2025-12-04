@@ -1,28 +1,55 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router';
 import ProductCard from '../components/ui/ProductCard';
 import { Item } from '@shared/schemas/item';
-import { getItems } from '../services/api/items';
+import { getItems, searchItems } from '../services/api/items';
 
 export const ProductList: React.FC = () => {
   const [items, setItems] = useState<Item[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [searchParams] = useSearchParams();
+  const searchQuery = searchParams.get('q');
 
   useEffect(() => {
     const fetchItems = async (): Promise<void> => {
-      const response = await getItems();
-      setItems(response.items);
+      setIsLoading(true);
+      try {
+        if (searchQuery && searchQuery.trim()) {
+          const response = await searchItems({ q: searchQuery.trim() });
+          setItems(response.items);
+        } else {
+          const response = await getItems();
+          setItems(response.items);
+        }
+      } catch (error) {
+        console.error('商品の取得に失敗しました:', error);
+        setItems([]);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     fetchItems();
-  }, []);
+  }, [searchQuery]);
 
   return (
     <div className="container mx-auto py-8">
-      <h1 className="text-3xl font-bold">商品一覧</h1>
-      <div className="grid grid-cols-4 gap-4">
-        {items.map((item) => (
-          <ProductCard key={item.id} item={item} />
-        ))}
-      </div>
+      <h1 className="text-3xl font-bold mb-4">
+        {searchQuery ? `「${searchQuery}」の検索結果` : '商品一覧'}
+      </h1>
+      {isLoading ? (
+        <div className="text-center py-8">読み込み中...</div>
+      ) : items.length === 0 ? (
+        <div className="text-center py-8 text-gray-500">
+          {searchQuery ? '検索結果が見つかりませんでした' : '商品がありません'}
+        </div>
+      ) : (
+        <div className="grid grid-cols-4 gap-4">
+          {items.map((item) => (
+            <ProductCard key={item.id} item={item} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };
