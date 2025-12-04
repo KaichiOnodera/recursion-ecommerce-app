@@ -58,6 +58,6 @@ export async function getAdminItem(id: number): Promise<ItemResponse> {
 }
 
 export async function getItem(id: number): Promise<ItemResponse> {
-  const response = await apiClient.get<<GetRes['items/:id']>(`/item/${id}`);
+  const response = await apiClient.get<GetRes['items/:id']>(`/item/${id}`);
   return response.data;
 }
