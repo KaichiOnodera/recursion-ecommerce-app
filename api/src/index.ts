@@ -11,6 +11,7 @@ import { adminItemsRouter } from './contexts/items/admin';
 import { authRouter } from './contexts/auth';
 import { prisma } from './libs/prisma';
 import { UsersRouter as usersRouter } from './contexts/users';
+import { cartRouter } from './contexts/cart';
 
 const app = express();
 
@@ -33,6 +34,7 @@ app.use('/items', itemsRouter);
 app.use('/admin/items', adminItemsRouter);
 
 app.use('/users', usersRouter);
+app.use('/cart', cartRouter);
 
 app.listen(8000, '0.0.0.0', () => {
   // eslint-disable-next-line no-console
