@@ -7,14 +7,14 @@ export class CartController {
   constructor(private readonly cartInteractor: ICartInteractor) {}
 
   async execute(
-    req: AuthenticatedRequest,
+    req: AuthenticatedRequest<PostReq['/cart']>,
     res: express.Response<PostRes['/cart'] | { message: string }>,
   ) {
     if (!req.user) {
       return res.status(401).json({ message: 'User not authenticated' });
     }
 
-    const { items } = req.body as PostReq['/cart'];
+    const { items } = req.body;
 
     if (!Array.isArray(items)) {
       return res.status(400).json({ message: 'Items must be an array' });

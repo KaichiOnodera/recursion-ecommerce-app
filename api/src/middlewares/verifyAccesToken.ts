@@ -2,7 +2,11 @@ import express from 'express';
 import { verifyJWT, JWTPayload } from '../utils/jwt';
 import { IVerifyUserInteractor } from '../contexts/auth/usecases/IVerifyUserInteractor';
 
-export interface AuthenticatedRequest extends express.Request {
+export interface AuthenticatedRequest<
+  ReqBody = any,
+  PathParams = any,
+  ReqQuery = any,
+> extends express.Request<PathParams, any, ReqBody, ReqQuery> {
   user?: JWTPayload;
 }
 
