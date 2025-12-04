@@ -11,6 +11,12 @@ export type PostReq = {
     description: string;
     type: number;
   };
+  'users/signup': {
+    lastName: string;
+    firstName: string;
+    email: string;
+    password: string;
+  };
 };
 
 export type PostRes = {
@@ -19,5 +25,8 @@ export type PostRes = {
   };
   'admin/items': {
     item: Item;
+  };
+  'users/signup': {
+    createdUser: User;
   };
 };

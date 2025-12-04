@@ -1,7 +1,7 @@
 import { PrismaClient, Prisma } from '@prisma/client';
 import { IItemRepository } from '../../domains/repositories/IItemRepository';
 import { ItemQuery } from '../../domains/repositories/ItemQuery';
-import { Item } from '../../domains/entities/Item';
+import { DisplayStatus, Item } from '../../domains/entities/Item';
 
 export class ItemRepository implements IItemRepository {
   constructor(private readonly prisma: PrismaClient) {}
@@ -20,7 +20,9 @@ export class ItemRepository implements IItemRepository {
       description: item.description,
       type: item.type,
       price: item.price,
-      displayStatus: item.displayStatus,
+      displayStatus: this.isDisplayStatus(item.displayStatus)
+        ? item.displayStatus
+        : DisplayStatus.PRIVATE,
       inventory: {
         amount: item.Inventory?.[0]?.amount ?? 0,
       },
@@ -43,7 +45,9 @@ export class ItemRepository implements IItemRepository {
       description: item.description,
       type: item.type,
       price: item.price,
-      displayStatus: item.displayStatus,
+      displayStatus: this.isDisplayStatus(item.displayStatus)
+        ? item.displayStatus
+        : DisplayStatus.PRIVATE,
       inventory: {
         amount: item.Inventory?.[0]?.amount ?? 0,
       },
@@ -98,7 +102,9 @@ export class ItemRepository implements IItemRepository {
       description: item.description,
       type: item.type,
       price: item.price,
-      displayStatus: item.displayStatus,
+      displayStatus: this.isDisplayStatus(item.displayStatus)
+        ? item.displayStatus
+        : DisplayStatus.PRIVATE,
       inventory: {
         amount: 0,
       },
@@ -144,7 +150,9 @@ export class ItemRepository implements IItemRepository {
       description: item.description,
       type: item.type,
       price: item.price,
-      displayStatus: item.displayStatus,
+      displayStatus: this.isDisplayStatus(item.displayStatus)
+        ? item.displayStatus
+        : DisplayStatus.PRIVATE,
       inventory: {
         amount: inventory?.amount ?? 0,
       },
@@ -167,9 +175,12 @@ export class ItemRepository implements IItemRepository {
     return true;
   }
 
-  async findById(id: number): Promise<Item | null> {
+  async findById(
+    id: number,
+    displayStatus?: DisplayStatus,
+  ): Promise<Item | null> {
     const item = await this.prisma.items.findFirst({
-      where: { id },
+      where: { id, displayStatus },
       include: {
         Inventory: true,
       },
@@ -182,7 +193,9 @@ export class ItemRepository implements IItemRepository {
           description: item.description,
           type: item.type,
           price: item.price,
-          displayStatus: item.displayStatus,
+          displayStatus: this.isDisplayStatus(item.displayStatus)
+            ? item.displayStatus
+            : DisplayStatus.PRIVATE,
           inventory: {
             amount: item.Inventory?.[0]?.amount ?? 0,
           },
@@ -190,5 +203,13 @@ export class ItemRepository implements IItemRepository {
           updatedAt: item.updatedAt,
         }
       : null;
+  }
+
+  private isDisplayStatus(
+    displayStatus: string,
+  ): displayStatus is DisplayStatus {
+    return Object.values(DisplayStatus).includes(
+      displayStatus as DisplayStatus,
+    );
   }
 }

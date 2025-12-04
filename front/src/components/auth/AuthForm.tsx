@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { login } from '../../services/api/auth';
+import { signup } from '../../services/api/users';
 import { useNavigate } from 'react-router';
 import { useUser } from '../../contexts/UserContext';
 
@@ -45,11 +46,24 @@ export const AuthForm: React.FC<AuthFormProps> = ({
         } else {
           navigate('/');
         }
+      } else if (mode === 'signup') {
+        const response = await signup({
+          lastName,
+          firstName,
+          email,
+          password,
+        });
+
+        if (response.createdUser) {
+          navigate('/login');
+        }
       }
     } catch (err: any) {
       // axiosのエラーレスポンスからメッセージを取得
       const errorMessage =
-        err.response?.data?.message || err.message || 'Login failed';
+        err.response?.data?.message ||
+        err.message ||
+        (mode === 'login' ? 'Login failed' : 'Signup failed');
       setError(errorMessage);
     }
   };
