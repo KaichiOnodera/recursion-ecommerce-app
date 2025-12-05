@@ -8,6 +8,7 @@ export const AdminProductEdit: React.FC = () => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [type, setType] = useState<number>(1);
+  const [price, setPrice] = useState<number>(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
@@ -29,6 +30,7 @@ export const AdminProductEdit: React.FC = () => {
       setName(item.name);
       setDescription(item.description);
       setType(item.type);
+      setPrice(item.price);
     };
 
     fetchItem();
@@ -48,6 +50,7 @@ export const AdminProductEdit: React.FC = () => {
         name,
         description,
         type,
+        price,
       });
 
       navigate('/admin/products');
@@ -101,6 +104,22 @@ export const AdminProductEdit: React.FC = () => {
               <option value={2}>デジタル商品</option>
             </select>
             <p className="mt-1 text-sm text-gray-500">商品タイプの選択</p>
+          </div>
+
+          {/* 価格 */}
+          <div>
+            <label className="block mb-2 font-medium">価格</label>
+            <input
+              type="number"
+              value={price}
+              onChange={(e) => setPrice(Number(e.target.value))}
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+              min="0"
+              step="1"
+              placeholder="価格を円単位で入力してください"
+            />
+            <p className="mt-1 text-sm text-gray-500">価格の入力</p>
           </div>
 
           {/* ボタン */}
