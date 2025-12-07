@@ -1,5 +1,6 @@
 import { Item } from '../schemas/item';
 import { User } from '../schemas/user';
+import { CartItem } from '../schemas/cart';
 
 export type GetRes = {
   '/items': {
@@ -21,13 +22,6 @@ export type GetRes = {
     item: Item;
   };
   '/cart': {
-    items: {
-      id: number;
-      name: string;
-      description: string;
-      type: number;
-      price: number;
-      amount: number;
-    }[];
+    items: CartItem[];
   };
 };
