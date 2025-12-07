@@ -26,16 +26,42 @@ export async function updateCartItem(
   return updateCart(updatedItems);
 }
 
-// 削除用の関数
-export async function deleteCartItem(
-  currentItems: Array<{ id: number; amount: number }>,
+// カートに商品を追加する関数
+export async function addToCart(
   itemId: number,
+  amount = 1,
 ): Promise<PostRes['/cart']> {
-  const updatedItems = currentItems.filter((item) => item.id !== itemId);
-  return updateCart(updatedItems);
-}
+  try {
+    // 現在のカートを取得（カートが存在しない場合は空配列を返す）
+    let currentItems: Array<{ id: number; amount: number }> = [];
+    try {
+      const currentCart = await getCart();
+      currentItems = currentCart.items.map((item) => ({
+        id: item.id,
+        amount: item.amount,
+      }));
+    } catch (error) {
+      // カートが存在しない場合（404など）は空のカートとして扱う
+      console.log('Cart not found, creating new cart');
+      currentItems = [];
+    }
 
-// 全削除用の関数
-export async function clearCart(): Promise<PostRes['/cart']> {
-  return updateCart([]);
+    // 既にカートにある商品かチェック
+    const existingItemIndex = currentItems.findIndex(
+      (item) => item.id === itemId,
+    );
+
+    if (existingItemIndex >= 0) {
+      // 既にある場合は数量を増やす
+      currentItems[existingItemIndex].amount += amount;
+    } else {
+      // 新規追加
+      currentItems.push({ id: itemId, amount });
+    }
+
+    return updateCart(currentItems);
+  } catch (error) {
+    console.error('Error in addToCart:', error);
+    throw error;
+  }
 }
