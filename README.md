@@ -70,9 +70,10 @@ cd api
 npm run migrate:test
 ```
 
-3. **（オプション）テスト用シードデータの投入**
+3. **(オプション)テスト用シードデータの投入**
 
 ```bash
+cd api
 npm run seed:test
 ```
 

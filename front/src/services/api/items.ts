@@ -1,8 +1,9 @@
 import { apiClient } from './apiClient';
-import { Item } from '@shared/schemas/item';
+import { Item, SearchItemsParams } from '@shared/schemas/item';
 import { DeleteRes } from '@shared/types/delete';
 import { PostReq, PostRes } from '@shared/types/posts';
 import { PatchReq, PatchRes } from '@shared/types/patches';
+import { GetRes } from '@shared/types/gets';
 
 export interface ItemsResponse {
   items: Item[];
@@ -59,5 +60,26 @@ export async function getAdminItem(id: number): Promise<ItemResponse> {
 
 export async function getItem(id: number): Promise<ItemResponse> {
   const response = await apiClient.get<GetRes['items/:id']>(`/item/${id}`);
+  return response.data;
+}
+
+export async function searchItems(
+  params: SearchItemsParams,
+): Promise<GetRes['/items/search']> {
+  const queryParams = new URLSearchParams();
+  if (params.q) {
+    queryParams.append('q', params.q);
+  }
+  if (params.sort) {
+    queryParams.append('sort', params.sort);
+  }
+  if (params.page) {
+    queryParams.append('page', params.page.toString());
+  }
+
+  const queryString = queryParams.toString();
+  const url = `/items/search${queryString ? `?${queryString}` : ''}`;
+  const response = await apiClient.get<GetRes['/items/search']>(url);
+
   return response.data;
 }

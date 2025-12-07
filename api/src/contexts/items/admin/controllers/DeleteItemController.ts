@@ -19,22 +19,8 @@ export class DeleteItemController {
       return res.status(400).json({ message: 'Invalid item ID' });
     }
 
-    const item = await this.deleteItemInteractor.execute(itemId);
+    const result = await this.deleteItemInteractor.execute(itemId);
 
-    if (!item) {
-      return res.status(404).json({ message: 'Item not found' });
-    }
-
-    const responseItem = {
-      id: item.id,
-      name: item.name,
-      description: item.description,
-      type: item.type,
-      price: item.price,
-      createdAt: item.createdAt,
-      updatedAt: item.updatedAt,
-    };
-
-    res.status(200).json({ item: responseItem });
+    res.status(200).json({ deleted: result });
   }
 }

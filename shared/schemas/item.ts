@@ -7,3 +7,36 @@ export type Item = {
   createdAt: Date;
   updatedAt: Date;
 };
+
+export const SearchSortType = {
+  newest: 'newest',
+  price_asc: 'price_asc',
+  price_desc: 'price_desc',
+  name_asc: 'name_asc',
+  name_desc: 'name_desc',
+} as const;
+
+export type SearchSortType =
+  (typeof SearchSortType)[keyof typeof SearchSortType];
+
+export interface SearchItemsParams {
+  q?: string;
+  sort?: SearchSortType;
+  page?: number;
+}
+
+export const InventoryStatus = {
+  IN_STOCK: 'inStock',
+  OUT_OF_STOCK: 'outOfStock',
+} as const;
+export type InventoryStatus =
+  (typeof InventoryStatus)[keyof typeof InventoryStatus];
+
+export type ItemDetail = {
+  id: number;
+  name: string;
+  description: string;
+  type: number;
+  price: number;
+  inventoryStatus: InventoryStatus;
+};

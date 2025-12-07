@@ -69,9 +69,15 @@ export const AdminProductDelete: React.FC = () => {
               <span className="font-semibold text-gray-700">説明:</span>
               <span className="ml-2 text-gray-900">{item.description}</span>
             </div>
-            <div>
+            <div className="mb-2">
               <span className="font-semibold text-gray-700">商品タイプ:</span>
               <span className="ml-2 text-gray-900">{item.type}</span>
+            </div>
+            <div>
+              <span className="font-semibold text-gray-700">価格:</span>
+              <span className="ml-2 text-gray-900">
+                ¥{item.price.toLocaleString()}
+              </span>
             </div>
           </div>
         </div>
