@@ -1,4 +1,4 @@
-import { Item, ItemDetail } from '../schemas/item';
+import { Item } from '../schemas/item';
 import { User } from '../schemas/user';
 
 export type GetRes = {

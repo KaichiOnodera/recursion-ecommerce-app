@@ -1,3 +1,4 @@
+import { User } from 'schemas/user';
 import { Item } from '../schemas/item';
 
 export type PatchReq = {
@@ -7,10 +8,18 @@ export type PatchReq = {
     type?: number;
     price: number;
   };
+  'users/profile': {
+    lastName: string;
+    firstName: string;
+    email: string;
+  };
 };
 
 export type PatchRes = {
   'admin/items/:id': {
     item: Item;
+  };
+  'users/profile': {
+    updatedUser: User;
   };
 };
