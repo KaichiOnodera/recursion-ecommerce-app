@@ -10,7 +10,16 @@ export class UpdateItemInteractor implements IUpdateItemInteractor {
     name?: string,
     description?: string,
     type?: number,
+    price?: number,
+    inventoryAmount?: number,
   ): Promise<Item | null> {
-    return await this.itemRepository.update(id, name, description, type);
+    return await this.itemRepository.update(
+      id,
+      name,
+      description,
+      type,
+      price,
+      inventoryAmount,
+    );
   }
 }
