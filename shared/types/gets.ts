@@ -17,4 +17,14 @@ export type GetRes = {
   '/auth/me': {
     user: User;
   };
+  '/cart': {
+    items: {
+      id: number;
+      name: string;
+      description: string;
+      type: number;
+      price: number;
+      amount: number;
+    }[];
+  };
 };
