@@ -17,6 +17,7 @@ import { AdminProductList } from './pages/admin/AdminProductList';
 import { AdminProductCreate } from './pages/admin/AdminProductCreate';
 import { AdminProductEdit } from './pages/admin/AdminProductEdit';
 import { AdminProductDelete } from './pages/admin/AdminProductDelete';
+import { Cart } from './pages/user/Cart';
 
 function App(): React.JSX.Element {
   return (
@@ -30,6 +31,7 @@ function App(): React.JSX.Element {
               <Route path="/products" element={<ProductList />} />
               <Route path="/auth/user/login" element={<UserLogin />} />
               <Route path="/auth/user/signup" element={<UserSignup />} />
+              <Route path="/cart" element={<Cart />} />
               <Route path="/auth/admin/login" element={<AdminLogin />} />
               <Route path="/auth/admin/signup" element={<AdminSignup />} />
               <Route
