@@ -11,11 +11,14 @@ export type GetRes = {
   '/items/search': {
     items: Item[];
   };
-  '/items/:id': {
-    item: ItemDetail;
-  };
   '/auth/me': {
     user: User;
+  };
+  'admin/items/:id': {
+    item: Item;
+  };
+  'items/:id': {
+    item: Item;
   };
   '/cart': {
     items: {

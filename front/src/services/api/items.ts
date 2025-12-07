@@ -53,6 +53,20 @@ export async function deleteItem(
   return response.data;
 }
 
+export async function getAdminItem(
+  id: number,
+): Promise<GetRes['admin/items/:id']> {
+  const response = await apiClient.get<GetRes['admin/items/:id']>(
+    `/admin/items/${id}`,
+  );
+  return response.data;
+}
+
+export async function getItem(id: number): Promise<GetRes['items/:id']> {
+  const response = await apiClient.get<GetRes['items/:id']>(`/item/${id}`);
+  return response.data;
+}
+
 export async function searchItems(
   params: SearchItemsParams,
 ): Promise<GetRes['/items/search']> {
