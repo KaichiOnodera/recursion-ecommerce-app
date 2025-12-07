@@ -20,6 +20,10 @@ export type GetRes = {
   '/cart': {
     items: {
       id: number;
+      name: string;
+      description: string;
+      type: number;
+      price: number;
       amount: number;
     }[];
   };

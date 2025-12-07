@@ -1,5 +1,5 @@
-import { GetRes } from '@shared/types/gets';
+import { Cart } from '../domains/entities/Cart';
 
 export interface IGetCartInteractor {
-  execute(userId: number): Promise<GetRes['/cart']>;
+  execute(userId: number): Promise<Cart | null>;
 }

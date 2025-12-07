@@ -19,6 +19,11 @@ export class GetCartController {
         Number(req.user.userId),
       );
 
+      if (!cart) {
+        res.status(402).json({ message: 'Cart not found' });
+        return null;
+      }
+
       return res.status(200).json(cart);
     } catch (error) {
       console.error(error);

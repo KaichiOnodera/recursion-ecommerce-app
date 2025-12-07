@@ -1,22 +1,26 @@
 import { IGetCartInteractor } from '../usecases/IGetCartInteractor';
 import { ICartRepository } from '../domains/repositories/ICartRepository';
-import { GetRes } from '@shared/types/gets';
+import { Cart } from '../domains/entities/Cart';
 
 export class GetCartInteractor implements IGetCartInteractor {
   constructor(private readonly cartRepository: ICartRepository) {}
 
-  async execute(userId: number): Promise<GetRes['/cart']> {
+  async execute(userId: number): Promise<Cart | null> {
     const cart = await this.cartRepository.find(userId);
 
     if (!cart) {
-      return {
-        items: [],
-      };
+      return null;
     }
 
     return {
+      id: cart.id,
       items: cart.items.map((item) => ({
         id: item.id,
+        name: item.name,
+        description: item.description,
+        type: item.type,
+        price: item.price,
+        displayStatus: item.displayStatus,
         amount: item.amount,
       })),
     };
