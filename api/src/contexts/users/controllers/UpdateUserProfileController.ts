@@ -27,7 +27,17 @@ export class UpdateUserProfileController {
       const updatedUser = await this.updateUserProfileInteractor.execute(input);
 
       return res.status(200).json({ updatedUser });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      // Error Handling
+      if (error instanceof Error) {
+        if (error.message === 'Mail is registered already') {
+          return res.status(400).json({ message: error.message });
+        }
+        if (error.message === 'User not found') {
+          return res.status(400).json({ message: error.message });
+        }
+      }
+
       console.error('Error updating user profile:', error);
       return res.status(500).json({ message: 'Internal server error' });
     }
