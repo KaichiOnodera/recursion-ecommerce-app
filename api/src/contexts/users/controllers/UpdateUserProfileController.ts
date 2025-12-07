@@ -2,7 +2,7 @@ import express from 'express';
 import { AuthenticatedRequest } from 'src/middlewares';
 import { IUpdateUserProfileInteractor } from '../usecases/IUpdateUserProfileInteractor';
 import { UpdateUserProfileInput } from '../interactors/UpdateUserProfileInteractor';
-import { PostReq, PostRes } from '@shared/types/posts';
+import { PatchReq, PatchRes } from '@shared/types/patches';
 
 export class UpdateUserProfileController {
   constructor(
@@ -11,7 +11,7 @@ export class UpdateUserProfileController {
 
   async execute(
     req: AuthenticatedRequest,
-    res: express.Response<PostRes['users/profile'] | { message: string }>,
+    res: express.Response<PatchRes['users/profile'] | { message: string }>,
   ) {
     try {
       const userId = Number(req.user?.userId);
@@ -19,7 +19,7 @@ export class UpdateUserProfileController {
         return res.status(400).json({ message: 'User ID must be a number' });
       }
 
-      const body: PostReq['users/profile'] = req.body;
+      const body: PatchReq['users/profile'] = req.body;
 
       const { lastName, firstName, email } = body;
 
