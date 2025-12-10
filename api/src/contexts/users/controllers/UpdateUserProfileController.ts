@@ -10,8 +10,8 @@ export class UpdateUserProfileController {
   ) {}
 
   async execute(
-    req: AuthenticatedRequest,
-    res: express.Response<PatchRes['users/profile'] | { message: string }>,
+    req: AuthenticatedRequest<PatchReq['/users/profile']>,
+    res: express.Response<PatchRes['/users/profile'] | { message: string }>,
   ) {
     try {
       const userId = Number(req.user?.userId);
@@ -19,20 +19,18 @@ export class UpdateUserProfileController {
         return res.status(400).json({ message: 'User ID must be a number' });
       }
 
-      const body: PatchReq['users/profile'] = req.body;
-
-      const { lastName, firstName, email } = body;
+      const body: PatchReq['/users/profile'] = req.body;
 
       const input: UpdateUserProfileInput = {
         id: userId,
-        lastName,
-        firstName,
-        email,
+        lastName: body.lastName,
+        firstName: body.firstName,
+        email: body.email,
       };
 
-      const updatedUser = await this.updateUserProfileInteractor.execute(input);
+      const user = await this.updateUserProfileInteractor.execute(input);
 
-      return res.status(200).json({ updatedUser });
+      return res.status(200).json({ user });
     } catch (error: any) {
       console.error('Error updating user profile:', error);
       return res.status(500).json({ message: 'Internal server error' });
