@@ -19,13 +19,13 @@ export class UpdateUserProfileController {
         return res.status(400).json({ message: 'User ID must be a number' });
       }
 
-      const body: PatchReq['/users/profile'] = req.body;
+      const { lastName, firstName, email } = req.body;
 
       const input: UpdateUserProfileInput = {
         id: userId,
-        lastName: body.lastName,
-        firstName: body.firstName,
-        email: body.email,
+        lastName: lastName,
+        firstName: firstName,
+        email: email,
       };
 
       const user = await this.updateUserProfileInteractor.execute(input);
