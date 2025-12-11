@@ -1,4 +1,4 @@
-import { Item } from '../schemas/item';
+import { Item, AdminItemDetail } from '../schemas/item';
 import { User } from '../schemas/user';
 
 export type GetRes = {
@@ -10,6 +10,9 @@ export type GetRes = {
   };
   '/items/search': {
     items: Item[];
+  };
+  '/admin/items/:id': {
+    item: AdminItemDetail;
   };
   '/auth/me': {
     user: User;

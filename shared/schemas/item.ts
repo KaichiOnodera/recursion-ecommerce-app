@@ -40,3 +40,23 @@ export type ItemDetail = {
   price: number;
   inventoryStatus: InventoryStatus;
 };
+
+export const DisplayStatus = {
+  PUBLIC: 'public',
+  PRIVATE: 'private',
+} as const;
+
+export type DisplayStatus = (typeof DisplayStatus)[keyof typeof DisplayStatus];
+
+export type AdminItemDetail = {
+  id: number;
+  name: string;
+  description: string;
+  type: number;
+  price: number;
+  inventoryStatus: InventoryStatus;
+  inventoryAmount: number;
+  displayStatus: DisplayStatus;
+  createdAt: Date;
+  updatedAt: Date;
+};

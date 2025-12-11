@@ -6,6 +6,8 @@ import { DeleteItemController } from './controllers/DeleteItemController';
 import { DeleteItemInteractor } from './interactors/DeleteItemInteractor';
 import { GetItemsController } from './controllers/GetItemsController';
 import { GetItemsInteractor } from '../interactors/GetItemsInteractor';
+import { GetItemController } from './controllers/GetItemController';
+import { GetItemInteractor } from './interactors/GetItemInteractor';
 import { ItemRepository } from '../infrastructures/repositories/ItemRepository';
 import { prisma } from '../../../libs/prisma';
 import express from 'express';
@@ -31,7 +33,12 @@ const deleteItemController = new DeleteItemController(deleteItemInteractor);
 const getItemsInteractor = new GetItemsInteractor(itemRepository);
 const getItemsController = new GetItemsController(getItemsInteractor);
 
+const getItemInteractor = new GetItemInteractor(itemRepository);
+const getItemController = new GetItemController(getItemInteractor);
+
 adminItemsRouter.get('/', getItemsController.execute.bind(getItemsController));
+
+adminItemsRouter.get('/:id', getItemController.execute.bind(getItemController));
 
 adminItemsRouter.post(
   '/',
