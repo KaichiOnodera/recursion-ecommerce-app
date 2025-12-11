@@ -19,6 +19,11 @@ export class UpdateUserProfileInteractor {
       throw new Error('User not found');
     }
 
+    const existedUser = await this.userRepository.findByEmail(String(email));
+    if (existedUser) {
+      throw new Error('Mail is registered already');
+    }
+
     const updatedUser = await this.userRepository.update(id, {
       lastName: lastName ?? existingUser.lastName,
       firstName: firstName ?? existingUser.firstName,

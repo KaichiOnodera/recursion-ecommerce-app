@@ -32,6 +32,16 @@ export class UpdateUserProfileController {
 
       return res.status(200).json({ user });
     } catch (error: any) {
+      // Error Handling
+      if (error instanceof Error) {
+        if (error.message === 'Mail is registered already') {
+          return res.status(400).json({ message: error.message });
+        }
+        if (error.message === 'User not found') {
+          return res.status(400).json({ message: error.message });
+        }
+      }
+
       console.error('Error updating user profile:', error);
       return res.status(500).json({ message: 'Internal server error' });
     }

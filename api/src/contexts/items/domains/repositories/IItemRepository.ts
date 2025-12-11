@@ -11,6 +11,8 @@ export interface IItemRepository {
     name?: string,
     description?: string,
     type?: number,
+    price?: number,
+    inventoryAmount?: number,
   ): Promise<Item | null>;
   delete(id: number): Promise<boolean>;
 }
