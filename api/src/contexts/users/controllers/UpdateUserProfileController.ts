@@ -2,13 +2,17 @@ import express from 'express';
 import { AuthenticatedRequest } from 'src/middlewares';
 import { IUpdateUserProfileInteractor } from '../usecases/IUpdateUserProfileInteractor';
 import { UpdateUserProfileInput } from '../interactors/UpdateUserProfileInteractor';
+import { PatchReq, PatchRes } from '@shared/types/patches';
 
 export class UpdateUserProfileController {
   constructor(
     private readonly updateUserProfileInteractor: IUpdateUserProfileInteractor,
   ) {}
 
-  async execute(req: AuthenticatedRequest, res: express.Response) {
+  async execute(
+    req: AuthenticatedRequest<PatchReq['/users/profile']>,
+    res: express.Response<PatchRes['/users/profile'] | { message: string }>,
+  ) {
     try {
       const userId = Number(req.user?.userId);
       if (isNaN(userId)) {
@@ -19,15 +23,15 @@ export class UpdateUserProfileController {
 
       const input: UpdateUserProfileInput = {
         id: userId,
-        lastName,
-        firstName,
-        email,
+        lastName: lastName,
+        firstName: firstName,
+        email: email,
       };
 
-      const updatedUser = await this.updateUserProfileInteractor.execute(input);
+      const user = await this.updateUserProfileInteractor.execute(input);
 
-      return res.status(200).json({ updatedUser });
-    } catch (error: unknown) {
+      return res.status(200).json({ user });
+    } catch (error: any) {
       // Error Handling
       if (error instanceof Error) {
         if (error.message === 'Mail is registered already') {
