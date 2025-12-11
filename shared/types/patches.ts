@@ -5,7 +5,8 @@ export type PatchReq = {
     name?: string;
     description?: string;
     type?: number;
-    price: number;
+    price?: number;
+    inventoryAmount?: number;
   };
 };
 

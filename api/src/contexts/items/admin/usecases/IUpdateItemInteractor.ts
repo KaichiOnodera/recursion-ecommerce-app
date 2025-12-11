@@ -6,5 +6,7 @@ export interface IUpdateItemInteractor {
     name?: string,
     description?: string,
     type?: number,
+    price?: number,
+    inventoryAmount?: number,
   ): Promise<Item | null>;
 }
