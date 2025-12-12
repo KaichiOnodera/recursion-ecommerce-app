@@ -6,6 +6,7 @@ import { seedTestData } from '../../../prisma/seed';
  * 外部キー制約の順序を考慮して削除する
  */
 export async function cleanDatabase(): Promise<void> {
+  await prismaTest.orderPaymentExternalIds.deleteMany();
   await prismaTest.orderItems.deleteMany();
   await prismaTest.cartItems.deleteMany();
   await prismaTest.inventory.deleteMany();
