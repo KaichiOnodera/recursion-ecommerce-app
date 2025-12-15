@@ -1,4 +1,7 @@
-import { CheckoutSession } from '../entities/CheckoutSession';
+import {
+  CheckoutSession,
+  CheckoutSessionMode,
+} from '../entities/CheckoutSession';
 
 export interface IStripeAdapter {
   // Checkout Sessionを作成
@@ -14,7 +17,7 @@ export interface IStripeAdapter {
       };
       quantity: number;
     }>;
-    mode: 'payment' | 'subscription';
+    mode: CheckoutSessionMode;
     successUrl: string;
     cancelUrl: string;
     customerEmail?: string;
