@@ -1,6 +1,9 @@
 import Stripe from 'stripe';
 import { IStripeAdapter } from '../../domains/adapters/IStripeAdapter';
-import { CheckoutSession } from '../../domains/entities/CheckoutSession';
+import {
+  CheckoutSession,
+  CheckoutSessionMode,
+} from '../../domains/entities/CheckoutSession';
 
 export class StripeAdapter implements IStripeAdapter {
   private stripe: Stripe;
@@ -27,7 +30,7 @@ export class StripeAdapter implements IStripeAdapter {
       };
       quantity: number;
     }>;
-    mode: 'payment' | 'subscription';
+    mode: CheckoutSessionMode;
     successUrl: string;
     cancelUrl: string;
     customerEmail?: string;

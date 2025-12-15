@@ -3,6 +3,7 @@ import { ICartRepository } from '../../cart/domains/repositories/ICartRepository
 import { IItemRepository } from '../../items/domains/repositories/IItemRepository';
 import { IUserRepository } from '../../users/domains/repositories/IUserRepository';
 import { IStripeAdapter } from '../domains/adapters/IStripeAdapter';
+import { CheckoutSessionMode } from '../domains/entities/CheckoutSession';
 
 export class CreateCheckoutSessionInteractor
   implements ICreateCheckoutSessionInteractor
@@ -60,7 +61,7 @@ export class CreateCheckoutSessionInteractor
     // Stripe Checkout Session作成
     const session = await this.stripeAdapter.createCheckoutSession({
       lineItems,
-      mode: 'payment',
+      mode: CheckoutSessionMode.Payment,
       successUrl: params.successUrl,
       cancelUrl: params.cancelUrl,
       customerEmail: user.email,
