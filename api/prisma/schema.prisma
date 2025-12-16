@@ -84,9 +84,9 @@ model Orders {
   email       String
   address     String
   totalPrice  Int
-  orderStatus OrderStatus @default(PENDING)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  orderStatus String   @default("pending") @db.VarChar(32)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   user               Users?                    @relation(fields: [userId], references: [id], onDelete: SetNull)
   cart               Cart?                     @relation(fields: [cartId], references: [id], onDelete: SetNull)
@@ -94,6 +94,26 @@ model Orders {
   paymentExternalIds OrderPaymentExternalIds[]
 
   @@index([userId])
+}
+
+model OrderPaymentExternalIds {
+  id               Int      @id @default(autoincrement())
+  orderId          Int
+  /**
+   * STRIPE
+   */
+  provider         String   @db.VarChar(191)
+  paymentSessionId String?  @db.VarChar(255)
+  paymentId        String?  @db.VarChar(255)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  order Orders @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, paymentSessionId])
+  @@unique([provider, paymentId])
+  @@index([orderId])
+  @@index([provider])
 }
 
 model OrderPaymentExternalIds {
