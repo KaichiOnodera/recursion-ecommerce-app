@@ -78,6 +78,7 @@ model ItemImages {
 model Orders {
   id          Int      @id @default(autoincrement())
   userId      Int?
+  cartId      Int?
   lastName    String
   firstName   String
   email       String
@@ -88,10 +89,31 @@ model Orders {
   updatedAt   DateTime @updatedAt
 
   user               Users?                    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  cart               Cart?                     @relation(fields: [cartId], references: [id], onDelete: SetNull)
   orderItems         OrderItems[]
   paymentExternalIds OrderPaymentExternalIds[]
 
   @@index([userId])
+}
+
+model OrderPaymentExternalIds {
+  id               Int      @id @default(autoincrement())
+  orderId          Int
+  /**
+   * STRIPE
+   */
+  provider         String   @db.VarChar(191)
+  paymentSessionId String?  @db.VarChar(255)
+  paymentId        String?  @db.VarChar(255)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  order Orders @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, paymentSessionId])
+  @@unique([provider, paymentId])
+  @@index([orderId])
+  @@index([provider])
 }
 
 model OrderPaymentExternalIds {
