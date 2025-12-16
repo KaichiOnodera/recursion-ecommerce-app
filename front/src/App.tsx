@@ -17,6 +17,7 @@ import { AdminProductList } from './pages/admin/AdminProductList';
 import { AdminProductCreate } from './pages/admin/AdminProductCreate';
 import { AdminProductEdit } from './pages/admin/AdminProductEdit';
 import { AdminProductDelete } from './pages/admin/AdminProductDelete';
+import { OrderComplete } from './pages/OrderComplete';
 
 function App(): React.JSX.Element {
   return (
@@ -45,6 +46,9 @@ function App(): React.JSX.Element {
                 path="/admin/products/:id/delete"
                 element={<AdminProductDelete />}
               />
+            </Routes>
+            <Routes>
+              <Route path="/order/complete" element={<OrderComplete />} />
             </Routes>
           </div>
         </div>
