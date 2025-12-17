@@ -9,11 +9,12 @@ datasource db {
 
 model Cart {
   id        Int      @id @default(autoincrement())
-  userId    Int      @unique
+  sessionId String   @unique @db.VarChar(255)
+  userId    Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user      Users       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      Users?      @relation(fields: [userId], references: [id], onDelete: SetNull)
   cartItems CartItems[]
   orders    Orders[]
 }
@@ -145,7 +146,7 @@ model Users {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
-  Cart   Cart?
+  Cart   Cart[]
   orders Orders[]
 }
 
