@@ -19,10 +19,9 @@ export class CreateCheckoutSessionController {
 
     const successUrl =
       process.env.CHECKOUT_SUCCESS_URL ??
-      'http://localhost:3000/checkout/success';
+      'http://localhost:3000/order/complete';
     const cancelUrl =
-      process.env.CHECKOUT_CANCEL_URL ??
-      'http://localhost:3000/checkout/cancel';
+      process.env.CHECKOUT_CANCEL_URL ?? 'http://localhost:3000/products';
 
     try {
       const result = await this.createCheckoutSessionInteractor.execute({
