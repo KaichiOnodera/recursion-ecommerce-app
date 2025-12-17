@@ -8,10 +8,7 @@ export class CreateCheckoutSessionController {
   ) {}
 
   async execute(
-    req: AuthenticatedRequest<
-      { successUrl: string; cancelUrl: string },
-      Record<string, never>
-    >,
+    req: AuthenticatedRequest<Record<string, never>, Record<string, never>>,
     res: express.Response<
       { sessionId: string; url: string } | { message: string }
     >,
@@ -20,19 +17,12 @@ export class CreateCheckoutSessionController {
       return res.status(401).json({ message: 'User not authenticated' });
     }
 
-    const { successUrl, cancelUrl } = req.body;
-
-    if (!successUrl || typeof successUrl !== 'string') {
-      return res
-        .status(400)
-        .json({ message: 'successUrl is required and must be a string' });
-    }
-
-    if (!cancelUrl || typeof cancelUrl !== 'string') {
-      return res
-        .status(400)
-        .json({ message: 'cancelUrl is required and must be a string' });
-    }
+    const successUrl =
+      process.env.CHECKOUT_SUCCESS_URL ??
+      'http://localhost:3000/checkout/success';
+    const cancelUrl =
+      process.env.CHECKOUT_CANCEL_URL ??
+      'http://localhost:3000/checkout/cancel';
 
     try {
       const result = await this.createCheckoutSessionInteractor.execute({
