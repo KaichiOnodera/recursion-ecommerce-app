@@ -84,9 +84,9 @@ const Header: React.FC<HeaderProps> = ({
               <UserIcon className="w-5 h-5" />
             </button>
             {/* カートアイコン */}
-            <button className="p-2 text-gray-700">
+            <Link to="/cart" className="p-2 text-gray-700 hover:text-gray-900">
               <ShoppingCartIcon className="w-5 h-5" />
-            </button>
+            </Link>
           </div>
         </div>
       </div>

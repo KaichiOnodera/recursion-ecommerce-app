@@ -1,5 +1,6 @@
 import { User } from '../schemas/user';
 import { Item } from '../schemas/item';
+import { CartItem } from '../schemas/cart';
 
 export type PostReq = {
   'auth/login': {
@@ -37,14 +38,6 @@ export type PostRes = {
     createdUser: User;
   };
   '/cart': {
-    items: Array<{
-      id: number;
-      name: string;
-      description: string;
-      type: number;
-      price: number;
-      displayStatus: string;
-      amount: number;
-    }>;
+    items: CartItem[];
   };
 };

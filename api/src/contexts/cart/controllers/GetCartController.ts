@@ -20,11 +20,21 @@ export class GetCartController {
       );
 
       if (!cart) {
-        res.status(402).json({ message: 'Cart not found' });
-        return null;
+        res.status(200).json({ items: [] });
+        return;
       }
 
-      return res.status(200).json(cart);
+      // displayStatusを除外してCartItem形式に変換
+      const items = cart.items.map((item) => ({
+        id: item.id,
+        name: item.name,
+        description: item.description,
+        type: item.type,
+        price: item.price,
+        amount: item.amount,
+      }));
+
+      return res.status(200).json({ items });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ message: 'Failed to retrieve cart' });
