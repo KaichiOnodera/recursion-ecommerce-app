@@ -1,5 +1,7 @@
 import { CartController } from './controllers/CartController';
 import { CartInteractor } from './interactors/CartInteractor';
+import { GetCartController } from './controllers/GetCartController';
+import { GetCartInteractor } from './interactors/GetCartInteractor';
 import { CartRepository } from './infrastructures/repositories/CartRepository';
 import { CartItemRepository } from './infrastructures/repositories/CartItemRepository';
 import { ItemRepository } from '../items/infrastructures/repositories/ItemRepository';
@@ -18,6 +20,15 @@ const cartInteractor = new CartInteractor(
   itemRepository,
 );
 const cartController = new CartController(cartInteractor);
+
+const getCartInteractor = new GetCartInteractor(cartRepository);
+const getCartController = new GetCartController(getCartInteractor);
+
+cartRouter.get(
+  '/',
+  verifyAccessToken,
+  getCartController.execute.bind(getCartController),
+);
 
 cartRouter.post(
   '/',

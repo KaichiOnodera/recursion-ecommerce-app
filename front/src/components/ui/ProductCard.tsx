@@ -1,6 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router';
 import { Item } from '@shared/schemas/item';
+import { addToCart } from '../../services/api/cart';
+import { useUser } from '../../contexts/UserContext';
 
 interface ProductCardProps {
   item: Item;
@@ -9,6 +11,20 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ item, isAdmin = false }) => {
   const navigate = useNavigate();
+  const { isLoggedIn } = useUser();
+
+  const handleAddToCart = async (): Promise<void> => {
+    if (!isLoggedIn()) {
+      navigate('/auth/user/login');
+      return;
+    }
+
+    try {
+      await addToCart(item.id, 1);
+    } catch (err) {
+      console.error('Failed to add to cart:', err);
+    }
+  };
 
   return (
     <div className="bg-white border duration-200 rounded-lg">
@@ -24,7 +40,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ item, isAdmin = false }) => {
         <p> {item.price} </p>
 
         {/* 管理者用の編集ボタン */}
-        {isAdmin && (
+        {isAdmin ? (
           <div className="mt-4">
             <button
               onClick={() => navigate(`/admin/products/${item.id}/edit`)}
@@ -33,6 +49,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ item, isAdmin = false }) => {
               編集
             </button>
           </div>
+        ) : (
+          <button
+            onClick={handleAddToCart}
+            className="w-full bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600 text-sm"
+          >
+            カートに追加
+          </button>
         )}
       </div>
     </div>
