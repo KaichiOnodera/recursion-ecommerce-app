@@ -19,10 +19,16 @@ export class UpdateItemController {
       return res.status(400).json({ message: 'Invalid item ID' });
     }
 
-    const { name, description, type } = req.body;
+    const { name, description, type, price, inventoryAmount } = req.body;
 
     // 少なくとも1つのフィールドが更新されるか確認する
-    if (name === undefined && description === undefined && type === undefined) {
+    if (
+      name === undefined &&
+      description === undefined &&
+      type === undefined &&
+      price === undefined &&
+      inventoryAmount === undefined
+    ) {
       return res
         .status(400)
         .json({ message: 'At least one field must be provided for update' });
@@ -33,6 +39,8 @@ export class UpdateItemController {
       name,
       description,
       type,
+      price,
+      inventoryAmount,
     );
 
     if (!item) {

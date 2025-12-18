@@ -12,6 +12,9 @@ export type GetRes = {
   '/items/search': {
     items: Item[];
   };
+  '/admin/items/:id': {
+    item: AdminItemDetail;
+  };
   '/auth/me': {
     user: User;
   };

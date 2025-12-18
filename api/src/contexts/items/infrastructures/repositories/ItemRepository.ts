@@ -118,6 +118,8 @@ export class ItemRepository implements IItemRepository {
     name?: string,
     description?: string,
     type?: number,
+    price?: number,
+    inventoryAmount?: number,
   ): Promise<Item | null> {
     const existingItem = await this.findById(id);
 
@@ -129,16 +131,39 @@ export class ItemRepository implements IItemRepository {
       name?: string;
       description?: string;
       type?: number;
+      price?: number;
     } = {};
 
     if (name !== undefined) updateData.name = name;
     if (description !== undefined) updateData.description = description;
     if (type !== undefined) updateData.type = type;
+    if (price !== undefined) updateData.price = price;
 
     const item = await this.prisma.items.update({
       where: { id },
       data: updateData,
     });
+
+    // 在庫数の更新処理
+    if (inventoryAmount !== undefined) {
+      const existingInventory = await this.prisma.inventory.findFirst({
+        where: { itemId: item.id },
+      });
+
+      if (existingInventory) {
+        await this.prisma.inventory.update({
+          where: { id: existingInventory.id },
+          data: { amount: inventoryAmount },
+        });
+      } else {
+        await this.prisma.inventory.create({
+          data: {
+            itemId: item.id,
+            amount: inventoryAmount,
+          },
+        });
+      }
+    }
 
     const inventory = await this.prisma.inventory.findFirst({
       where: { itemId: item.id },
