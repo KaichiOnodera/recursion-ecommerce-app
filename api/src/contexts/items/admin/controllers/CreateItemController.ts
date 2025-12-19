@@ -8,10 +8,10 @@ export class CreateItemController {
   async execute(
     req: express.Request<
       null,
-      PostRes['admin/items'] | { message: string },
-      PostReq['admin/items']
+      PostRes['/admin/items'] | { message: string },
+      PostReq['/admin/items']
     >,
-    res: express.Response<PostRes['admin/items'] | { message: string }>,
+    res: express.Response<PostRes['/admin/items'] | { message: string }>,
   ) {
     const { name, description, type } = req.body;
 

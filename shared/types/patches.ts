@@ -2,7 +2,7 @@ import { User } from 'schemas/user';
 import { Item } from '../schemas/item';
 
 export type PatchReq = {
-  'admin/items/:id': {
+  '/admin/items/:id': {
     name?: string;
     description?: string;
     type?: number;
@@ -17,7 +17,7 @@ export type PatchReq = {
 };
 
 export type PatchRes = {
-  'admin/items/:id': {
+  '/admin/items/:id': {
     item: Item;
   };
   '/users/profile': {

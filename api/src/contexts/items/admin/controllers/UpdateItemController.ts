@@ -8,10 +8,10 @@ export class UpdateItemController {
   async execute(
     req: express.Request<
       { id: string },
-      PatchRes['admin/items/:id'] | { message: string },
-      PatchReq['admin/items/:id']
+      PatchRes['/admin/items/:id'] | { message: string },
+      PatchReq['/admin/items/:id']
     >,
-    res: express.Response<PatchRes['admin/items/:id'] | { message: string }>,
+    res: express.Response<PatchRes['/admin/items/:id'] | { message: string }>,
   ) {
     const itemId = parseInt(req.params.id);
 
