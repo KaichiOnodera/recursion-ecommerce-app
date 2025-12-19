@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { getCart, updateCartItem } from '../../services/api/cart';
+import { createCheckoutSession } from '../../services/api/checkout';
 import { CartItem } from '@shared/schemas/cart';
 import { PlusIcon, MinusIcon } from '@heroicons/react/24/outline';
 import { useUser } from '../../contexts/UserContext';
@@ -12,6 +13,7 @@ export const Cart: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isUpdating, setIsUpdating] = useState<number | null>(null);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
 
   useEffect(() => {
     const fetchCart = async () => {
@@ -164,13 +166,21 @@ export const Cart: React.FC = () => {
               </div>
               <div>
                 <button
-                  className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 font-semibold transition-colors"
-                  onClick={() => {
-                    // TODO: チェックアウト処理を実装
-                    window.alert('チェックアウト機能は今後実装予定です');
+                  className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={isCheckingOut}
+                  onClick={async () => {
+                    try {
+                      setIsCheckingOut(true);
+                      const { url } = await createCheckoutSession();
+                      window.location.href = url;
+                    } catch (err) {
+                      console.error('Checkout error:', err);
+                      setError('決済処理の開始に失敗しました');
+                      setIsCheckingOut(false);
+                    }
                   }}
                 >
-                  レジに進む
+                  {isCheckingOut ? '処理中...' : 'レジに進む'}
                 </button>
               </div>
             </div>
