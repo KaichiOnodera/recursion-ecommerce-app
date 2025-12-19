@@ -1,9 +1,5 @@
 export interface ICreateCheckoutSessionInteractor {
-  execute(params: {
-    userId: number;
-    successUrl: string;
-    cancelUrl: string;
-  }): Promise<{
+  execute(params: { userId: number }): Promise<{
     sessionId: string;
     url: string;
   }>;
