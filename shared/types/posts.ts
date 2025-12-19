@@ -3,17 +3,17 @@ import { Item } from '../schemas/item';
 import { CartItem } from '../schemas/cart';
 
 export type PostReq = {
-  'auth/login': {
+  '/auth/login': {
     email: string;
     password: string;
   };
-  'admin/items': {
+  '/admin/items': {
     name: string;
     description: string;
     type: number;
     price: number;
   };
-  'users/signup': {
+  '/users/signup': {
     lastName: string;
     firstName: string;
     email: string;
@@ -28,13 +28,13 @@ export type PostReq = {
 };
 
 export type PostRes = {
-  'auth/login': {
+  '/auth/login': {
     user: User;
   };
-  'admin/items': {
+  '/admin/items': {
     item: Item;
   };
-  'users/signup': {
+  '/users/signup': {
     createdUser: User;
   };
   '/cart': {
