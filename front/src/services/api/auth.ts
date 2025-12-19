@@ -3,9 +3,9 @@ import { PostReq, PostRes } from '@shared/types/posts';
 import { GetRes } from '@shared/types/gets';
 
 export async function login(
-  data: PostReq['auth/login'],
-): Promise<PostRes['auth/login']> {
-  const response = await apiClient.post<PostRes['auth/login']>(
+  data: PostReq['/auth/login'],
+): Promise<PostRes['/auth/login']> {
+  const response = await apiClient.post<PostRes['/auth/login']>(
     '/auth/login',
     data,
   );

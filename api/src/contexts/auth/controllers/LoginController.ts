@@ -6,8 +6,8 @@ export class LoginController {
   constructor(private readonly loginInteractor: ILoginInteractor) {}
 
   async execute(
-    req: express.Request<null, PostRes['auth/login'], PostReq['auth/login']>,
-    res: express.Response<PostRes['auth/login'] | { message: string }>,
+    req: express.Request<null, PostRes['/auth/login'], PostReq['/auth/login']>,
+    res: express.Response<PostRes['/auth/login'] | { message: string }>,
   ) {
     const { email, password } = req.body;
 

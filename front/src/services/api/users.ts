@@ -3,9 +3,9 @@ import { PostReq, PostRes } from '@shared/types/posts';
 import { PatchReq, PatchRes } from '@shared/types/patches';
 
 export async function signup(
-  data: PostReq['users/signup'],
-): Promise<PostRes['users/signup']> {
-  const response = await apiClient.post<PostRes['users/signup']>(
+  data: PostReq['/users/signup'],
+): Promise<PostRes['/users/signup']> {
+  const response = await apiClient.post<PostRes['/users/signup']>(
     '/users/signup',
     data,
   );
@@ -14,9 +14,9 @@ export async function signup(
 }
 
 export async function updateProfile(
-  data: PatchReq['users/profile'],
-): Promise<PatchRes['users/profile']> {
-  const response = await apiClient.put<PatchRes['users/profile']>(
+  data: PatchReq['/users/profile'],
+): Promise<PatchRes['/users/profile']> {
+  const response = await apiClient.put<PatchRes['/users/profile']>(
     '/users/profile',
     data,
   );

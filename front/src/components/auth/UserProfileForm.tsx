@@ -4,7 +4,7 @@ import { useUser } from '../../contexts/UserContext';
 import type { PatchReq, PatchRes } from '@shared/types/patches';
 
 export interface UserProfileFormProps {
-  profileInput: PatchReq['users/profile'];
+  profileInput: PatchReq['/users/profile'];
   onSuccess?: () => void;
   className?: string;
 }
@@ -15,7 +15,7 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
   className = '',
 }) => {
   const [profileform, setProfileForm] =
-    useState<PatchReq['users/profile']>(profileInput);
+    useState<PatchReq['/users/profile']>(profileInput);
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const { user, setUser } = useUser();
@@ -38,14 +38,14 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
     setMessage(null);
 
     try {
-      const result: PatchRes['users/profile'] =
+      const result: PatchRes['/users/profile'] =
         await updateProfile(profileform);
 
       setUser({
         ...user,
-        lastName: result.updatedUser.lastName,
-        firstName: result.updatedUser.firstName,
-        email: result.updatedUser.email,
+        lastName: result.user.lastName,
+        firstName: result.user.firstName,
+        email: result.user.email,
       });
 
       setMessage('プロフィールを更新しました');

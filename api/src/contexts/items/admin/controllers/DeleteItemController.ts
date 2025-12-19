@@ -8,10 +8,10 @@ export class DeleteItemController {
   async execute(
     req: express.Request<
       { id: string },
-      DeleteRes['admin/items/:id'] | { message: string },
-      DeleteReq['admin/items/:id']
+      DeleteRes['/admin/items/:id'] | { message: string },
+      DeleteReq['/admin/items/:id']
     >,
-    res: express.Response<DeleteRes['admin/items/:id'] | { message: string }>,
+    res: express.Response<DeleteRes['/admin/items/:id'] | { message: string }>,
   ) {
     const itemId = parseInt(req.params.id);
 

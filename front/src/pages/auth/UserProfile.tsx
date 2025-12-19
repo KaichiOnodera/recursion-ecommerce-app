@@ -6,7 +6,7 @@ import type { PatchReq } from '@shared/types/patches';
 export const User: React.FC = () => {
   const { user } = useUser();
 
-  const initialProfile: PatchReq['users/profile'] = useMemo(
+  const initialProfile: PatchReq['/users/profile'] = useMemo(
     () => ({
       lastName: user?.lastName ?? '',
       firstName: user?.firstName ?? '',

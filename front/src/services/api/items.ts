@@ -22,9 +22,9 @@ export async function getAdminItems(): Promise<ItemsResponse> {
 }
 
 export async function createItem(
-  data: PostReq['admin/items'],
-): Promise<PostRes['admin/items']> {
-  const response = await apiClient.post<PostRes['admin/items']>(
+  data: PostReq['/admin/items'],
+): Promise<PostRes['/admin/items']> {
+  const response = await apiClient.post<PostRes['/admin/items']>(
     '/admin/items',
     data,
   );
@@ -34,9 +34,9 @@ export async function createItem(
 
 export async function updateItem(
   id: number,
-  data: PatchReq['admin/items/:id'],
-): Promise<PatchRes['admin/items/:id']> {
-  const response = await apiClient.patch<PatchRes['admin/items/:id']>(
+  data: PatchReq['/admin/items/:id'],
+): Promise<PatchRes['/admin/items/:id']> {
+  const response = await apiClient.patch<PatchRes['/admin/items/:id']>(
     `/admin/items/${id}`,
     data,
   );
@@ -45,8 +45,8 @@ export async function updateItem(
 
 export async function deleteItem(
   id: number,
-): Promise<DeleteRes['admin/items/:id']> {
-  const response = await apiClient.delete<DeleteRes['admin/items/:id']>(
+): Promise<DeleteRes['/admin/items/:id']> {
+  const response = await apiClient.delete<DeleteRes['/admin/items/:id']>(
     `/admin/items/${id}`,
   );
 
@@ -55,15 +55,15 @@ export async function deleteItem(
 
 export async function getAdminItem(
   id: number,
-): Promise<GetRes['admin/items/:id']> {
-  const response = await apiClient.get<GetRes['admin/items/:id']>(
+): Promise<GetRes['/admin/items/:id']> {
+  const response = await apiClient.get<GetRes['/admin/items/:id']>(
     `/admin/items/${id}`,
   );
   return response.data;
 }
 
-export async function getItem(id: number): Promise<GetRes['items/:id']> {
-  const response = await apiClient.get<GetRes['items/:id']>(`/item/${id}`);
+export async function getItem(id: number): Promise<GetRes['/items/:id']> {
+  const response = await apiClient.get<GetRes['/items/:id']>(`/item/${id}`);
   return response.data;
 }
 
