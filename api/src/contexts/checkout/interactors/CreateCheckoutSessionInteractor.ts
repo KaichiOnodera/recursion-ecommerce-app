@@ -17,8 +17,6 @@ export class CreateCheckoutSessionInteractor
 
   async execute(params: {
     userId: number;
-    successUrl: string;
-    cancelUrl: string;
   }): Promise<{ sessionId: string; url: string }> {
     const cart = await this.cartRepository.find(params.userId);
     if (!cart?.items || cart.items.length === 0) {
@@ -29,6 +27,12 @@ export class CreateCheckoutSessionInteractor
     if (!user) {
       throw new Error('User not found');
     }
+
+    const successUrl =
+      process.env.CHECKOUT_SUCCESS_URL ??
+      'http://localhost:3000/order/complete';
+    const cancelUrl =
+      process.env.CHECKOUT_CANCEL_URL ?? 'http://localhost:3000/products';
 
     const lineItems = [];
     for (const cartItem of cart.items) {
@@ -62,8 +66,8 @@ export class CreateCheckoutSessionInteractor
     const session = await this.stripeAdapter.createCheckoutSession({
       lineItems,
       mode: CheckoutSessionMode.Payment,
-      successUrl: params.successUrl,
-      cancelUrl: params.cancelUrl,
+      successUrl,
+      cancelUrl,
       customerEmail: user.email,
       metadata: {
         userId: params.userId.toString(),
