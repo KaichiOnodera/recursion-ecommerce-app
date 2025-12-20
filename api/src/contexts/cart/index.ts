@@ -2,12 +2,13 @@ import { PostCartController } from './controllers/PostCartController';
 import { CartInteractor } from './interactors/CartInteractor';
 import { GetCartController } from './controllers/GetCartController';
 import { GetCartInteractor } from './interactors/GetCartInteractor';
+import { MergeCartInteractor } from './interactors/MergeCartInteractor';
 import { CartRepository } from './infrastructures/repositories/CartRepository';
 import { CartItemRepository } from './infrastructures/repositories/CartItemRepository';
 import { ItemRepository } from '../items/infrastructures/repositories/ItemRepository';
 import { prisma } from '../../libs/prisma';
 import express from 'express';
-import { verifyAccessToken } from '../../middlewares';
+import { optionalVerifyAccessToken } from '../../middlewares';
 
 const cartRouter = express.Router();
 
@@ -19,20 +20,29 @@ const cartInteractor = new CartInteractor(
   cartItemRepository,
   itemRepository,
 );
-const cartController = new PostCartController(cartInteractor);
-
 const getCartInteractor = new GetCartInteractor(cartRepository);
+const mergeCartInteractor = new MergeCartInteractor(
+  cartRepository,
+  cartItemRepository,
+);
+const cartController = new PostCartController(
+  cartInteractor,
+  getCartInteractor,
+  mergeCartInteractor,
+  cartRepository,
+);
+
 const getCartController = new GetCartController(getCartInteractor);
 
 cartRouter.get(
   '/',
-  verifyAccessToken,
+  optionalVerifyAccessToken,
   getCartController.execute.bind(getCartController),
 );
 
 cartRouter.post(
   '/',
-  verifyAccessToken,
+  optionalVerifyAccessToken,
   cartController.execute.bind(cartController),
 );
 
