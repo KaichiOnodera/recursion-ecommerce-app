@@ -1,10 +1,10 @@
-import { ICartInteractor } from '../usecases/ICartInteractor';
+import { IUpdateCartInteractor } from '../usecases/IUpdateCartInteractor';
 import { ICartRepository } from '../domains/repositories/ICartRepository';
 import { ICartItemRepository } from '../domains/repositories/ICartItemRepository';
 import { IItemRepository } from '../../items/domains/repositories/IItemRepository';
 import { Cart } from '../domains/entities/Cart';
 
-export class CartInteractor implements ICartInteractor {
+export class UpdateCartInteractor implements IUpdateCartInteractor {
   constructor(
     private readonly cartRepository: ICartRepository,
     private readonly cartItemRepository: ICartItemRepository,

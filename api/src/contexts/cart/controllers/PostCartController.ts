@@ -1,6 +1,6 @@
 import express from 'express';
 import { PostReq, PostRes } from '@shared/types/posts';
-import { ICartInteractor } from '../usecases/ICartInteractor';
+import { IUpdateCartInteractor } from '../usecases/IUpdateCartInteractor';
 import { IGetCartInteractor } from '../usecases/IGetCartInteractor';
 import { IMergeCartInteractor } from '../usecases/IMergeCartInteractor';
 import { ICartRepository } from '../domains/repositories/ICartRepository';
@@ -14,7 +14,7 @@ import { generateSessionId } from '../../../utils/sessionId';
 
 export class PostCartController {
   constructor(
-    private readonly cartInteractor: ICartInteractor,
+    private readonly updateCartInteractor: IUpdateCartInteractor,
     private readonly getCartInteractor: IGetCartInteractor,
     private readonly mergeCartInteractor: IMergeCartInteractor,
     private readonly cartRepository: ICartRepository,
@@ -67,14 +67,14 @@ export class PostCartController {
             clearCartSessionIdCookie(res);
 
             // マージ後にリクエストされたitemsも追加
-            cart = await this.cartInteractor.execute(
+            cart = await this.updateCartInteractor.execute(
               req.user.userId,
               undefined,
               items,
             );
           } else {
             // セッションカートが空の場合は通常のカート操作
-            cart = await this.cartInteractor.execute(
+            cart = await this.updateCartInteractor.execute(
               req.user.userId,
               undefined,
               items,
@@ -82,7 +82,7 @@ export class PostCartController {
           }
         } else {
           // CookieにsessionIdがない場合: 通常のカート操作
-          cart = await this.cartInteractor.execute(
+          cart = await this.updateCartInteractor.execute(
             req.user.userId,
             undefined,
             items,
@@ -98,7 +98,11 @@ export class PostCartController {
           setCartSessionIdCookie(res, sessionId);
         }
 
-        cart = await this.cartInteractor.execute(undefined, sessionId, items);
+        cart = await this.updateCartInteractor.execute(
+          undefined,
+          sessionId,
+          items,
+        );
       }
 
       res.status(200).json({ items: cart.items });
