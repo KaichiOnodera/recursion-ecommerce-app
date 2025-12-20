@@ -1,7 +1,7 @@
 import express from 'express';
 import { GetRes } from '@shared/types/gets';
 import { IGetMeInteractor } from '../usecases/IGetMeInteractor';
-import { AuthenticatedRequest } from '../../../middlewares/verifyAccesToken';
+import { AuthenticatedRequest } from '../../../middlewares/verifyAccessToken';
 
 export class MeController {
   constructor(private readonly getMeInteractor: IGetMeInteractor) {}

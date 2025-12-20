@@ -1,6 +1,6 @@
 import { LoginController } from './controllers/LoginController';
 import { LogoutController } from './controllers/LogoutController';
-import { MeController } from './controllers/meController';
+import { MeController } from './controllers/MeController';
 import { LoginInteractor } from './interactors/LoginInteractor';
 import { VerifyUserInteractor } from './interactors/VerifyUserInteractor';
 import { GetMeInteractor } from './interactors/GetMeInteractor';
