@@ -9,14 +9,13 @@ datasource db {
 
 model Cart {
   id        Int      @id @default(autoincrement())
-  sessionId String   @unique @db.VarChar(255)
-  userId    Int?
+  sessionId String?  @db.VarChar(64)
+  userId    Int?     @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   user      Users?      @relation(fields: [userId], references: [id], onDelete: SetNull)
   cartItems CartItems[]
-  orders    Orders[]
 }
 
 model CartItems {
@@ -79,7 +78,6 @@ model ItemImages {
 model Orders {
   id          Int      @id @default(autoincrement())
   userId      Int?
-  cartId      Int?
   lastName    String
   firstName   String
   email       String
@@ -90,12 +88,10 @@ model Orders {
   updatedAt   DateTime @updatedAt
 
   user               Users?                    @relation(fields: [userId], references: [id], onDelete: SetNull)
-  cart               Cart?                     @relation(fields: [cartId], references: [id], onDelete: SetNull)
   orderItems         OrderItems[]
   paymentExternalIds OrderPaymentExternalIds[]
 
   @@index([userId])
-  @@index([cartId])
 }
 
 model OrderPaymentExternalIds {
@@ -146,7 +142,7 @@ model Users {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
-  Cart   Cart[]
+  cart   Cart?
   orders Orders[]
 }
 
