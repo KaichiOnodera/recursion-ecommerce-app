@@ -2,6 +2,7 @@ import express from 'express';
 import { GetRes } from '@shared/types/gets';
 import { IGetCartInteractor } from '../usecases/IGetCartInteractor';
 import { AuthenticatedRequest } from '../../../middlewares/verifyAccessToken';
+import { getCartSessionIdFromCookie } from '../../../utils/cookie';
 
 export class GetCartController {
   constructor(private readonly getCartInteractor: IGetCartInteractor) {}
@@ -10,14 +11,21 @@ export class GetCartController {
     req: AuthenticatedRequest,
     res: express.Response<GetRes['/cart'] | { message: string }>,
   ) {
-    if (!req.user) {
-      return res.status(401).json({ message: 'User not authenticated' });
-    }
-
     try {
-      const cart = await this.getCartInteractor.execute(
-        Number(req.user.userId),
-      );
+      let cart;
+
+      if (req.user) {
+        cart = await this.getCartInteractor.execute(
+          Number(req.user.userId),
+          undefined,
+        );
+      } else {
+        const sessionId = getCartSessionIdFromCookie(req);
+
+        if (sessionId) {
+          cart = await this.getCartInteractor.execute(undefined, sessionId);
+        }
+      }
 
       if (!cart) {
         res.status(200).json({ items: [] });
