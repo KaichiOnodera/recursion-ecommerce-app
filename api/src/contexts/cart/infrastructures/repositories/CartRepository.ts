@@ -84,6 +84,21 @@ export class CartRepository implements ICartRepository {
     });
   }
 
+  async findById(cartId: number): Promise<Cart | null> {
+    const cart = await this.prisma.cart.findUnique({
+      where: { id: cartId },
+      include: {
+        cartItems: {
+          include: {
+            item: true,
+          },
+        },
+      },
+    });
+
+    return cart ? this.mapToCart(cart) : null;
+  }
+
   private mapToCart(cart: {
     id: number;
     cartItems: Array<{
