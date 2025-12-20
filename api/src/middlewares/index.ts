@@ -1,4 +1,4 @@
-import { createVerifyAccessToken } from './verifyAccesToken';
+import { createVerifyAccessToken } from './verifyAccessToken';
 import { VerifyUserInteractor } from '../contexts/auth/interactors/VerifyUserInteractor';
 import { UserRepository } from '../contexts/auth/infrastructures/repositories/UserRepository';
 import { prisma } from '../libs/prisma';
@@ -9,4 +9,4 @@ const verifyUserInteractor = new VerifyUserInteractor(userRepository);
 export const verifyAccessToken = createVerifyAccessToken(verifyUserInteractor);
 
 export { verifyAdmin } from './verifyAdmin';
-export type { AuthenticatedRequest } from './verifyAccesToken';
+export type { AuthenticatedRequest } from './verifyAccessToken';

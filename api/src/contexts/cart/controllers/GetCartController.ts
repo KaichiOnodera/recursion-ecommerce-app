@@ -1,10 +1,10 @@
 import express from 'express';
 import { GetRes } from '@shared/types/gets';
 import { IGetCartInteractor } from '../usecases/IGetCartInteractor';
-import { AuthenticatedRequest } from '../../../middlewares/verifyAccesToken';
+import { AuthenticatedRequest } from '../../../middlewares/verifyAccessToken';
 
 export class GetCartController {
-  constructor(private readonly getcartInteractor: IGetCartInteractor) {}
+  constructor(private readonly getCartInteractor: IGetCartInteractor) {}
 
   async execute(
     req: AuthenticatedRequest,
@@ -15,7 +15,7 @@ export class GetCartController {
     }
 
     try {
-      const cart = await this.getcartInteractor.execute(
+      const cart = await this.getCartInteractor.execute(
         Number(req.user.userId),
       );
 
