@@ -7,4 +7,5 @@ export interface ICartRepository {
   createWithSessionId(sessionId: string): Promise<Cart>;
   findBySessionIdOrCreate(sessionId: string): Promise<Cart>;
   deleteBySessionId(sessionId: string): Promise<void>;
+  findById(cartId: number): Promise<Cart | null>;
 }
