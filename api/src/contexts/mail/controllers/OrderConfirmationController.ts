@@ -10,6 +10,7 @@ export class OrderConfirmationController {
   async execute(req: AuthenticatedRequest, res: Response) {
     const { cartId } = req.body;
     const userId = req.user?.userId;
+    const email = req.user?.email;
 
     if (!userId || !cartId) {
       return res
@@ -18,7 +19,7 @@ export class OrderConfirmationController {
     }
 
     await this.orderConfirmationInteractor.OrderConfirmation(
-      String(userId),
+      String(email),
       String(cartId),
     );
     return res
