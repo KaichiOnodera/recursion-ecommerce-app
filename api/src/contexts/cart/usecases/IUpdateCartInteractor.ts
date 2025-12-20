@@ -1,6 +1,6 @@
 import { Cart } from '../domains/entities/Cart';
 
-export interface ICartInteractor {
+export interface IUpdateCartInteractor {
   execute(
     userId: number | undefined,
     sessionId: string | undefined,

@@ -1,11 +1,20 @@
 import express from 'express';
 import { GetRes } from '@shared/types/gets';
 import { IGetCartInteractor } from '../usecases/IGetCartInteractor';
+import { IMergeCartInteractor } from '../usecases/IMergeCartInteractor';
+import { ICartRepository } from '../domains/repositories/ICartRepository';
 import { AuthenticatedRequest } from '../../../middlewares/verifyAccessToken';
-import { getCartSessionIdFromCookie } from '../../../utils/cookie';
+import {
+  getCartSessionIdFromCookie,
+  clearCartSessionIdCookie,
+} from '../../../utils/cookie';
 
 export class GetCartController {
-  constructor(private readonly getCartInteractor: IGetCartInteractor) {}
+  constructor(
+    private readonly getCartInteractor: IGetCartInteractor,
+    private readonly mergeCartInteractor: IMergeCartInteractor,
+    private readonly cartRepository: ICartRepository,
+  ) {}
 
   async execute(
     req: AuthenticatedRequest,
@@ -15,11 +24,43 @@ export class GetCartController {
       let cart;
 
       if (req.user) {
-        cart = await this.getCartInteractor.execute(
-          Number(req.user.userId),
-          undefined,
-        );
+        const sessionId = getCartSessionIdFromCookie(req);
+
+        if (sessionId) {
+          // CookieにsessionIdがある場合: マージ処理
+          const sessionCart = await this.getCartInteractor.execute(
+            undefined,
+            sessionId,
+          );
+
+          if (sessionCart && sessionCart.items.length > 0) {
+            // セッションカートとユーザーカートをマージ
+            cart = await this.mergeCartInteractor.execute(
+              req.user.userId,
+              sessionCart,
+            );
+
+            // マージ後、sessionカートを削除
+            await this.cartRepository.deleteBySessionId(sessionId);
+
+            // sessionIdをCookieから削除
+            clearCartSessionIdCookie(res);
+          } else {
+            // セッションカートが空の場合はユーザーカートを取得
+            cart = await this.getCartInteractor.execute(
+              Number(req.user.userId),
+              undefined,
+            );
+          }
+        } else {
+          // CookieにsessionIdがない場合: ユーザーカートを取得
+          cart = await this.getCartInteractor.execute(
+            Number(req.user.userId),
+            undefined,
+          );
+        }
       } else {
+        // ゲストユーザーの場合: CookieのsessionIdを使用
         const sessionId = getCartSessionIdFromCookie(req);
 
         if (sessionId) {

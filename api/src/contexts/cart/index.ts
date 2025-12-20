@@ -1,5 +1,5 @@
 import { PostCartController } from './controllers/PostCartController';
-import { CartInteractor } from './interactors/CartInteractor';
+import { UpdateCartInteractor } from './interactors/UpdateCartInteractor';
 import { GetCartController } from './controllers/GetCartController';
 import { GetCartInteractor } from './interactors/GetCartInteractor';
 import { MergeCartInteractor } from './interactors/MergeCartInteractor';
@@ -15,7 +15,7 @@ const cartRouter = express.Router();
 const cartRepository = new CartRepository(prisma);
 const cartItemRepository = new CartItemRepository(prisma);
 const itemRepository = new ItemRepository(prisma);
-const cartInteractor = new CartInteractor(
+const updateCartInteractor = new UpdateCartInteractor(
   cartRepository,
   cartItemRepository,
   itemRepository,
@@ -26,13 +26,17 @@ const mergeCartInteractor = new MergeCartInteractor(
   cartItemRepository,
 );
 const cartController = new PostCartController(
-  cartInteractor,
+  updateCartInteractor,
   getCartInteractor,
   mergeCartInteractor,
   cartRepository,
 );
 
-const getCartController = new GetCartController(getCartInteractor);
+const getCartController = new GetCartController(
+  getCartInteractor,
+  mergeCartInteractor,
+  cartRepository,
+);
 
 cartRouter.get(
   '/',
