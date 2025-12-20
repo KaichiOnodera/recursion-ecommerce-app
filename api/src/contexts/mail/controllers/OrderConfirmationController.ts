@@ -6,25 +6,23 @@ export class OrderConfirmationController {
   constructor(
     private orderConfirmationInteractor: OrderConfirmationInteractor,
   ) {}
-  async execute(req: AuthenticatedRequest, res: Response) {
-    const { to, orderId } = req.body;
 
-    if (!to || !orderId) {
+  async execute(req: AuthenticatedRequest, res: Response) {
+    const { cartId } = req.body;
+    const userId = req.user?.userId;
+
+    if (!userId || !cartId) {
       return res
         .status(400)
-        .json({ message: 'Missing "to" or "orderId" in request body' });
+        .json({ message: 'Missing "cartId" or user not authenticated' });
     }
 
-    try {
-      await this.orderConfirmationInteractor.OrderConfirmation(to, orderId);
-      res
-        .status(200)
-        .json({ message: 'Delivery notification email sent successfully' });
-    } catch (error) {
-      console.error('Error in sendOrderConfirmation:', error);
-      res
-        .status(500)
-        .json({ message: 'Failed to send order confirmation email' });
-    }
+    await this.orderConfirmationInteractor.OrderConfirmation(
+      String(userId),
+      String(cartId),
+    );
+    return res
+      .status(200)
+      .json({ message: 'Order Confirmation email sent successfully' });
   }
 }

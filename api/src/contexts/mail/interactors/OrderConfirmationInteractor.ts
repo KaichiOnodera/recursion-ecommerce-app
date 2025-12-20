@@ -13,7 +13,6 @@ export class OrderConfirmationInteractor
   ) {}
 
   async OrderConfirmation(to: string, cartId: string): Promise<void> {
-    // 注文情報の取得（必要に応じてcartInteractorを使用）
     const cart = await this.cartRepository.find(Number(cartId));
     if (!cart) {
       throw new Error('Order not found');
