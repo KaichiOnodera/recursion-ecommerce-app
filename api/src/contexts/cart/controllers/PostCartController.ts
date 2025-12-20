@@ -31,7 +31,11 @@ export class PostCartController {
       }
     }
 
-    const cart = await this.cartInteractor.execute(req.user.userId, items);
+    const cart = await this.cartInteractor.execute(
+      req.user.userId,
+      undefined,
+      items,
+    );
 
     res.status(200).json({ items: cart.items });
   }

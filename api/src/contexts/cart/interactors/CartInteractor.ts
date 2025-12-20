@@ -12,7 +12,8 @@ export class CartInteractor implements ICartInteractor {
   ) {}
 
   async execute(
-    userId: number,
+    userId: number | undefined,
+    sessionId: string | undefined,
     items: Array<{ id: number; amount: number }>,
   ): Promise<Cart> {
     // 在庫チェック
@@ -28,19 +29,35 @@ export class CartInteractor implements ICartInteractor {
       }
     }
 
-    const cart =
-      (await this.cartRepository.findByUserId(userId)) ??
-      (await this.cartRepository.createByUserId(userId));
+    const cart = await this.getOrCreateCart(userId, sessionId);
 
     for (const item of items) {
       await this.cartItemRepository.upsert(cart.id, item.id, item.amount);
     }
 
-    const updatedCart = await this.cartRepository.findByUserId(userId);
+    const updatedCart = await this.cartRepository.findById(cart.id);
     if (!updatedCart) {
       throw new Error('Cart not found after update');
     }
 
     return updatedCart;
+  }
+
+  private async getOrCreateCart(
+    userId: number | undefined,
+    sessionId: string | undefined,
+  ): Promise<Cart> {
+    if (userId !== undefined) {
+      return (
+        (await this.cartRepository.findByUserId(userId)) ??
+        (await this.cartRepository.createByUserId(userId))
+      );
+    }
+
+    if (sessionId !== undefined) {
+      return await this.cartRepository.findBySessionIdOrCreate(sessionId);
+    }
+
+    throw new Error('Either userId or sessionId must be provided');
   }
 }
