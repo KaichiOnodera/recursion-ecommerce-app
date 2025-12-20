@@ -1,6 +1,7 @@
 import express from 'express';
 import { ICreateCheckoutSessionInteractor } from '../usecases/ICreateCheckoutSessionInteractor';
-import { AuthenticatedRequest } from '../../../middlewares/verifyAccesToken';
+import { AuthenticatedRequest } from '../../../middlewares';
+import { PostRes } from '@shared/types/posts';
 
 export class CreateCheckoutSessionController {
   constructor(
@@ -9,9 +10,7 @@ export class CreateCheckoutSessionController {
 
   async execute(
     req: AuthenticatedRequest<Record<string, never>, Record<string, never>>,
-    res: express.Response<
-      { sessionId: string; url: string } | { message: string }
-    >,
+    res: express.Response<PostRes['/checkout/session'] | { message: string }>,
   ) {
     if (!req.user) {
       return res.status(401).json({ message: 'User not authenticated' });
