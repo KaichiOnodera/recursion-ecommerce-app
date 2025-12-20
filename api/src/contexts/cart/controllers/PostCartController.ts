@@ -1,19 +1,29 @@
 import express from 'express';
 import { PostReq, PostRes } from '@shared/types/posts';
 import { ICartInteractor } from '../usecases/ICartInteractor';
+import { IGetCartInteractor } from '../usecases/IGetCartInteractor';
+import { IMergeCartInteractor } from '../usecases/IMergeCartInteractor';
+import { ICartRepository } from '../domains/repositories/ICartRepository';
 import { AuthenticatedRequest } from '../../../middlewares/verifyAccessToken';
+import {
+  getCartSessionIdFromCookie,
+  setCartSessionIdCookie,
+  clearCartSessionIdCookie,
+} from '../../../utils/cookie';
+import { generateSessionId } from '../../../utils/sessionId';
 
 export class PostCartController {
-  constructor(private readonly cartInteractor: ICartInteractor) {}
+  constructor(
+    private readonly cartInteractor: ICartInteractor,
+    private readonly getCartInteractor: IGetCartInteractor,
+    private readonly mergeCartInteractor: IMergeCartInteractor,
+    private readonly cartRepository: ICartRepository,
+  ) {}
 
   async execute(
     req: AuthenticatedRequest<PostReq['/cart']>,
     res: express.Response<PostRes['/cart'] | { message: string }>,
   ) {
-    if (!req.user) {
-      return res.status(401).json({ message: 'User not authenticated' });
-    }
-
     const { items } = req.body;
 
     if (!Array.isArray(items)) {
@@ -31,12 +41,70 @@ export class PostCartController {
       }
     }
 
-    const cart = await this.cartInteractor.execute(
-      req.user.userId,
-      undefined,
-      items,
-    );
+    try {
+      let cart;
 
-    res.status(200).json({ items: cart.items });
+      if (req.user) {
+        const sessionId = getCartSessionIdFromCookie(req);
+
+        if (sessionId) {
+          const sessionCart = await this.getCartInteractor.execute(
+            undefined,
+            sessionId,
+          );
+
+          if (sessionCart && sessionCart.items.length > 0) {
+            // セッションカートとユーザーカートをマージ
+            cart = await this.mergeCartInteractor.execute(
+              req.user.userId,
+              sessionCart,
+            );
+
+            // マージ後、sessionカートを削除
+            await this.cartRepository.deleteBySessionId(sessionId);
+
+            // sessionIdをCookieから削除
+            clearCartSessionIdCookie(res);
+
+            // マージ後にリクエストされたitemsも追加
+            cart = await this.cartInteractor.execute(
+              req.user.userId,
+              undefined,
+              items,
+            );
+          } else {
+            // セッションカートが空の場合は通常のカート操作
+            cart = await this.cartInteractor.execute(
+              req.user.userId,
+              undefined,
+              items,
+            );
+          }
+        } else {
+          // CookieにsessionIdがない場合: 通常のカート操作
+          cart = await this.cartInteractor.execute(
+            req.user.userId,
+            undefined,
+            items,
+          );
+        }
+      } else {
+        // ゲストユーザーの場合: CookieのsessionIdを使用
+        let sessionId = getCartSessionIdFromCookie(req);
+
+        if (!sessionId) {
+          // CookieにsessionIdがなければ生成してセット
+          sessionId = generateSessionId();
+          setCartSessionIdCookie(res, sessionId);
+        }
+
+        cart = await this.cartInteractor.execute(undefined, sessionId, items);
+      }
+
+      res.status(200).json({ items: cart.items });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Failed to update cart' });
+    }
   }
 }
