@@ -29,14 +29,14 @@ export class CartInteractor implements ICartInteractor {
     }
 
     const cart =
-      (await this.cartRepository.find(userId)) ??
-      (await this.cartRepository.create(userId));
+      (await this.cartRepository.findByUserId(userId)) ??
+      (await this.cartRepository.createByUserId(userId));
 
     for (const item of items) {
       await this.cartItemRepository.upsert(cart.id, item.id, item.amount);
     }
 
-    const updatedCart = await this.cartRepository.find(userId);
+    const updatedCart = await this.cartRepository.findByUserId(userId);
     if (!updatedCart) {
       throw new Error('Cart not found after update');
     }

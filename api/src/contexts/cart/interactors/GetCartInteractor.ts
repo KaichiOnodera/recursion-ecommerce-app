@@ -6,7 +6,7 @@ export class GetCartInteractor implements IGetCartInteractor {
   constructor(private readonly cartRepository: ICartRepository) {}
 
   async execute(userId: number): Promise<Cart | null> {
-    const cart = await this.cartRepository.find(userId);
+    const cart = await this.cartRepository.findByUserId(userId);
 
     if (!cart) {
       return null;

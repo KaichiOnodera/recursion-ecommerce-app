@@ -18,7 +18,7 @@ export class CreateCheckoutSessionInteractor
   async execute(params: {
     userId: number;
   }): Promise<{ sessionId: string; url: string }> {
-    const cart = await this.cartRepository.find(params.userId);
+    const cart = await this.cartRepository.findByUserId(params.userId);
     if (!cart?.items || cart.items.length === 0) {
       throw new Error('Cart is empty');
     }
