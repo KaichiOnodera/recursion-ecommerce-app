@@ -1,4 +1,4 @@
-import { CartController } from './controllers/CartController';
+import { PostCartController } from './controllers/PostCartController';
 import { CartInteractor } from './interactors/CartInteractor';
 import { GetCartController } from './controllers/GetCartController';
 import { GetCartInteractor } from './interactors/GetCartInteractor';
@@ -19,7 +19,7 @@ const cartInteractor = new CartInteractor(
   cartItemRepository,
   itemRepository,
 );
-const cartController = new CartController(cartInteractor);
+const cartController = new PostCartController(cartInteractor);
 
 const getCartInteractor = new GetCartInteractor(cartRepository);
 const getCartController = new GetCartController(getCartInteractor);

@@ -1,9 +1,9 @@
 import express from 'express';
 import { PostReq, PostRes } from '@shared/types/posts';
 import { ICartInteractor } from '../usecases/ICartInteractor';
-import { AuthenticatedRequest } from '../../../middlewares/verifyAccesToken';
+import { AuthenticatedRequest } from '../../../middlewares/verifyAccessToken';
 
-export class CartController {
+export class PostCartController {
   constructor(private readonly cartInteractor: ICartInteractor) {}
 
   async execute(
