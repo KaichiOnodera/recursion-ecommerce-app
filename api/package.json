@@ -10,7 +10,7 @@
     "test:api": "./scripts/test-api.sh",
     "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "npx tsx src/index.ts",
+    "dev": "npx tsx watch src/index.ts",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json}\"",
