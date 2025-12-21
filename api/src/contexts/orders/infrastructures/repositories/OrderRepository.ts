@@ -1,41 +1,49 @@
-import { PrismaClient } from '@prisma/client';
-import { IOrderRepository } from '../../domains/repositories/IOrderRepository';
-import { Order } from '../../domains/entities/Order';
+import { PrismaClient, Prisma, OrderStatus } from '@prisma/client';
+import {
+  IOrderRepository,
+  CreateOrderData,
+  Order,
+} from '../../domains/repositories/IOrderRepository';
 
 export class OrderRepository implements IOrderRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
-  async findByUserId(userId: number): Promise<Order[]> {
-    const orders = await this.prisma.orders.findMany({
-      where: { userId },
+  async create(data: CreateOrderData): Promise<Order> {
+    const order = await this.prisma.orders.create({
+      data: {
+        userId: data.userId,
+        lastName: data.lastName,
+        firstName: data.firstName,
+        email: data.email,
+        address: data.address,
+        totalPrice: data.totalPrice,
+        orderStatus: data.orderStatus ?? OrderStatus.pending,
+        orderItems: {
+          create: data.orderItems.map((item) => ({
+            itemId: item.itemId,
+            itemName: item.itemName,
+            itemPrice: item.itemPrice,
+            amount: item.amount,
+          })),
+        },
+      },
       include: {
         orderItems: true,
       },
-      orderBy: { createdAt: 'desc' },
-    });
+    } as Prisma.OrdersCreateArgs);
 
-    return orders.map((order) => this.mapToOrder(order));
+    return this.mapToOrder(
+      order as Prisma.OrdersGetPayload<{
+        include: { orderItems: true };
+      }>,
+    );
   }
 
-  private mapToOrder(order: {
-    id: number;
-    userId: number | null;
-    lastName: string;
-    firstName: string;
-    email: string;
-    address: string;
-    totalPrice: number;
-    orderStatus: string;
-    createdAt: Date;
-    updatedAt: Date;
-    orderItems: Array<{
-      id: number;
-      itemId: number | null;
-      itemName: string;
-      itemPrice: number;
-      amount: number;
-    }>;
-  }): Order {
+  private mapToOrder(
+    order: Prisma.OrdersGetPayload<{
+      include: { orderItems: true };
+    }>,
+  ): Order {
     return {
       id: order.id,
       userId: order.userId,
@@ -47,12 +55,15 @@ export class OrderRepository implements IOrderRepository {
       orderStatus: order.orderStatus,
       createdAt: order.createdAt,
       updatedAt: order.updatedAt,
-      items: order.orderItems.map((item) => ({
+      orderItems: order.orderItems.map((item) => ({
         id: item.id,
+        orderId: item.orderId,
         itemId: item.itemId,
         itemName: item.itemName,
         itemPrice: item.itemPrice,
         amount: item.amount,
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt,
       })),
     };
   }
