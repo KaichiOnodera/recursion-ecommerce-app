@@ -50,8 +50,10 @@ jobs:
         env:
           CI: true
           HUSKY: 0
+          npm_config_ignore_scripts: true
         run: |
-          npm ci --ignore-scripts || true
+          # workspaceの設定により、apiディレクトリでnpm ciを実行するとルートのprepareが実行される可能性があるため、
+          # npm_config_ignore_scripts環境変数で全てのスクリプトを無効化
           cd api && npm ci
 
       - name: Generate Prisma Client
