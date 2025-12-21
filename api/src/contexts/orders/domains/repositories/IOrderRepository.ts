@@ -23,4 +23,5 @@ export interface IOrderRepository {
   findByUserId(userId: number): Promise<Order[]>;
   create(data: CreateOrderData): Promise<Order>;
   getByStripeSessionId(sessionId: string): Promise<Order | null>;
+  updateStatus(id: number, status: OrderStatus): Promise<Order>;
 }

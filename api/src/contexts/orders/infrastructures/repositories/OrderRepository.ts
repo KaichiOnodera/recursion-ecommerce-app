@@ -74,6 +74,20 @@ export class OrderRepository implements IOrderRepository {
     return this.mapToOrder(paymentExternalId.order);
   }
 
+  async updateStatus(id: number, status: OrderStatus): Promise<Order> {
+    const order = await this.prisma.orders.update({
+      where: { id },
+      data: {
+        orderStatus: status,
+      },
+      include: {
+        orderItems: true,
+      },
+    });
+
+    return this.mapToOrder(order);
+  }
+
   private mapToOrder(
     order: Prisma.OrdersGetPayload<{
       include: { orderItems: true };
