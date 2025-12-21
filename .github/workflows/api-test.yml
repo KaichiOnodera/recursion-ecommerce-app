@@ -46,14 +46,13 @@ jobs:
           cache: "npm"
           cache-dependency-path: api/package-lock.json
 
-      - name: Install root dependencies (skip husky)
+      - name: Install dependencies
         env:
           CI: true
-        run: npm ci --ignore-scripts || true
-
-      - name: Install API dependencies
-        working-directory: ./api
-        run: npm ci
+          HUSKY: 0
+        run: |
+          npm ci --ignore-scripts || true
+          cd api && npm ci
 
       - name: Generate Prisma Client
         working-directory: ./api
