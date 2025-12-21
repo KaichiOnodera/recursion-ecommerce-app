@@ -42,4 +42,5 @@ export interface Order {
 export interface IOrderRepository {
   create(data: CreateOrderData): Promise<Order>;
   getByStripeSessionId(sessionId: string): Promise<Order | null>;
+  updateStatus(id: number, status: OrderStatus): Promise<Order>;
 }
