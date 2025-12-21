@@ -1,0 +1,8 @@
+{
+    "jest.rootPath": "api",
+    "jest.jestCommandLine": "npm run test:api",
+    "jest.autoRun": "off",
+    "jest.testExplorer": {
+        "enabled": true
+    }
+}
