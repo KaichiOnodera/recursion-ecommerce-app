@@ -2,11 +2,23 @@ import { PrismaClient, Prisma, OrderStatus } from '@prisma/client';
 import {
   IOrderRepository,
   CreateOrderData,
-  Order,
 } from '../../domains/repositories/IOrderRepository';
+import { Order } from '../../domains/entities/Order';
 
 export class OrderRepository implements IOrderRepository {
   constructor(private readonly prisma: PrismaClient) {}
+
+  async findByUserId(userId: number): Promise<Order[]> {
+    const orders = await this.prisma.orders.findMany({
+      where: { userId },
+      include: {
+        orderItems: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return orders.map((order) => this.mapToOrder(order));
+  }
 
   async create(data: CreateOrderData): Promise<Order> {
     const order = await this.prisma.orders.create({
@@ -78,15 +90,12 @@ export class OrderRepository implements IOrderRepository {
       orderStatus: order.orderStatus,
       createdAt: order.createdAt,
       updatedAt: order.updatedAt,
-      orderItems: order.orderItems.map((item) => ({
+      items: order.orderItems.map((item) => ({
         id: item.id,
-        orderId: item.orderId,
         itemId: item.itemId,
         itemName: item.itemName,
         itemPrice: item.itemPrice,
         amount: item.amount,
-        createdAt: item.createdAt,
-        updatedAt: item.updatedAt,
       })),
     };
   }

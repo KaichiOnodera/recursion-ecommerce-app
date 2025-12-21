@@ -1,4 +1,5 @@
 import { OrderStatus } from '@prisma/client';
+import { Order } from '../entities/Order';
 
 export interface CreateOrderData {
   userId?: number;
@@ -16,30 +17,8 @@ export interface CreateOrderData {
   }>;
 }
 
-export interface Order {
-  id: number;
-  userId: number | null;
-  lastName: string;
-  firstName: string;
-  email: string;
-  address: string;
-  totalPrice: number;
-  orderStatus: OrderStatus;
-  createdAt: Date;
-  updatedAt: Date;
-  orderItems: Array<{
-    id: number;
-    orderId: number;
-    itemId: number | null;
-    itemName: string;
-    itemPrice: number;
-    amount: number;
-    createdAt: Date;
-    updatedAt: Date;
-  }>;
-}
-
 export interface IOrderRepository {
+  findByUserId(userId: number): Promise<Order[]>;
   create(data: CreateOrderData): Promise<Order>;
   getByStripeSessionId(sessionId: string): Promise<Order | null>;
 }
