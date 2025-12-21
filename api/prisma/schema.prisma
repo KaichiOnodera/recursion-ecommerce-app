@@ -76,16 +76,16 @@ model ItemImages {
 }
 
 model Orders {
-  id          Int      @id @default(autoincrement())
+  id          Int         @id @default(autoincrement())
   userId      Int?
   lastName    String
   firstName   String
   email       String
   address     String
   totalPrice  Int
-  orderStatus String   @default("pending") @db.VarChar(32)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  orderStatus OrderStatus @default(pending)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 
   user               Users?                    @relation(fields: [userId], references: [id], onDelete: SetNull)
   orderItems         OrderItems[]
@@ -149,4 +149,11 @@ model Users {
 enum UserRole {
   USER
   ADMIN
+}
+
+enum OrderStatus {
+  pending
+  completed
+  shipped
+  cancelled
 }

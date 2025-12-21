@@ -4,10 +4,15 @@ const tsJestTransformCfg = createDefaultPreset().transform;
 
 /** @type {import("jest").Config} **/
 module.exports = {
+  rootDir: __dirname,
   testEnvironment: "node",
   transform: {
     ...tsJestTransformCfg,
   },
   setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
   testTimeout: 30000,
+  testMatch: ["<rootDir>/src/**/*.test.ts"],
+  moduleNameMapper: {
+    "^@shared/(.*)$": "<rootDir>/../shared/$1",
+  },
 };
