@@ -5,6 +5,7 @@ import {
   CreateOrderPaymentExternalIdData,
 } from '../../domains/repositories/IOrderRepository';
 import { Order } from '../../domains/entities/Order';
+import { OrderPaymentExternalId } from '../../domains/entities/OrderPaymentExternalId';
 
 export class OrderRepository implements IOrderRepository {
   constructor(private readonly prisma: PrismaClient) {}
@@ -91,15 +92,7 @@ export class OrderRepository implements IOrderRepository {
 
   async createPaymentExternalId(
     data: CreateOrderPaymentExternalIdData,
-  ): Promise<{
-    id: number;
-    orderId: number;
-    provider: string;
-    paymentSessionId: string | null;
-    paymentId: string | null;
-    createdAt: Date;
-    updatedAt: Date;
-  }> {
+  ): Promise<OrderPaymentExternalId> {
     const paymentExternalId = await this.prisma.orderPaymentExternalIds.create({
       data: {
         orderId: data.orderId,

@@ -1,7 +1,6 @@
 import {
   ICreateOrderPaymentExternalIdInteractor,
   CreateOrderPaymentExternalIdParams,
-  CreateOrderPaymentExternalIdResult,
 } from '../usecases/ICreateOrderPaymentExternalIdInteractor';
 import { IOrderRepository } from '../domains/repositories/IOrderRepository';
 
@@ -10,9 +9,7 @@ export class CreateOrderPaymentExternalIdInteractor
 {
   constructor(private readonly orderRepository: IOrderRepository) {}
 
-  async execute(
-    params: CreateOrderPaymentExternalIdParams,
-  ): Promise<CreateOrderPaymentExternalIdResult> {
+  async execute(params: CreateOrderPaymentExternalIdParams) {
     return await this.orderRepository.createPaymentExternalId({
       orderId: params.orderId,
       provider: params.provider,

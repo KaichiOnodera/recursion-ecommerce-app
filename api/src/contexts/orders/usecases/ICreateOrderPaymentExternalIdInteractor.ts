@@ -1,3 +1,5 @@
+import { OrderPaymentExternalId } from '../domains/entities/OrderPaymentExternalId';
+
 export interface CreateOrderPaymentExternalIdParams {
   orderId: number;
   provider: string;
@@ -5,18 +7,8 @@ export interface CreateOrderPaymentExternalIdParams {
   paymentId?: string;
 }
 
-export interface CreateOrderPaymentExternalIdResult {
-  id: number;
-  orderId: number;
-  provider: string;
-  paymentSessionId: string | null;
-  paymentId: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
 export interface ICreateOrderPaymentExternalIdInteractor {
   execute(
     params: CreateOrderPaymentExternalIdParams,
-  ): Promise<CreateOrderPaymentExternalIdResult>;
+  ): Promise<OrderPaymentExternalId>;
 }
