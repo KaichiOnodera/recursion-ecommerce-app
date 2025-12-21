@@ -29,7 +29,7 @@ export class OrderRepository implements IOrderRepository {
         email: data.email,
         address: data.address,
         totalPrice: data.totalPrice,
-        orderStatus: data.orderStatus ?? OrderStatus.pending,
+        orderStatus: data.orderStatus ?? OrderStatus.PENDING,
         orderItems: {
           create: data.orderItems.map((item) => ({
             itemId: item.itemId,

@@ -1,6 +1,8 @@
 import { OrderStatus } from '@prisma/client';
 import { Order } from '../entities/Order';
 
+export type { Order };
+
 export interface CreateOrderData {
   userId?: number;
   lastName: string;
