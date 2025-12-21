@@ -39,6 +39,29 @@ export class OrderRepository implements IOrderRepository {
     );
   }
 
+  async getByStripeSessionId(sessionId: string): Promise<Order | null> {
+    const paymentExternalId =
+      await this.prisma.orderPaymentExternalIds.findFirst({
+        where: {
+          provider: 'STRIPE',
+          paymentSessionId: sessionId,
+        },
+        include: {
+          order: {
+            include: {
+              orderItems: true,
+            },
+          },
+        },
+      });
+
+    if (!paymentExternalId?.order) {
+      return null;
+    }
+
+    return this.mapToOrder(paymentExternalId.order);
+  }
+
   private mapToOrder(
     order: Prisma.OrdersGetPayload<{
       include: { orderItems: true };
