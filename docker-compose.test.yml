@@ -25,4 +25,3 @@ services:
 networks:
   default:
     name: recursion-ecommerce-app-test
-
