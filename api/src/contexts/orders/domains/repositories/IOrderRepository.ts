@@ -19,9 +19,25 @@ export interface CreateOrderData {
   }>;
 }
 
+export interface CreateOrderPaymentExternalIdData {
+  orderId: number;
+  provider: string;
+  paymentSessionId?: string;
+  paymentId?: string;
+}
+
 export interface IOrderRepository {
   findByUserId(userId: number): Promise<Order[]>;
   create(data: CreateOrderData): Promise<Order>;
   getByStripeSessionId(sessionId: string): Promise<Order | null>;
   updateStatus(id: number, status: OrderStatus): Promise<Order>;
+  createPaymentExternalId(data: CreateOrderPaymentExternalIdData): Promise<{
+    id: number;
+    orderId: number;
+    provider: string;
+    paymentSessionId: string | null;
+    paymentId: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+  }>;
 }

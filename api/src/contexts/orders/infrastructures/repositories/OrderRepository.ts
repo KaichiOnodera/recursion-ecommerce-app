@@ -2,6 +2,7 @@ import { PrismaClient, Prisma, OrderStatus } from '@prisma/client';
 import {
   IOrderRepository,
   CreateOrderData,
+  CreateOrderPaymentExternalIdData,
 } from '../../domains/repositories/IOrderRepository';
 import { Order } from '../../domains/entities/Order';
 
@@ -86,6 +87,37 @@ export class OrderRepository implements IOrderRepository {
     });
 
     return this.mapToOrder(order);
+  }
+
+  async createPaymentExternalId(
+    data: CreateOrderPaymentExternalIdData,
+  ): Promise<{
+    id: number;
+    orderId: number;
+    provider: string;
+    paymentSessionId: string | null;
+    paymentId: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+  }> {
+    const paymentExternalId = await this.prisma.orderPaymentExternalIds.create({
+      data: {
+        orderId: data.orderId,
+        provider: data.provider,
+        paymentSessionId: data.paymentSessionId ?? null,
+        paymentId: data.paymentId ?? null,
+      },
+    });
+
+    return {
+      id: paymentExternalId.id,
+      orderId: paymentExternalId.orderId,
+      provider: paymentExternalId.provider,
+      paymentSessionId: paymentExternalId.paymentSessionId,
+      paymentId: paymentExternalId.paymentId,
+      createdAt: paymentExternalId.createdAt,
+      updatedAt: paymentExternalId.updatedAt,
+    };
   }
 
   private mapToOrder(
