@@ -84,7 +84,7 @@ model Orders {
   email       String
   address     String
   totalPrice  Int
-  orderStatus OrderStatus @default(pending)
+  orderStatus OrderStatus @default(PENDING)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
@@ -194,8 +194,8 @@ enum UserRole {
 }
 
 enum OrderStatus {
-  pending
-  completed
-  shipped
-  cancelled
+  PENDING
+  COMPLETED
+  SHIPPED
+  CANCELLED
 }
