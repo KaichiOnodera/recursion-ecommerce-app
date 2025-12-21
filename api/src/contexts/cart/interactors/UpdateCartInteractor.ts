@@ -16,23 +16,30 @@ export class UpdateCartInteractor implements IUpdateCartInteractor {
     sessionId: string | undefined,
     items: Array<{ id: number; amount: number }>,
   ): Promise<Cart> {
-    // 在庫チェック
+    // 在庫チェック（amount > 0の場合のみ）
     for (const item of items) {
-      const product = await this.itemRepository.findById(item.id);
-      if (!product) {
-        throw new Error(`Item with id ${item.id} not found`);
-      }
-      if (product.inventory.amount < item.amount) {
-        throw new Error(
-          `Insufficient inventory for item ${product.name}. Available: ${product.inventory.amount}, Requested: ${item.amount}`,
-        );
+      if (item.amount > 0) {
+        const product = await this.itemRepository.findById(item.id);
+        if (!product) {
+          throw new Error(`Item with id ${item.id} not found`);
+        }
+        if (product.inventory.amount < item.amount) {
+          throw new Error(
+            `Insufficient inventory for item ${product.name}. Available: ${product.inventory.amount}, Requested: ${item.amount}`,
+          );
+        }
       }
     }
 
     const cart = await this.getOrCreateCart(userId, sessionId);
 
     for (const item of items) {
-      await this.cartItemRepository.upsert(cart.id, item.id, item.amount);
+      console.log(item);
+      if (item.amount === 0) {
+        await this.cartItemRepository.delete(cart.id, item.id);
+      } else {
+        await this.cartItemRepository.upsert(cart.id, item.id, item.amount);
+      }
     }
 
     const updatedCart = await this.cartRepository.findById(cart.id);
