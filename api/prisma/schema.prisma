@@ -84,9 +84,9 @@ model Orders {
   email       String
   address     String
   totalPrice  Int
-  orderStatus String   @default("pending") @db.VarChar(32)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  orderStatus OrderStatus @default(pending)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 
   user               Users?                    @relation(fields: [userId], references: [id], onDelete: SetNull)
   cart               Cart?                     @relation(fields: [cartId], references: [id], onDelete: SetNull)
@@ -194,8 +194,8 @@ enum UserRole {
 }
 
 enum OrderStatus {
-  PENDING
-  COMPLETED
-  SHIPPED
-  CANCELLED
+  pending
+  completed
+  shipped
+  cancelled
 }
