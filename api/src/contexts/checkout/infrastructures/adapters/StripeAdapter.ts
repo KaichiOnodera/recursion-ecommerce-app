@@ -34,6 +34,8 @@ export class StripeAdapter implements IStripeAdapter {
     successUrl: string;
     cancelUrl: string;
     customerEmail?: string;
+    requireEmail?: boolean;
+    requireShippingAddress?: boolean;
     metadata?: Record<string, string>;
   }): Promise<CheckoutSession> {
     const sessionParams: Stripe.Checkout.SessionCreateParams = {
@@ -55,8 +57,19 @@ export class StripeAdapter implements IStripeAdapter {
       metadata: params.metadata,
     };
 
+    // メールアドレスの処理
+    // ログインユーザーの場合：既知のメールアドレスを設定
+    // ゲストユーザーの場合：customer_emailを設定しないことでStripeが自動的にメールアドレスを収集
     if (params.customerEmail) {
       sessionParams.customer_email = params.customerEmail;
+    }
+    // customerEmailがない場合（ゲストユーザー）、Stripeが自動的にメールアドレス収集フォームを表示します
+
+    // 物理商品がある場合、住所入力を必須にする
+    if (params.requireShippingAddress) {
+      sessionParams.shipping_address_collection = {
+        allowed_countries: ['JP'],
+      };
     }
 
     const session = await this.stripe.checkout.sessions.create(sessionParams);
