@@ -10,17 +10,12 @@ export class OrderCompletedController {
   async execute(req: AuthenticatedRequest, res: Response): Promise<Response> {
     try {
       const { orderId } = req.params;
-      const userEmail = req.user?.email;
 
       if (!orderId) {
         return res.status(400).json({ message: 'Missing orderId' });
       }
 
-      if (!userEmail) {
-        return res.status(400).json({ message: 'User email not found' });
-      }
-
-      await this.orderCompletedInteractor.OrderCompleted(userEmail, orderId);
+      await this.orderCompletedInteractor.OrderCompleted(orderId);
 
       return res
         .status(200)

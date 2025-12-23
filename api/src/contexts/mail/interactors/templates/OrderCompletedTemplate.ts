@@ -1,5 +1,5 @@
-export const ORDER_COMPLETED_TEMPLATE = (cartId: string) => ({
+export const ORDER_COMPLETED_TEMPLATE = (orderId: string) => ({
   subject: 'Order Completed',
-  text: `Your order with ID ${cartId} has been delivered.`,
-  html: `<p>Your order with ID <strong>${cartId}</strong> has been delivered.</p>`,
+  text: `Your order with ID ${orderId} has been delivered.`,
+  html: `<p>Your order with ID <strong>${orderId}</strong> has been delivered.</p>`,
 });

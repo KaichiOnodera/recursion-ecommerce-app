@@ -11,7 +11,7 @@ export class OrderCompletedInteractor implements IOrderCompletedInteractor {
     private readonly userRepository: IUserRepository,
   ) {}
 
-  async OrderCompleted(to: string, orderId: string): Promise<void> {
+  async OrderCompleted(orderId: string): Promise<void> {
     const order = await this.orderRepository.getById(Number(orderId));
     if (order === null) {
       throw new Error('Order not found');
@@ -22,6 +22,8 @@ export class OrderCompletedInteractor implements IOrderCompletedInteractor {
     if (!user) {
       throw new Error('User not found');
     }
+
+    const to = user.email;
 
     // メールメッセージの作成
     const message = {
