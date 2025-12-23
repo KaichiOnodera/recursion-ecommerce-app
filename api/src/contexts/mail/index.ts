@@ -6,12 +6,15 @@ import { OrderCompletedController } from './controllers/OrderCompletedController
 import { OrderCompletedInteractor } from './interactors/OrderCompletedInteractor';
 import { CartRepository } from '../cart/infrastructures/repositories/CartRepository';
 import { UserRepository } from '../auth/infrastructures/repositories/UserRepository';
+import { OrderRepository } from 'src/contexts/orders/infrastructures/repositories/OrderRepository';
 import { EmailAdapter } from './infrastructures/adapters/EmailAdapter';
+import { verifyAdmin } from 'src/middlewares';
 
 const mailRouter = express.Router();
 
 const cartRepository = new CartRepository(prisma);
 const userRepository = new UserRepository(prisma);
+const orderRepository = new OrderRepository(prisma);
 const emailAdapter = new EmailAdapter();
 
 const orderconfirmationInteractor = new OrderConfirmationInteractor(
@@ -22,7 +25,7 @@ const orderconfirmationInteractor = new OrderConfirmationInteractor(
 
 const orderCompletedInteractor = new OrderCompletedInteractor(
   emailAdapter,
-  cartRepository,
+  orderRepository,
   userRepository,
 );
 
@@ -40,7 +43,8 @@ mailRouter.post(
 );
 
 mailRouter.post(
-  '/send-order-completed',
+  '/send-order-completed/:orderId',
+  verifyAdmin,
   orderCompletedController.execute.bind(orderCompletedController),
 );
 

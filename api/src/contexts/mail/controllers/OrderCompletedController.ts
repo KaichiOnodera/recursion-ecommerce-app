@@ -1,30 +1,40 @@
-import Express from 'express';
+import { Response } from 'express';
 import { AuthenticatedRequest } from 'src/middlewares';
-import { OrderCompletedInteractor } from '../interactors/OrderCompletedInteractor';
+import { IOrderCompletedInteractor } from '../usecases/IOrderCompletedInteractor';
 
 export class OrderCompletedController {
   constructor(
-    private readonly orderCompletedInteractor: OrderCompletedInteractor,
+    private readonly orderCompletedInteractor: IOrderCompletedInteractor,
   ) {}
 
-  async execute(req: AuthenticatedRequest, res: Express.Response) {
-    const { cartId } = req.body;
-    const userId = req.user?.userId;
-    const email = req.user?.email;
+  async execute(req: AuthenticatedRequest, res: Response): Promise<Response> {
+    try {
+      const { orderId } = req.params;
+      const userEmail = req.user?.email;
 
-    if (!userId || !cartId) {
+      if (!orderId) {
+        return res.status(400).json({ message: 'Missing orderId' });
+      }
+
+      if (!userEmail) {
+        return res.status(400).json({ message: 'User email not found' });
+      }
+
+      await this.orderCompletedInteractor.OrderCompleted(userEmail, orderId);
+
       return res
-        .status(400)
-        .json({ message: 'Missing "cartId" or user not authenticated' });
-    }
+        .status(200)
+        .json({ message: 'Order completed email sent successfully' });
+    } catch (error: unknown) {
+      console.error('Error sending order completed email:', error);
 
-    if (!email) {
-      return res.status(400).json({ message: 'Missing email' });
-    }
+      const message = error instanceof Error ? error.message : 'Unknown error';
 
-    await this.orderCompletedInteractor.OrderCompleted(email, cartId);
-    return res
-      .status(200)
-      .json({ message: 'Order Completed email sent successfully' });
+      if (message === 'Order not found' || message === 'User not found') {
+        return res.status(404).json({ message });
+      }
+
+      return res.status(500).json({ message: 'Internal server error' });
+    }
   }
 }
