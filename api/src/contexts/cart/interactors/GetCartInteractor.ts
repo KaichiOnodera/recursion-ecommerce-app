@@ -5,32 +5,13 @@ import { Cart } from '../domains/entities/Cart';
 export class GetCartInteractor implements IGetCartInteractor {
   constructor(private readonly cartRepository: ICartRepository) {}
 
-  async execute(userId?: number, sessionId?: string): Promise<Cart | null> {
-    const cart = await this.fetchCart(userId, sessionId);
+  async execute(userId: number): Promise<Cart | null> {
+    const cart = await this.cartRepository.find(userId);
 
     if (!cart) {
       return null;
     }
 
-    return this.mapCart(cart);
-  }
-
-  private async fetchCart(
-    userId?: number,
-    sessionId?: string,
-  ): Promise<Cart | null> {
-    if (userId !== undefined) {
-      return this.cartRepository.findByUserId(userId);
-    }
-
-    if (sessionId !== undefined) {
-      return this.cartRepository.findBySessionId(sessionId);
-    }
-
-    return null;
-  }
-
-  private mapCart(cart: Cart): Cart {
     return {
       id: cart.id,
       items: cart.items.map((item) => ({

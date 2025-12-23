@@ -1,5 +1,5 @@
 import express from 'express';
-import { AuthenticatedRequest } from './verifyAccessToken';
+import { AuthenticatedRequest } from './verifyAccesToken';
 
 /**
  * 管理者権限チェックミドルウェア

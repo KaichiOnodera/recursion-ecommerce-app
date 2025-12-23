@@ -40,8 +40,4 @@ export type PostRes = {
   '/cart': {
     items: CartItem[];
   };
-  '/checkout/session': {
-    sessionId: string;
-    url: string;
-  };
 };

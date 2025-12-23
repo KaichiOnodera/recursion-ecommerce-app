@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { AuthenticatedRequest } from 'src/middlewares/verifyAccessToken';
+import { AuthenticatedRequest } from 'src/middlewares/verifyAccesToken';
 import { DeleteUserInteractor } from '../interactors/DeleteUserInteractor';
 
 export class DeleteUserController {
