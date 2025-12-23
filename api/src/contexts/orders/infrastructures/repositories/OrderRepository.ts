@@ -20,6 +20,17 @@ export class OrderRepository implements IOrderRepository {
     return orders.map((order) => this.mapToOrder(order));
   }
 
+  async findAll(): Promise<Order[]> {
+    const orders = await this.prisma.orders.findMany({
+      include: {
+        orderItems: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return orders.map((order) => this.mapToOrder(order));
+  }
+
   async create(data: CreateOrderData): Promise<Order> {
     const order = await this.prisma.orders.create({
       data: {

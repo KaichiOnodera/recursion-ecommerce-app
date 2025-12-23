@@ -14,6 +14,7 @@ import { UsersRouter as usersRouter } from './contexts/users';
 import { cartRouter } from './contexts/cart';
 import { checkoutRouter } from './contexts/checkout';
 import { ordersRouter } from './contexts/orders';
+import { adminOrdersRouter } from './contexts/orders/admin';
 
 const app = express();
 
@@ -39,6 +40,7 @@ app.use('/users', usersRouter);
 app.use('/cart', cartRouter);
 app.use('/checkout', checkoutRouter);
 app.use('/orders', ordersRouter);
+app.use('/admin/orders', adminOrdersRouter);
 
 app.listen(8000, '0.0.0.0', () => {
   // eslint-disable-next-line no-console
