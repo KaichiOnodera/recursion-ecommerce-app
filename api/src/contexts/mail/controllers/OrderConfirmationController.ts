@@ -18,10 +18,11 @@ export class OrderConfirmationController {
         .json({ message: 'Missing "cartId" or user not authenticated' });
     }
 
-    await this.orderConfirmationInteractor.OrderConfirmation(
-      String(email),
-      String(cartId),
-    );
+    if (!email) {
+      return res.status(400).json({ message: 'Missing email' });
+    }
+
+    await this.orderConfirmationInteractor.OrderConfirmation(email, cartId);
     return res
       .status(200)
       .json({ message: 'Order Confirmation email sent successfully' });
