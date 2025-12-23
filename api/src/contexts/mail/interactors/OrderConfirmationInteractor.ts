@@ -2,6 +2,7 @@ import { ICartRepository } from '../../cart/domains/repositories/ICartRepository
 import { IOrderConfirmationInteractor } from '../usecases/IOrderConfrimationInteractor';
 import { IUserRepository } from '../../auth/domains/repositories/IUserRepository';
 import { IEmailAdapter } from '../domains/adapters/IEmailAdapter';
+import { ORDER_CONFIRMATION_TEMPLATE } from './templates/OrderCofirmation';
 
 export class OrderConfirmationInteractor
   implements IOrderConfirmationInteractor
@@ -21,9 +22,7 @@ export class OrderConfirmationInteractor
     // メールメッセージの作成
     const message = {
       to,
-      subject: 'Order Confirmation',
-      text: `Your order with ID ${cartId} has been confirmed.`,
-      html: `<p>Your order with ID <strong>${cartId}</strong> has been confirmed.</p>`,
+      ...ORDER_CONFIRMATION_TEMPLATE(cartId),
     };
 
     // メールの送信

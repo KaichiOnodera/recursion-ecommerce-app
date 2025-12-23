@@ -1,6 +1,5 @@
 import express from 'express';
 import { prisma } from '../../libs/prisma';
-import { verifyAccessToken } from 'src/middlewares';
 import { OrderConfirmationController } from './controllers/OrderConfirmationController';
 import { OrderConfirmationInteractor } from './interactors/OrderConfirmationInteractor';
 import { CartRepository } from '../cart/infrastructures/repositories/CartRepository';
@@ -25,7 +24,6 @@ const orderconfirmationController = new OrderConfirmationController(
 
 mailRouter.post(
   '/send-delivery-notification',
-  verifyAccessToken,
   orderconfirmationController.execute.bind(orderconfirmationController),
 );
 
