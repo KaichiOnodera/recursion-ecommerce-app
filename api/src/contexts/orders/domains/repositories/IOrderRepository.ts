@@ -1,7 +1,9 @@
 import { OrderStatus } from '@prisma/client';
 import { Order } from '../entities/Order';
+import { OrderPaymentExternalId } from '../entities/OrderPaymentExternalId';
 
 export type { Order };
+export type { OrderPaymentExternalId };
 
 export interface CreateOrderData {
   userId?: number;
@@ -19,9 +21,19 @@ export interface CreateOrderData {
   }>;
 }
 
+export interface CreateOrderPaymentExternalIdData {
+  orderId: number;
+  provider: string;
+  paymentSessionId?: string;
+  paymentId?: string;
+}
+
 export interface IOrderRepository {
   findByUserId(userId: number): Promise<Order[]>;
   create(data: CreateOrderData): Promise<Order>;
   getByStripeSessionId(sessionId: string): Promise<Order | null>;
   updateStatus(id: number, status: OrderStatus): Promise<Order>;
+  createPaymentExternalId(
+    data: CreateOrderPaymentExternalIdData,
+  ): Promise<OrderPaymentExternalId>;
 }
