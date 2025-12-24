@@ -25,4 +25,11 @@ export interface IStripeAdapter {
     requireShippingAddress?: boolean;
     metadata?: Record<string, string>;
   }): Promise<CheckoutSession>;
+
+  // Webhook署名を検証
+  verifyWebhookSignature(
+    payload: string | Buffer,
+    signature: string,
+    secret: string,
+  ): Promise<any>;
 }

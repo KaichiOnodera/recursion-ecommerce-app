@@ -79,4 +79,12 @@ export class StripeAdapter implements IStripeAdapter {
       checkoutUrl: session.url ?? '',
     };
   }
+
+  async verifyWebhookSignature(
+    payload: string | Buffer,
+    signature: string,
+    secret: string,
+  ): Promise<any> {
+    return this.stripe.webhooks.constructEvent(payload, signature, secret);
+  }
 }
