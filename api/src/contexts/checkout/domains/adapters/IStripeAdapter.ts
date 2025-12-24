@@ -21,6 +21,8 @@ export interface IStripeAdapter {
     successUrl: string;
     cancelUrl: string;
     customerEmail?: string;
+    requireEmail?: boolean;
+    requireShippingAddress?: boolean;
     metadata?: Record<string, string>;
   }): Promise<CheckoutSession>;
 }
