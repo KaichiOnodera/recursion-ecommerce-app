@@ -84,7 +84,7 @@ export class StripeAdapter implements IStripeAdapter {
     payload: string | Buffer,
     signature: string,
     secret: string,
-  ): Promise<any> {
+  ): Promise<Stripe.Event> {
     return this.stripe.webhooks.constructEvent(payload, signature, secret);
   }
 }

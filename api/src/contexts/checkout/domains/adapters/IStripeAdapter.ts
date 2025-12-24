@@ -1,3 +1,4 @@
+import Stripe from 'stripe';
 import {
   CheckoutSession,
   CheckoutSessionMode,
@@ -31,5 +32,5 @@ export interface IStripeAdapter {
     payload: string | Buffer,
     signature: string,
     secret: string,
-  ): Promise<any>;
+  ): Promise<Stripe.Event>;
 }
