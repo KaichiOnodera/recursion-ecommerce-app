@@ -108,6 +108,13 @@ export class CreateCheckoutSessionInteractor
       },
     });
 
+    // StripeセッションIDを保存
+    await this.orderRepository.createPaymentExternalId({
+      orderId: order.id,
+      provider: 'STRIPE',
+      paymentSessionId: session.sessionId,
+    });
+
     return {
       sessionId: session.sessionId,
       url: session.checkoutUrl,
