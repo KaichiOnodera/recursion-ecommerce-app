@@ -37,4 +37,8 @@ export interface IOrderRepository {
   createPaymentExternalId(
     data: CreateOrderPaymentExternalIdData,
   ): Promise<OrderPaymentExternalId>;
+  updatePaymentExternalIdBySessionId(
+    paymentSessionId: string,
+    paymentId: string,
+  ): Promise<OrderPaymentExternalId | null>;
 }
