@@ -144,7 +144,7 @@ model Users {
   updatedAt  DateTime @updatedAt
 
   cart   Cart?
-  verificationToken VerificationToken?
+  emailVerificationToken EmailVerificationToken?
   orders Orders[]
 }
 
@@ -161,12 +161,12 @@ enum OrderStatus {
 }
 
 
-model VerificationToken {
+model EmailVerificationToken {
   id        Int      @id @default(autoincrement())
   token     String  @unique
-  userId    Int?    @unique
+  userId    Int    @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
-  user      Users?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user      Users      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
