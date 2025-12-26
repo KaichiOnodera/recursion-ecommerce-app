@@ -46,6 +46,21 @@ export class HandleStripeWebhookInteractor
       return;
     }
 
+    // PaymentIDの保存
+    if (session.payment_intent) {
+      const paymentId =
+        typeof session.payment_intent === 'string'
+          ? session.payment_intent
+          : session.payment_intent.id;
+      await this.orderRepository.updatePaymentExternalIdBySessionId(
+        session.id,
+        paymentId,
+      );
+      console.log(
+        `Payment ID ${paymentId} saved for session ${session.id}`,
+      );
+    }
+
     // 注文ステータスの更新
     await this.orderRepository.updateStatus(order.id, OrderStatus.COMPLETED);
     console.log(`Order ${order.id} status updated to COMPLETED`);
