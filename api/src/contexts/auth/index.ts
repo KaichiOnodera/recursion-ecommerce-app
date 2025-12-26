@@ -1,6 +1,6 @@
 import { LoginController } from './controllers/LoginController';
 import { LogoutController } from './controllers/LogoutController';
-import { MeController } from './controllers/MeController';
+import { MeController } from './controllers/meController';
 import { LoginInteractor } from './interactors/LoginInteractor';
 import { VerifyUserInteractor } from './interactors/VerifyUserInteractor';
 import { GetMeInteractor } from './interactors/GetMeInteractor';
@@ -25,6 +25,11 @@ authRouter.get(
   '/me',
   verifyAccessToken,
   meController.execute.bind(meController),
+);
+
+authRouter.post(
+  'verify-email',
+  verifyUserInteractor.execute.bind(verifyUserInteractor),
 );
 
 export { authRouter, verifyUserInteractor };
