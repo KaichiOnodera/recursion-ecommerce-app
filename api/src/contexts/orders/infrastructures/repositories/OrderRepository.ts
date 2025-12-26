@@ -124,6 +124,44 @@ export class OrderRepository implements IOrderRepository {
     };
   }
 
+  async updatePaymentExternalIdBySessionId(
+    paymentSessionId: string,
+    paymentId: string,
+  ): Promise<OrderPaymentExternalId | null> {
+    const paymentExternalId =
+      await this.prisma.orderPaymentExternalIds.findUnique({
+        where: {
+          provider_paymentSessionId: {
+            provider: 'STRIPE',
+            paymentSessionId,
+          },
+        },
+      });
+
+    if (!paymentExternalId) {
+      return null;
+    }
+
+    const updated = await this.prisma.orderPaymentExternalIds.update({
+      where: {
+        id: paymentExternalId.id,
+      },
+      data: {
+        paymentId,
+      },
+    });
+
+    return {
+      id: updated.id,
+      orderId: updated.orderId,
+      provider: updated.provider,
+      paymentSessionId: updated.paymentSessionId,
+      paymentId: updated.paymentId,
+      createdAt: updated.createdAt,
+      updatedAt: updated.updatedAt,
+    };
+  }
+
   private mapToOrder(
     order: Prisma.OrdersGetPayload<{
       include: { orderItems: true };
