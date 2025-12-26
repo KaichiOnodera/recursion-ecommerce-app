@@ -22,6 +22,17 @@ export class OrderRepository implements IOrderRepository {
     return orders.map((order) => this.mapToOrder(order));
   }
 
+  async findAll(): Promise<Order[]> {
+    const orders = await this.prisma.orders.findMany({
+      include: {
+        orderItems: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return orders.map((order) => this.mapToOrder(order));
+  }
+
   async create(data: CreateOrderData): Promise<Order> {
     const order = await this.prisma.orders.create({
       data: {
@@ -90,6 +101,20 @@ export class OrderRepository implements IOrderRepository {
     return this.mapToOrder(order);
   }
 
+  async updateAddress(id: number, address: string): Promise<Order> {
+    const order = await this.prisma.orders.update({
+      where: { id },
+      data: {
+        address,
+      },
+      include: {
+        orderItems: true,
+      },
+    });
+
+    return this.mapToOrder(order);
+  }
+
   async createPaymentExternalId(
     data: CreateOrderPaymentExternalIdData,
   ): Promise<OrderPaymentExternalId> {
@@ -110,6 +135,44 @@ export class OrderRepository implements IOrderRepository {
       paymentId: paymentExternalId.paymentId,
       createdAt: paymentExternalId.createdAt,
       updatedAt: paymentExternalId.updatedAt,
+    };
+  }
+
+  async updatePaymentExternalIdBySessionId(
+    paymentSessionId: string,
+    paymentId: string,
+  ): Promise<OrderPaymentExternalId | null> {
+    const paymentExternalId =
+      await this.prisma.orderPaymentExternalIds.findUnique({
+        where: {
+          provider_paymentSessionId: {
+            provider: 'STRIPE',
+            paymentSessionId,
+          },
+        },
+      });
+
+    if (!paymentExternalId) {
+      return null;
+    }
+
+    const updated = await this.prisma.orderPaymentExternalIds.update({
+      where: {
+        id: paymentExternalId.id,
+      },
+      data: {
+        paymentId,
+      },
+    });
+
+    return {
+      id: updated.id,
+      orderId: updated.orderId,
+      provider: updated.provider,
+      paymentSessionId: updated.paymentSessionId,
+      paymentId: updated.paymentId,
+      createdAt: updated.createdAt,
+      updatedAt: updated.updatedAt,
     };
   }
 

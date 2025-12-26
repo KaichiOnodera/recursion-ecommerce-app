@@ -30,10 +30,16 @@ export interface CreateOrderPaymentExternalIdData {
 
 export interface IOrderRepository {
   findByUserId(userId: number): Promise<Order[]>;
+  findAll(): Promise<Order[]>;
   create(data: CreateOrderData): Promise<Order>;
   getByStripeSessionId(sessionId: string): Promise<Order | null>;
   updateStatus(id: number, status: OrderStatus): Promise<Order>;
+  updateAddress(id: number, address: string): Promise<Order>;
   createPaymentExternalId(
     data: CreateOrderPaymentExternalIdData,
   ): Promise<OrderPaymentExternalId>;
+  updatePaymentExternalIdBySessionId(
+    paymentSessionId: string,
+    paymentId: string,
+  ): Promise<OrderPaymentExternalId | null>;
 }
