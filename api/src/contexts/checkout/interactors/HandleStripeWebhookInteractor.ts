@@ -61,6 +61,13 @@ export class HandleStripeWebhookInteractor
       );
     }
 
+    // 住所情報の更新（checkoutページで入力された住所）
+    if (session.shipping_details?.address) {
+      const address = this.formatShippingAddress(session.shipping_details.address);
+      await this.orderRepository.updateAddress(order.id, address);
+      console.log(`Order ${order.id} address updated: ${address}`);
+    }
+
     // 注文ステータスの更新
     await this.orderRepository.updateStatus(order.id, OrderStatus.COMPLETED);
     console.log(`Order ${order.id} status updated to COMPLETED`);
@@ -117,5 +124,39 @@ export class HandleStripeWebhookInteractor
         `Order ID not found in payment intent metadata: ${paymentIntent.id}`,
       );
     }
+  }
+
+  // Stripeの住所情報を文字列にフォーマット
+  private formatShippingAddress(
+    address: Stripe.Address,
+  ): string {
+    const parts: string[] = [];
+
+    // 郵便番号
+    if (address.postal_code) {
+      parts.push(`〒${address.postal_code}`);
+    }
+
+    // 都道府県
+    if (address.state) {
+      parts.push(address.state);
+    }
+
+    // 市区町村
+    if (address.city) {
+      parts.push(address.city);
+    }
+
+    // 番地（line1）
+    if (address.line1) {
+      parts.push(address.line1);
+    }
+
+    // 建物名・部屋番号（line2）
+    if (address.line2) {
+      parts.push(address.line2);
+    }
+
+    return parts.join(' ');
   }
 }
