@@ -19,7 +19,17 @@ const itemRepository = new ItemRepository(prisma);
 const inventoryRepository = new InventoryRepository(prisma);
 const userRepository = new UserRepository(prisma);
 const orderRepository = new OrderRepository(prisma);
-const stripeAdapter = new StripeAdapter();
+
+const secretKey = process.env.STRIPE_SECRET_KEY;
+if (!secretKey) {
+  throw new Error('STRIPE_SECRET_KEY is not set');
+}
+
+const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+if (!webhookSecret) {
+  throw new Error('STRIPE_WEBHOOK_SECRET is not set');
+}
+const stripeAdapter = new StripeAdapter(secretKey, webhookSecret);
 
 const createCheckoutSessionInteractor = new CreateCheckoutSessionInteractor(
   cartRepository,
