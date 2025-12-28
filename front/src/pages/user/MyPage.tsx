@@ -66,7 +66,9 @@ export const MyPage: React.FC = () => {
             >
               <div className="flex items-center space-x-4">
                 <ClipboardDocumentListIcon className="w-6 h-6 text-gray-600 group-hover:text-gray-900 transition-colors" />
-                <span className="text-gray-900 font-medium">購入履歴管理</span>
+                <span className="text-gray-900 font-medium">
+                  すべての購入管理
+                </span>
               </div>
               <ChevronRightIcon className="w-5 h-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
             </Link>
