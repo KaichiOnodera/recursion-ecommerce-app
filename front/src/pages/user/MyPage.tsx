@@ -31,7 +31,7 @@ export const MyPage: React.FC = () => {
           {isAdmin() && (
             <div>
               <span className="text-gray-600">権限: </span>
-              <span className="font-medium text-blue-600">管理者</span>
+              <span className="font-medium text-gray-900">管理者</span>
             </div>
           )}
         </div>
