@@ -1,6 +1,7 @@
 import express from 'express';
 import { PatchReq, PatchRes } from '@shared/types/patches';
 import { IUpdateItemInteractor } from '../usecases/IUpdateItemInteractor';
+import { InventoryStatus } from '@shared/schemas/item';
 
 export class UpdateItemController {
   constructor(private readonly updateItemInteractor: IUpdateItemInteractor) {}
@@ -53,6 +54,10 @@ export class UpdateItemController {
       description: item.description,
       type: item.type,
       price: item.price,
+      inventoryStatus:
+        item.inventory.amount > 0
+          ? InventoryStatus.IN_STOCK
+          : InventoryStatus.OUT_OF_STOCK,
       createdAt: item.createdAt,
       updatedAt: item.updatedAt,
     };

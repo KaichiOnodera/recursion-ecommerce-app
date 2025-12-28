@@ -1,5 +1,5 @@
 import { User } from 'schemas/user';
-import { Item } from '../schemas/item';
+import { AdminItem } from '../schemas/item';
 
 export type PatchReq = {
   '/admin/items/:id': {
@@ -18,7 +18,7 @@ export type PatchReq = {
 
 export type PatchRes = {
   '/admin/items/:id': {
-    item: Item;
+    item: AdminItem;
   };
   '/users/profile': {
     user: User;

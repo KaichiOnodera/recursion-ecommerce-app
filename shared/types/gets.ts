@@ -1,4 +1,4 @@
-import { Item, AdminItemDetail } from '../schemas/item';
+import { Item, ItemDetail, AdminItem, AdminItemDetail } from '../schemas/item';
 import { User } from '../schemas/user';
 import { CartItem } from '../schemas/cart';
 
@@ -7,7 +7,7 @@ export type GetRes = {
     items: Item[];
   };
   '/admin/items': {
-    items: Item[];
+    items: AdminItem[];
   };
   '/items/search': {
     items: Item[];
@@ -19,7 +19,7 @@ export type GetRes = {
     user: User;
   };
   '/items/:id': {
-    item: Item;
+    item: ItemDetail;
   };
   '/cart': {
     items: CartItem[];

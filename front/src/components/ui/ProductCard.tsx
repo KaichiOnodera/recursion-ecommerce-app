@@ -1,11 +1,11 @@
 import React from 'react';
 import { useNavigate } from 'react-router';
-import { Item } from '@shared/schemas/item';
+import { Item, AdminItem } from '@shared/schemas/item';
 import { addToCart } from '../../services/api/cart';
 import { useUser } from '../../contexts/UserContext';
 
 interface ProductCardProps {
-  item: Item;
+  item: Item | AdminItem;
   isAdmin?: boolean;
 }
 
