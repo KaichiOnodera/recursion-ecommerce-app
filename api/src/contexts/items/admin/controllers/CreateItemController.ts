@@ -1,6 +1,7 @@
 import express from 'express';
 import { PostReq, PostRes } from '@shared/types/posts';
 import { ICreateItemInteractor } from '../usecases/ICreateItemInteractor';
+import { InventoryStatus } from '@shared/schemas/item';
 
 export class CreateItemController {
   constructor(private readonly createItemInteractor: ICreateItemInteractor) {}
@@ -33,6 +34,10 @@ export class CreateItemController {
       description: item.description,
       type: item.type,
       price: item.price,
+      inventoryStatus:
+        item.inventory.amount > 0
+          ? InventoryStatus.IN_STOCK
+          : InventoryStatus.OUT_OF_STOCK,
       createdAt: item.createdAt,
       updatedAt: item.updatedAt,
     };

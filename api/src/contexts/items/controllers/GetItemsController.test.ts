@@ -63,12 +63,13 @@ describe('GetItemsController', () => {
       expect(firstItem).toHaveProperty('description');
       expect(firstItem).toHaveProperty('type');
       expect(firstItem).toHaveProperty('price');
-      expect(firstItem).toHaveProperty('createdAt');
-      expect(firstItem).toHaveProperty('updatedAt');
+      expect(firstItem).toHaveProperty('inventoryStatus');
 
-      // displayStatusとinventoryはレスポンスに含まれないことを確認
+      // displayStatus、inventory、createdAt、updatedAtはレスポンスに含まれないことを確認
       expect(firstItem).not.toHaveProperty('displayStatus');
       expect(firstItem).not.toHaveProperty('inventory');
+      expect(firstItem).not.toHaveProperty('createdAt');
+      expect(firstItem).not.toHaveProperty('updatedAt');
 
       // データの内容を検証
       const itemIds = response.body.items.map(
@@ -133,8 +134,7 @@ describe('GetItemsController', () => {
         description: '構造テスト商品の説明',
         type: 1,
         price: 5000,
-        createdAt: item.createdAt.toISOString(),
-        updatedAt: item.updatedAt.toISOString(),
+        inventoryStatus: 'outOfStock',
       });
     });
   });
