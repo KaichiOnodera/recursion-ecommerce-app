@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import ProductCard from '../../components/ui/ProductCard';
-import { Item } from '@shared/schemas/item';
+import { AdminItem } from '@shared/schemas/item';
 import { getAdminItems } from '../../services/api/items';
 
 export const AdminProductList: React.FC = () => {
-  const [items, setItems] = useState<Item[]>([]);
+  const [items, setItems] = useState<AdminItem[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {

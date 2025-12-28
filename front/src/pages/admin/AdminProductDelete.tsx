@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { getAdminItems, deleteItem } from '../../services/api/items';
-import { Item } from '@shared/schemas/item';
+import { AdminItem } from '@shared/schemas/item';
 
 export const AdminProductDelete: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [item, setItem] = useState<Item | null>(null);
+  const [item, setItem] = useState<AdminItem | null>(null);
   const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {

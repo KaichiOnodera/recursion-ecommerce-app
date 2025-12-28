@@ -1,22 +1,29 @@
 import { apiClient } from './apiClient';
-import { Item, SearchItemsParams } from '@shared/schemas/item';
+import { SearchItemsParams } from '@shared/schemas/item';
 import { DeleteRes } from '@shared/types/delete';
 import { PostReq, PostRes } from '@shared/types/posts';
 import { PatchReq, PatchRes } from '@shared/types/patches';
 import { GetRes } from '@shared/types/gets';
 
-export interface ItemsResponse {
-  items: Item[];
-}
+// Export InventoryStatus to avoid @shared path alias issues
+/* eslint-disable no-redeclare */
+export const InventoryStatus = {
+  IN_STOCK: 'inStock',
+  OUT_OF_STOCK: 'outOfStock',
+} as const;
 
-export async function getItems(): Promise<ItemsResponse> {
-  const response = await apiClient.get<ItemsResponse>('/items');
+export type InventoryStatus =
+  (typeof InventoryStatus)[keyof typeof InventoryStatus];
+/* eslint-enable no-redeclare */
+
+export async function getItems(): Promise<GetRes['/items']> {
+  const response = await apiClient.get<GetRes['/items']>('/items');
 
   return response.data;
 }
 
-export async function getAdminItems(): Promise<ItemsResponse> {
-  const response = await apiClient.get<ItemsResponse>('/admin/items');
+export async function getAdminItems(): Promise<GetRes['/admin/items']> {
+  const response = await apiClient.get<GetRes['/admin/items']>('/admin/items');
 
   return response.data;
 }

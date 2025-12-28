@@ -1,5 +1,5 @@
 import { User } from '../schemas/user';
-import { Item } from '../schemas/item';
+import { AdminItem } from '../schemas/item';
 import { CartItem } from '../schemas/cart';
 
 export type PostReq = {
@@ -32,7 +32,7 @@ export type PostRes = {
     user: User;
   };
   '/admin/items': {
-    item: Item;
+    item: AdminItem;
   };
   '/users/signup': {
     createdUser: User;

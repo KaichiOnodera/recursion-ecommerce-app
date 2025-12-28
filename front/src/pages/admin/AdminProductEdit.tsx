@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { getAdminItems, updateItem } from '../../services/api/items';
-import { Item } from '@shared/schemas/item';
+import { AdminItem } from '@shared/schemas/item';
 
 export const AdminProductEdit: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -20,7 +20,7 @@ export const AdminProductEdit: React.FC = () => {
       }
 
       const response = await getAdminItems();
-      const item = response.items.find((i: Item) => i.id === parseInt(id));
+      const item = response.items.find((i: AdminItem) => i.id === parseInt(id));
 
       if (!item) {
         navigate('/admin/products');

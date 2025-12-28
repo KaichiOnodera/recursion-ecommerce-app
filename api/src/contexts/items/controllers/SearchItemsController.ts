@@ -1,7 +1,11 @@
 import express from 'express';
 import { GetRes } from '@shared/types/gets';
 import { ISearchItemsInteractor } from '../usecases/ISearchItemsInteractor';
-import { SearchItemsParams, SearchSortType } from '@shared/schemas/item';
+import {
+  SearchItemsParams,
+  SearchSortType,
+  InventoryStatus,
+} from '@shared/schemas/item';
 
 type SearchParamsResult =
   | { success: true; params: SearchItemsParams }
@@ -28,8 +32,10 @@ export class SearchItemsController {
       description: item.description,
       type: item.type,
       price: item.price,
-      createdAt: item.createdAt,
-      updatedAt: item.updatedAt,
+      inventoryStatus:
+        item.inventory.amount > 0
+          ? InventoryStatus.IN_STOCK
+          : InventoryStatus.OUT_OF_STOCK,
     }));
 
     res.status(200).json({ items: responseItems });
