@@ -80,9 +80,12 @@ const Header: React.FC<HeaderProps> = ({
               <HeartIcon className="w-5 h-5" />
             </button>
             {/* ユーザーアイコン */}
-            <button className="p-2 text-gray-700">
+            <Link
+              to="/mypage"
+              className="p-2 text-gray-700 hover:text-gray-900"
+            >
               <UserIcon className="w-5 h-5" />
-            </button>
+            </Link>
             {/* カートアイコン */}
             <Link to="/cart" className="p-2 text-gray-700 hover:text-gray-900">
               <ShoppingCartIcon className="w-5 h-5" />
