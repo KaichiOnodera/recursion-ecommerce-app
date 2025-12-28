@@ -137,5 +137,90 @@ describe('GetItemsController', () => {
         inventoryStatus: 'outOfStock',
       });
     });
+
+    it('should exclude private items from results', async () => {
+      // public商品を作成
+      const publicItem = await prismaTest.items.create({
+        data: {
+          name: '公開商品',
+          description: '公開商品の説明',
+          type: 1,
+          price: 1000,
+          displayStatus: 'public',
+        },
+      });
+
+      // private商品を作成
+      const privateItem = await prismaTest.items.create({
+        data: {
+          name: '非公開商品',
+          description: '非公開商品の説明',
+          type: 1,
+          price: 2000,
+          displayStatus: 'private',
+        },
+      });
+
+      const response = await request(app).get('/items').expect(201);
+
+      expect(response.body.items.length).toBe(1);
+      expect(response.body.items[0].id).toBe(publicItem.id);
+      expect(response.body.items[0].id).not.toBe(privateItem.id);
+    });
+
+    it('should return only public items when both public and private items exist', async () => {
+      // public商品を複数作成
+      const publicItem1 = await prismaTest.items.create({
+        data: {
+          name: '公開商品1',
+          description: '公開商品1の説明',
+          type: 1,
+          price: 1000,
+          displayStatus: 'public',
+        },
+      });
+
+      const publicItem2 = await prismaTest.items.create({
+        data: {
+          name: '公開商品2',
+          description: '公開商品2の説明',
+          type: 1,
+          price: 2000,
+          displayStatus: 'public',
+        },
+      });
+
+      // private商品を複数作成
+      const privateItem1 = await prismaTest.items.create({
+        data: {
+          name: '非公開商品1',
+          description: '非公開商品1の説明',
+          type: 1,
+          price: 3000,
+          displayStatus: 'private',
+        },
+      });
+
+      const privateItem2 = await prismaTest.items.create({
+        data: {
+          name: '非公開商品2',
+          description: '非公開商品2の説明',
+          type: 1,
+          price: 4000,
+          displayStatus: 'private',
+        },
+      });
+
+      const response = await request(app).get('/items').expect(201);
+
+      expect(response.body.items.length).toBe(2);
+      const itemIds = response.body.items.map(
+        (item: { id: number }) => item.id,
+      );
+      expect(itemIds).toContain(publicItem1.id);
+      expect(itemIds).toContain(publicItem2.id);
+      expect(itemIds).not.toContain(privateItem1.id);
+      expect(itemIds).not.toContain(privateItem2.id);
+    });
   });
 });
