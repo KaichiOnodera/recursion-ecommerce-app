@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router';
 import { Item, AdminItem } from '@shared/schemas/item';
 import { addToCart } from '../../services/api/cart';
-import { useUser } from '../../contexts/UserContext';
+import { useCart } from '../../contexts/CartContext';
 
 interface ProductCardProps {
   item: Item | AdminItem;
@@ -11,16 +11,12 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ item, isAdmin = false }) => {
   const navigate = useNavigate();
-  const { isLoggedIn } = useUser();
+  const { refreshCart } = useCart();
 
   const handleAddToCart = async (): Promise<void> => {
-    if (!isLoggedIn()) {
-      navigate('/auth/user/login');
-      return;
-    }
-
     try {
       await addToCart(item.id, 1);
+      await refreshCart();
     } catch (err) {
       console.error('Failed to add to cart:', err);
     }
