@@ -2,7 +2,7 @@ import { DisplayStatus, Item } from '../entities/Item';
 import { ItemQuery } from './ItemQuery';
 
 export interface IItemRepository {
-  findAll(): Promise<Item[]>;
+  findAll(displayStatus?: DisplayStatus): Promise<Item[]>;
   find(query?: ItemQuery): Promise<Item[]>;
   findById(id: number, displayStatus?: DisplayStatus): Promise<Item | null>;
   create(name: string, description: string, type: number): Promise<Item>;
