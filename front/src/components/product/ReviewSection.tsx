@@ -1,9 +1,10 @@
-import React, { useMemo } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useUser } from '../../contexts/UserContext';
 import { useReviews } from './review/hooks/useReviews';
 import { ReviewHeader } from './review/ReviewHeader';
 import { ReviewItem } from './review/ReviewItem';
 import { Pagination } from './review/Pagination';
+import { ReviewFormModal } from './review/ReviewFormModal';
 
 interface ReviewSectionProps {
   itemId: number;
@@ -11,6 +12,7 @@ interface ReviewSectionProps {
 
 export const ReviewSection: React.FC<ReviewSectionProps> = ({ itemId }) => {
   const { user } = useUser();
+  const [showReviewForm, setShowReviewForm] = useState(false);
   const {
     reviews,
     total,
@@ -20,11 +22,25 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({ itemId }) => {
     currentPage,
     totalPages,
     changePage,
+    refetch,
   } = useReviews(itemId);
 
-  const handleWriteReview = () => {
-    // TODO: レビュー投稿機能は別PRで実装
-  };
+  const handleWriteReview = useCallback(() => {
+    if (!user) {
+      alert('レビューを投稿するにはログインが必要です');
+      return;
+    }
+    setShowReviewForm(true);
+  }, [user]);
+
+  const handleReviewSubmitted = useCallback(() => {
+    setShowReviewForm(false);
+    refetch();
+  }, [refetch]);
+
+  const handleCancelReview = useCallback(() => {
+    setShowReviewForm(false);
+  }, []);
 
   return (
     <div className="mt-12 pt-8 border-t border-gray-300">
@@ -32,8 +48,14 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({ itemId }) => {
         averageRating={averageRating}
         totalReviews={total}
         isLoading={isLoading}
-        showForm={false}
         onWriteReview={handleWriteReview}
+      />
+
+      <ReviewFormModal
+        isOpen={showReviewForm}
+        onClose={handleCancelReview}
+        itemId={itemId}
+        onSubmit={handleReviewSubmitted}
       />
 
       {isLoading ? (
