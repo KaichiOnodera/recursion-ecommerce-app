@@ -1,5 +1,15 @@
 import { Review } from '../entities/Review';
 
+export interface FindReviewsParams {
+  page?: number;
+  limit?: number;
+}
+
+export interface FindReviewsResult {
+  reviews: Review[];
+  total: number;
+}
+
 export interface IReviewRepository {
   create(
     userId: number,
@@ -9,4 +19,8 @@ export interface IReviewRepository {
     rating: number,
   ): Promise<Review>;
   findByUserIdAndItemId(userId: number, itemId: number): Promise<Review | null>;
+  findByItemId(
+    itemId: number,
+    params?: FindReviewsParams,
+  ): Promise<FindReviewsResult>;
 }

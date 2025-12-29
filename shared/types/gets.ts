@@ -1,6 +1,7 @@
 import { Item, ItemDetail, AdminItem, AdminItemDetail } from '../schemas/item';
 import { User } from '../schemas/user';
 import { CartItem } from '../schemas/cart';
+import { Review } from '../schemas/review';
 
 export type GetRes = {
   '/items': {
@@ -65,5 +66,9 @@ export type GetRes = {
         amount: number;
       }>;
     }>;
+  };
+  '/reviews/items/:itemId': {
+    reviews: Review[];
+    total: number;
   };
 };
