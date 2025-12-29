@@ -57,6 +57,7 @@ export class GetReviewsController {
       return res.status(200).json({
         reviews: responseReviews,
         total: result.total,
+        averageRating: result.averageRating,
       });
     } catch (error: unknown) {
       console.error('Error fetching reviews:', error);
