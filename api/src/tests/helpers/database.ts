@@ -1,5 +1,4 @@
 import { prismaTest } from '../../libs/prisma-test';
-import { seedTestData } from '../../../prisma/seed';
 
 /**
  * データベースをクリーンアップ
@@ -15,21 +14,6 @@ export async function cleanDatabase(): Promise<void> {
   await prismaTest.cart.deleteMany();
   await prismaTest.items.deleteMany();
   await prismaTest.users.deleteMany();
-}
-
-/**
- * テスト用のseedデータを投入
- */
-export async function seedTestDatabase(): Promise<void> {
-  await seedTestData(prismaTest);
-}
-
-/**
- * テスト前のセットアップ
- */
-export async function setupTestDatabase(): Promise<void> {
-  await cleanDatabase();
-  await seedTestDatabase();
 }
 
 /**

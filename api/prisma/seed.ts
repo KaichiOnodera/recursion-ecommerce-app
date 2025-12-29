@@ -1,21 +1,30 @@
-import { PrismaClient, UserRole, OrderStatus } from '@prisma/client';
+import { PrismaClient, UserRole, OrderStatus, Items, Orders } from '@prisma/client';
 import { hashPassword } from '../src/contexts/utils/hashPassword';
 import { config } from 'dotenv';
 
-if (!process.env.DATABASE_URL) {
-  config({ path: '.env.test' });
+if (require.main === module) {
+  if (!process.env.DATABASE_URL) {
+    config();
+  }
 }
 
-const prisma = new PrismaClient({
-  datasources: {
-    db: {
-      url: process.env.DATABASE_URL,
+let prisma: PrismaClient | undefined;
+
+if (require.main === module) {
+  prisma = new PrismaClient({
+    datasources: {
+      db: {
+        url: process.env.DATABASE_URL,
+      },
     },
-  },
-});
+  });
+}
 
 export async function seedTestData(prismaClient?: PrismaClient) {
-  const client = prismaClient || prisma;
+  if (!prismaClient && !prisma) {
+    throw new Error('prismaClient must be provided when seed.ts is imported as a module');
+  }
+  const client = prismaClient || prisma!;
 
   // Users
   const hashedPassword = await hashPassword('password123');
@@ -72,7 +81,7 @@ export async function seedTestData(prismaClient?: PrismaClient) {
     { name: 'アウトドアテーブル', description: '折りたたみ式のコンパクトテーブル。設営が簡単で収納も便利です。', price: 6000 },
   ];
 
-  const items = [];
+  const items: Items[] = [];
   for (let i = 0; i < itemData.length; i++) {
     const { name, description, price } = itemData[i];
     const item = await client.items.upsert({
@@ -196,7 +205,7 @@ export async function seedTestData(prismaClient?: PrismaClient) {
     },
   ];
 
-  const orders = [];
+  const orders: Orders[] = [];
   for (const orderData of ordersData) {
     const totalPrice = orderData.items.reduce(
       (sum, item) => sum + item.itemPrice * item.amount,
@@ -233,11 +242,26 @@ async function main() {
   await seedTestData();
 }
 
-main()
-  .catch((error) => {
-    console.error('Seed failed', error);
+// 直接実行された場合のみmain()を実行
+// モジュールとしてインポートされた場合は実行しない
+if (require.main === module) {
+  if (!prisma) {
+    console.error('Error: prisma instance is not initialized');
     process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+  }
+  main()
+    .catch((error) => {
+      console.error('Seed failed', error);
+      console.error('Error details:', error);
+      if (error instanceof Error) {
+        console.error('Error message:', error.message);
+        console.error('Error stack:', error.stack);
+      }
+      process.exit(1);
+    })
+    .finally(async () => {
+      if (prisma) {
+        await prisma.$disconnect();
+      }
+    });
+}
