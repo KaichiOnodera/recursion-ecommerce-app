@@ -1,6 +1,7 @@
 import { User } from '../schemas/user';
 import { AdminItem } from '../schemas/item';
 import { CartItem } from '../schemas/cart';
+import { Review } from '../schemas/review';
 
 export type PostReq = {
   '/auth/login': {
@@ -25,6 +26,12 @@ export type PostReq = {
       amount: number;
     }[];
   };
+  '/reviews': {
+    itemId: number;
+    title?: string;
+    body: string;
+    rating: number;
+  };
 };
 
 export type PostRes = {
@@ -43,5 +50,8 @@ export type PostRes = {
   '/checkout/session': {
     sessionId: string;
     url: string;
+  };
+  '/reviews': {
+    review: Review;
   };
 };
