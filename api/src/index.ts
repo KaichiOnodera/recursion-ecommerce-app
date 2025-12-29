@@ -21,6 +21,8 @@ import { HandleStripeWebhookInteractor } from './contexts/checkout/interactors/H
 import { StripeAdapter } from './contexts/checkout/infrastructures/adapters/StripeAdapter';
 import { OrderRepository } from './contexts/orders/infrastructures/repositories/OrderRepository';
 import { InventoryRepository } from './contexts/items/infrastructures/repositories/InventoryRepository';
+import { CartRepository } from './contexts/cart/infrastructures/repositories/CartRepository';
+import { CartItemRepository } from './contexts/cart/infrastructures/repositories/CartItemRepository';
 
 const app = express();
 
@@ -37,6 +39,8 @@ app.use(cookieParser());
 // Stripeの署名検証には生のリクエストボディが必要
 const orderRepository = new OrderRepository(prisma);
 const inventoryRepository = new InventoryRepository(prisma);
+const cartRepository = new CartRepository(prisma);
+const cartItemRepository = new CartItemRepository(prisma);
 
 const secretKey = process.env.STRIPE_SECRET_KEY;
 if (!secretKey) {
@@ -53,6 +57,8 @@ const handleStripeWebhookInteractor = new HandleStripeWebhookInteractor(
   orderRepository,
   inventoryRepository,
   stripeAdapter,
+  cartRepository,
+  cartItemRepository,
 );
 const stripeWebhookController = new StripeWebhookController(
   handleStripeWebhookInteractor,

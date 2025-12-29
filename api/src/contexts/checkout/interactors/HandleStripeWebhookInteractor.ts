@@ -2,6 +2,8 @@ import { IHandleStripeWebhookInteractor } from '../usecases/IHandleStripeWebhook
 import { IOrderRepository } from '../../orders/domains/repositories/IOrderRepository';
 import { IInventoryRepository } from '../../items/domains/repositories/IInventoryRepository';
 import { IStripeAdapter } from '../domains/adapters/IStripeAdapter';
+import { ICartRepository } from '../../cart/domains/repositories/ICartRepository';
+import { ICartItemRepository } from '../../cart/domains/repositories/ICartItemRepository';
 import { OrderStatus } from '@prisma/client';
 import Stripe from 'stripe';
 
@@ -12,6 +14,8 @@ export class HandleStripeWebhookInteractor
     private readonly orderRepository: IOrderRepository,
     private readonly inventoryRepository: IInventoryRepository,
     private readonly stripeAdapter: IStripeAdapter,
+    private readonly cartRepository: ICartRepository,
+    private readonly cartItemRepository: ICartItemRepository,
   ) {}
 
   async execute(event: Stripe.Event): Promise<void> {
@@ -140,6 +144,26 @@ export class HandleStripeWebhookInteractor
           error,
         );
       }
+    }
+
+    // metadataからcartIdを取得してカートをクリア
+    const cartId = detailedSession.metadata?.cartId;
+    if (cartId) {
+      try {
+        const cartIdNumber = parseInt(cartId, 10);
+        await this.cartItemRepository.clearCart(cartIdNumber);
+        console.log(`Cart ${cartIdNumber} cleared after order ${order.id}`);
+      } catch (error) {
+        // カートのクリアに失敗しても、注文は既に完了しているため、ログを残す
+        console.error(
+          `Failed to clear cart ${cartId} after order ${order.id}:`,
+          error,
+        );
+      }
+    } else {
+      console.warn(
+        `Order ${order.id}: cartId not found in metadata. Cart may not be cleared.`,
+      );
     }
 
     console.log(
