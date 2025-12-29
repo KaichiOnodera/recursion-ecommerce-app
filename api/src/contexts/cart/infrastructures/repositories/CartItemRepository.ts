@@ -33,4 +33,10 @@ export class CartItemRepository implements ICartItemRepository {
       },
     });
   }
+
+  async clearCart(cartId: number): Promise<void> {
+    await this.prisma.cartItems.deleteMany({
+      where: { cartId },
+    });
+  }
 }
