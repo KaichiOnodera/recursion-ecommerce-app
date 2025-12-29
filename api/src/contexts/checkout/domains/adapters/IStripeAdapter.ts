@@ -1,3 +1,4 @@
+import Stripe from 'stripe';
 import {
   CheckoutSession,
   CheckoutSessionMode,
@@ -25,4 +26,10 @@ export interface IStripeAdapter {
     requireShippingAddress?: boolean;
     metadata?: Record<string, string>;
   }): Promise<CheckoutSession>;
+
+  // Webhook署名を検証
+  verifyWebhookSignature(
+    payload: string | Buffer,
+    signature: string,
+  ): Promise<Stripe.Event>;
 }

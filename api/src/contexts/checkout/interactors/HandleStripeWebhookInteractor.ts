@@ -1,0 +1,162 @@
+import { IHandleStripeWebhookInteractor } from '../usecases/IHandleStripeWebhookInteractor';
+import { IOrderRepository } from '../../orders/domains/repositories/IOrderRepository';
+import { IInventoryRepository } from '../../items/domains/repositories/IInventoryRepository';
+import { OrderStatus } from '@prisma/client';
+import Stripe from 'stripe';
+
+export class HandleStripeWebhookInteractor
+  implements IHandleStripeWebhookInteractor
+{
+  constructor(
+    private readonly orderRepository: IOrderRepository,
+    private readonly inventoryRepository: IInventoryRepository,
+  ) {}
+
+  async execute(event: Stripe.Event): Promise<void> {
+    switch (event.type) {
+      case 'checkout.session.completed':
+        await this.handleCheckoutSessionCompleted(event);
+        break;
+      case 'payment_intent.payment_failed':
+        await this.handlePaymentIntentPaymentFailed(event);
+        break;
+      default:
+        console.log(`Unhandled event type: ${event.type}`);
+    }
+  }
+
+  // ここから、決済完了後の処理をします
+  private async handleCheckoutSessionCompleted(
+    event: Stripe.Event,
+  ): Promise<void> {
+    const session = event.data.object as Stripe.Checkout.Session;
+
+    // StripeセッションIDから注文を取得
+    const order = await this.orderRepository.getByStripeSessionId(session.id);
+    if (!order) {
+      const errorMessage = `Order not found for session ID: ${session.id}`;
+      console.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+
+    if (order.orderStatus === OrderStatus.COMPLETED) {
+      console.log(
+        `Order ${order.id} is already completed. Skipping duplicate webhook.`,
+      );
+      return;
+    }
+
+    // PaymentIDの保存
+    if (session.payment_intent) {
+      const paymentId =
+        typeof session.payment_intent === 'string'
+          ? session.payment_intent
+          : session.payment_intent.id;
+      await this.orderRepository.updatePaymentExternalIdBySessionId(
+        session.id,
+        paymentId,
+      );
+      console.log(
+        `Payment ID ${paymentId} saved for session ${session.id}`,
+      );
+    }
+
+    // 住所情報の更新（checkoutページで入力された住所）
+    if (session.shipping_details?.address) {
+      const address = this.formatShippingAddress(session.shipping_details.address);
+      await this.orderRepository.updateAddress(order.id, address);
+      console.log(`Order ${order.id} address updated: ${address}`);
+    }
+
+    // 注文ステータスの更新
+    await this.orderRepository.updateStatus(order.id, OrderStatus.COMPLETED);
+    console.log(`Order ${order.id} status updated to COMPLETED`);
+
+    // 在庫減算
+    for (const orderItem of order.items) {
+      // itemIdがnullの場合はスキップ（購入後、削除されている可能性があるため）
+      if (!orderItem.itemId) {
+        console.warn(
+          `OrderItem ${orderItem.id} has no itemId. Skipping inventory update.`,
+        );
+        continue;
+      }
+
+      try {
+        await this.inventoryRepository.decreaseStock(
+          orderItem.itemId,
+          orderItem.amount,
+        );
+        console.log(
+          `Inventory decreased: itemId=${orderItem.itemId}, amount=${orderItem.amount}`,
+        );
+      } catch (error) {
+        // 在庫減算に失敗した場合でも、注文は既に完了しているため、
+        // エラーをログに記録して処理を続行する
+        console.error(
+          `Failed to decrease inventory for itemId=${orderItem.itemId}, amount=${orderItem.amount}:`,
+          error,
+        );
+      }
+    }
+
+    console.log(
+      `Successfully processed checkout.session.completed for order ${order.id}`,
+    );
+  }
+
+  // 決済失敗時
+  private async handlePaymentIntentPaymentFailed(
+    event: Stripe.Event,
+  ): Promise<void> {
+    const paymentIntent = event.data.object as Stripe.PaymentIntent;
+
+    if (paymentIntent.metadata?.orderId) {
+      const orderId = parseInt(paymentIntent.metadata.orderId, 10);
+
+      await this.orderRepository.updateStatus(orderId, OrderStatus.CANCELLED);
+      console.log(
+        `Order ${orderId} status updated to CANCELLED (payment failed)`,
+      );
+    } else {
+      // metadataにorderIdが含まれていない場合は、エラーをログに記録
+      console.error(
+        `Order ID not found in payment intent metadata: ${paymentIntent.id}`,
+      );
+    }
+  }
+
+  // Stripeの住所情報を文字列にフォーマット
+  private formatShippingAddress(
+    address: Stripe.Address,
+  ): string {
+    const parts: string[] = [];
+
+    // 郵便番号
+    if (address.postal_code) {
+      parts.push(`〒${address.postal_code}`);
+    }
+
+    // 都道府県
+    if (address.state) {
+      parts.push(address.state);
+    }
+
+    // 市区町村
+    if (address.city) {
+      parts.push(address.city);
+    }
+
+    // 番地（line1）
+    if (address.line1) {
+      parts.push(address.line1);
+    }
+
+    // 建物名・部屋番号（line2）
+    if (address.line2) {
+      parts.push(address.line2);
+    }
+
+    return parts.join(' ');
+  }
+}
