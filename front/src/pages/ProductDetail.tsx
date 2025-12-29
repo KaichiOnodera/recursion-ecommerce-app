@@ -207,9 +207,11 @@ export const ProductDetail: React.FC = () => {
       </div>
 
       {/* レビューセクション */}
-      <div className="mt-12">
-        <ReviewSection />
-      </div>
+      {itemId && (
+        <div className="mt-12">
+          <ReviewSection itemId={itemId} />
+        </div>
+      )}
     </div>
   );
 };
