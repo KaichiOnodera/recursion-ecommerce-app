@@ -95,6 +95,30 @@ export async function seedTestData(prismaClient?: PrismaClient) {
     items.push(item);
   }
 
+  await client.inventory.deleteMany({});
+
+  const inventoryData = [
+    { itemId: items[0].id, amount: 85 }, 
+    { itemId: items[1].id, amount: 15 },
+    { itemId: items[2].id, amount: 42 },
+    { itemId: items[3].id, amount: 120 },
+    { itemId: items[4].id, amount: 28 },
+    { itemId: items[5].id, amount: 65 },
+    { itemId: items[6].id, amount: 38 },
+    { itemId: items[7].id, amount: 22 },
+    { itemId: items[8].id, amount: 0 },
+    { itemId: items[9].id, amount: 55 },
+  ];
+
+  for (const inventory of inventoryData) {
+    await client.inventory.create({
+      data: {
+        itemId: inventory.itemId,
+        amount: inventory.amount,
+      },
+    });
+  }
+
   await client.orderItems.deleteMany({});
   await client.orders.deleteMany({});
 
