@@ -51,6 +51,7 @@ const stripeAdapter = new StripeAdapter(secretKey, webhookSecret);
 const handleStripeWebhookInteractor = new HandleStripeWebhookInteractor(
   orderRepository,
   inventoryRepository,
+  stripeAdapter,
 );
 const stripeWebhookController = new StripeWebhookController(
   handleStripeWebhookInteractor,

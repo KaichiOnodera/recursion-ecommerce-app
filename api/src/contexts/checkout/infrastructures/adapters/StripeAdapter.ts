@@ -88,4 +88,13 @@ export class StripeAdapter implements IStripeAdapter {
       this.webhookSecret,
     );
   }
+
+  async retrieveCheckoutSession(
+    sessionId: string,
+  ): Promise<Stripe.Checkout.Session> {
+    // expandパラメータでcustomer情報を含める
+    return this.stripe.checkout.sessions.retrieve(sessionId, {
+      expand: ['customer'],
+    });
+  }
 }
