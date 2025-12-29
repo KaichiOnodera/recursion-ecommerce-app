@@ -70,7 +70,7 @@ export async function getAdminItem(
 }
 
 export async function getItem(id: number): Promise<GetRes['/items/:id']> {
-  const response = await apiClient.get<GetRes['/items/:id']>(`/item/${id}`);
+  const response = await apiClient.get<GetRes['/items/:id']>(`/items/${id}`);
   return response.data;
 }
 

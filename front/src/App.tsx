@@ -11,6 +11,7 @@ import { FloatingCartIcon } from './components/layout/FloatingCartIcon';
 
 // ページ関係
 import { ProductList } from './pages/ProductList';
+import { ProductDetail } from './pages/ProductDetail';
 import { UserLogin } from './pages/auth/UserLogin';
 import { UserSignup } from './pages/auth/UserSignup';
 import { AdminLogin } from './pages/auth/AdminLogin';
@@ -55,6 +56,7 @@ function App(): React.JSX.Element {
               <Routes>
                 <Route path="/" element={<Navigate to="/products" replace />} />
                 <Route path="/products" element={<ProductList />} />
+                <Route path="/products/:id" element={<ProductDetail />} />
                 <Route path="/auth/user/login" element={<UserLogin />} />
                 <Route path="/auth/user/signup" element={<UserSignup />} />
                 <Route path="/cart" element={<Cart />} />
