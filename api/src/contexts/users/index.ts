@@ -1,20 +1,13 @@
 import express from 'express';
-import { PrismaClient } from '@prisma/client';
 import { UserRepository } from './infrastructures/repositories/UserRepository';
-import { verifyAccessToken, verifyAdmin } from '../../middlewares';
-import { adminItemsRouter } from '../items/admin';
-
-adminItemsRouter.use(verifyAccessToken);
-adminItemsRouter.use(verifyAdmin);
-
+import { verifyAccessToken } from '../../middlewares';
 import { UpdateUserProfileInteractor } from './interactors/UpdateUserProfileInteractor';
-
 import { UpdateUserProfileController } from './controllers/UpdateUserProfileController';
+import { prisma } from '../../libs/prisma';
 
 const UsersRouter = express.Router();
 
 // Core dependencies
-const prisma = new PrismaClient();
 const userRepository = new UserRepository(prisma);
 
 const updateUserInteractor = new UpdateUserProfileInteractor(userRepository);
@@ -26,8 +19,10 @@ const updateUserProfileController = new UpdateUserProfileController(
 );
 
 // Routes
-UsersRouter.put('/profile', verifyAccessToken, (req, res) => {
-  updateUserProfileController.execute(req, res);
-});
+UsersRouter.put(
+  '/profile',
+  verifyAccessToken,
+  updateUserProfileController.execute.bind(updateUserProfileController),
+);
 
 export { UsersRouter };
