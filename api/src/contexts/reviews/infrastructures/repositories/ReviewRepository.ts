@@ -77,7 +77,7 @@ export class ReviewRepository implements IReviewRepository {
     const limit = params?.limit ?? 20;
     const skip = (page - 1) * limit;
 
-    const [reviews, total] = await Promise.all([
+    const [reviews, total, aggregate] = await Promise.all([
       this.prisma.reviews.findMany({
         where: {
           itemId,
@@ -91,6 +91,14 @@ export class ReviewRepository implements IReviewRepository {
       this.prisma.reviews.count({
         where: {
           itemId,
+        },
+      }),
+      this.prisma.reviews.aggregate({
+        where: {
+          itemId,
+        },
+        _avg: {
+          rating: true,
         },
       }),
     ]);
@@ -108,6 +116,7 @@ export class ReviewRepository implements IReviewRepository {
         updatedAt: review.updatedAt,
       })),
       total,
+      averageRating: aggregate._avg.rating ?? 0,
     };
   }
 }
