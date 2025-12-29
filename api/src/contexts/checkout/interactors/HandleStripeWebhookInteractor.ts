@@ -56,14 +56,14 @@ export class HandleStripeWebhookInteractor
         session.id,
         paymentId,
       );
-      console.log(
-        `Payment ID ${paymentId} saved for session ${session.id}`,
-      );
+      console.log(`Payment ID ${paymentId} saved for session ${session.id}`);
     }
 
     // 住所情報の更新（checkoutページで入力された住所）
     if (session.shipping_details?.address) {
-      const address = this.formatShippingAddress(session.shipping_details.address);
+      const address = this.formatShippingAddress(
+        session.shipping_details.address,
+      );
       await this.orderRepository.updateAddress(order.id, address);
       console.log(`Order ${order.id} address updated: ${address}`);
     }
@@ -127,9 +127,7 @@ export class HandleStripeWebhookInteractor
   }
 
   // Stripeの住所情報を文字列にフォーマット
-  private formatShippingAddress(
-    address: Stripe.Address,
-  ): string {
+  private formatShippingAddress(address: Stripe.Address): string {
     const parts: string[] = [];
 
     // 郵便番号

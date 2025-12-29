@@ -7,7 +7,7 @@ import { UserRepository } from '../users/infrastructures/repositories/UserReposi
 import { OrderRepository } from '../orders/infrastructures/repositories/OrderRepository';
 import { prisma } from '../../libs/prisma';
 import express from 'express';
-import { verifyAccessToken } from '../../middlewares';
+import { optionalVerifyAccessToken } from '../../middlewares';
 
 const checkoutRouter = express.Router();
 
@@ -27,12 +27,26 @@ if (!webhookSecret) {
 }
 const stripeAdapter = new StripeAdapter(secretKey, webhookSecret);
 
+// 環境変数からURLを取得（未設定の場合はデフォルト値を使用）
+const successUrlEnv = process.env.CHECKOUT_SUCCESS_URL?.trim();
+const successUrl =
+  successUrlEnv && successUrlEnv.length > 0
+    ? successUrlEnv
+    : 'http://localhost:3000/order/complete';
+const cancelUrlEnv = process.env.CHECKOUT_CANCEL_URL?.trim();
+const cancelUrl =
+  cancelUrlEnv && cancelUrlEnv.length > 0
+    ? cancelUrlEnv
+    : 'http://localhost:3000/products';
+
 const createCheckoutSessionInteractor = new CreateCheckoutSessionInteractor(
   cartRepository,
   itemRepository,
   userRepository,
   stripeAdapter,
   orderRepository,
+  successUrl,
+  cancelUrl,
 );
 
 const createCheckoutSessionController = new CreateCheckoutSessionController(
@@ -41,7 +55,7 @@ const createCheckoutSessionController = new CreateCheckoutSessionController(
 
 checkoutRouter.post(
   '/session',
-  verifyAccessToken,
+  optionalVerifyAccessToken,
   createCheckoutSessionController.execute.bind(createCheckoutSessionController),
 );
 
