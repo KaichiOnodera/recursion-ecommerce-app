@@ -22,6 +22,7 @@ export class UserRepository implements IUserRepository {
       email: user.email,
       password: user.password,
       role: user.role,
+      isResigned: user.isResigned,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };
@@ -44,6 +45,24 @@ export class UserRepository implements IUserRepository {
       email: user.email,
       password: user.password,
       role: user.role,
+      isResigned: user.isResigned,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
+  }
+
+  async create(
+    data: Omit<User, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<User> {
+    const user = await this.prisma.users.create({ data });
+    return {
+      id: user.id,
+      lastName: user.lastName,
+      firstName: user.firstName,
+      email: user.email,
+      password: user.password,
+      role: user.role,
+      isResigned: user.isResigned,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };

@@ -5,6 +5,7 @@ export type User = {
   readonly email: string;
   readonly password: string;
   readonly role: 'USER' | 'ADMIN';
+  readonly isResigned: boolean;
   readonly createdAt: Date;
   readonly updatedAt: Date;
 };
