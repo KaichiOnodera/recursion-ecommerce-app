@@ -10,4 +10,3 @@ export interface IUpdateOrderPaymentExternalIdInteractor {
     params: UpdateOrderPaymentExternalIdParams,
   ): Promise<OrderPaymentExternalId | null>;
 }
-

@@ -15,6 +15,11 @@ import { cartRouter } from './contexts/cart';
 import { checkoutRouter } from './contexts/checkout';
 import { ordersRouter } from './contexts/orders';
 import { adminOrdersRouter } from './contexts/orders/admin';
+import { StripeWebhookController } from './contexts/checkout/controllers/StripeWebhookController';
+import { HandleStripeWebhookInteractor } from './contexts/checkout/interactors/HandleStripeWebhookInteractor';
+import { StripeAdapter } from './contexts/checkout/infrastructures/adapters/StripeAdapter';
+import { OrderRepository } from './contexts/orders/infrastructures/repositories/OrderRepository';
+import { InventoryRepository } from './contexts/items/infrastructures/repositories/InventoryRepository';
 
 const app = express();
 
@@ -26,6 +31,28 @@ app.use(
 );
 
 app.use(cookieParser());
+
+// Webhookエンドポイントは express.json() の適用前に配置する必要がある
+// Stripeの署名検証には生のリクエストボディが必要
+const orderRepository = new OrderRepository(prisma);
+const inventoryRepository = new InventoryRepository(prisma);
+const stripeAdapter = new StripeAdapter();
+const handleStripeWebhookInteractor = new HandleStripeWebhookInteractor(
+  orderRepository,
+  inventoryRepository,
+);
+const stripeWebhookController = new StripeWebhookController(
+  handleStripeWebhookInteractor,
+  stripeAdapter,
+);
+
+app.post(
+  '/checkout/webhooks/stripe',
+  express.raw({ type: 'application/json' }),
+  stripeWebhookController.execute.bind(stripeWebhookController),
+);
+
+// その他のエンドポイントには express.json() を適用
 app.use(express.json());
 
 app.get('/', async (_req: Request, res: Response) => {

@@ -32,10 +32,11 @@ export class CreateCheckoutSessionInteractor
     }
 
     const successUrl =
-      process.env.CHECKOUT_SUCCESS_URL ??
+      process.env.CHECKOUT_SUCCESS_URL?.trim() ??
       'http://localhost:3000/order/complete';
     const cancelUrl =
-      process.env.CHECKOUT_CANCEL_URL ?? 'http://localhost:3000/products';
+      process.env.CHECKOUT_CANCEL_URL?.trim() ??
+      'http://localhost:3000/products';
 
     const lineItems = [];
     let hasPhysicalProduct = false;
