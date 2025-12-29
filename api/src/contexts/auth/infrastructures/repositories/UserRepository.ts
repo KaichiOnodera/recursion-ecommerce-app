@@ -67,4 +67,27 @@ export class UserRepository implements IUserRepository {
       updatedAt: user.updatedAt,
     };
   }
+
+  async update(
+    id: number,
+    data: Partial<Omit<User, 'id' | 'createdAt' | 'updatedAt'>>,
+  ): Promise<User> {
+    const user = await this.prisma.users.update({
+      where: { id },
+      data: {
+        ...data,
+      },
+    });
+    return {
+      id: user.id,
+      lastName: user.lastName,
+      firstName: user.firstName,
+      email: user.email,
+      password: user.password,
+      role: user.role,
+      isResigned: user.isResigned,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
+  }
 }
