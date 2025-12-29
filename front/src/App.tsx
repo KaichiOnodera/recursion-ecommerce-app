@@ -21,6 +21,7 @@ import { AdminProductEdit } from './pages/admin/AdminProductEdit';
 import { AdminProductDelete } from './pages/admin/AdminProductDelete';
 import { Cart } from './pages/user/Cart';
 import { MyPage } from './pages/user/MyPage';
+import { OrderHistory } from './pages/user/OrderHistory';
 import { OrderComplete } from './pages/OrderComplete';
 
 function App(): React.JSX.Element {
@@ -58,6 +59,7 @@ function App(): React.JSX.Element {
                 <Route path="/auth/user/signup" element={<UserSignup />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/mypage" element={<MyPage />} />
+                <Route path="/orders" element={<OrderHistory />} />
                 <Route path="/auth/admin/login" element={<AdminLogin />} />
                 <Route path="/auth/admin/signup" element={<AdminSignup />} />
                 <Route

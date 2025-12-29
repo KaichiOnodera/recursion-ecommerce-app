@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router';
 import { useUser } from '../../contexts/UserContext';
 import {
@@ -6,9 +6,12 @@ import {
   ClipboardDocumentListIcon,
   ChevronRightIcon,
 } from '@heroicons/react/24/outline';
+import { OrderHistoryPreview } from '../../components/user/OrderHistoryPreview';
+import { ORDER_HISTORY_PREVIEW_LIMIT } from '../../constants/order';
 
 export const MyPage: React.FC = () => {
   const { user, isAdmin } = useUser();
+  const [totalOrderCount, setTotalOrderCount] = useState(0);
 
   return (
     <div className="container mx-auto py-8 px-4 max-w-4xl">
@@ -39,8 +42,18 @@ export const MyPage: React.FC = () => {
 
       {/* 購入履歴セクション */}
       <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-        <h2 className="text-xl font-bold mb-4">購入履歴</h2>
-        <div className="text-gray-500">準備中</div>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold">購入履歴</h2>
+          {totalOrderCount > ORDER_HISTORY_PREVIEW_LIMIT && (
+            <Link
+              to="/orders"
+              className="text-blue-600 hover:text-blue-800 font-medium text-sm transition-colors"
+            >
+              すべて表示 →
+            </Link>
+          )}
+        </div>
+        <OrderHistoryPreview onTotalCountChange={setTotalOrderCount} />
       </div>
 
       {/* 管理者セクション */}
