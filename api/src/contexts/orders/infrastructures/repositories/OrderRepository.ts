@@ -129,6 +129,32 @@ export class OrderRepository implements IOrderRepository {
     return this.mapToOrder(order);
   }
 
+  async findOrdersNeedingShipping(): Promise<Order[]> {
+    // COMPLETEDステータスで、まだSHIPPEDでない注文を取得
+    const orders = await this.prisma.orders.findMany({
+      where: {
+        orderStatus: OrderStatus.COMPLETED,
+      },
+      include: {
+        orderItems: {
+          include: {
+            item: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    // 物理商品のみ取得
+    const ordersWithPhysicalItems = orders.filter((order) => {
+      return order.orderItems.some(
+        (orderItem) => orderItem.item && orderItem.item.type === 1,
+      );
+    });
+
+    return ordersWithPhysicalItems.map((order) => this.mapToOrder(order));
+  }
+
   async createPaymentExternalId(
     data: CreateOrderPaymentExternalIdData,
   ): Promise<OrderPaymentExternalId> {
@@ -204,6 +230,7 @@ export class OrderRepository implements IOrderRepository {
       address: order.address,
       totalPrice: order.totalPrice,
       orderStatus: order.orderStatus,
+      trackingNumber: order.trackingNumber,
       createdAt: order.createdAt,
       updatedAt: order.updatedAt,
       items: order.orderItems.map((item) => ({
