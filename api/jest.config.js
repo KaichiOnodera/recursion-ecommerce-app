@@ -8,7 +8,12 @@ module.exports = {
   testEnvironment: "node",
   transform: {
     ...tsJestTransformCfg,
+    "^.+\\.mjs$": ["ts-jest", { useESM: false }],
+    "^.+\\.js$": ["ts-jest", { useESM: false }],
   },
+  transformIgnorePatterns: [
+    "node_modules/(?!(jose)/)",
+  ],
   setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
   testTimeout: 30000,
   testMatch: ["<rootDir>/src/**/*.test.ts"],

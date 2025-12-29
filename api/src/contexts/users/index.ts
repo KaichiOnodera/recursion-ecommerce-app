@@ -1,50 +1,28 @@
 import express from 'express';
-import { PrismaClient } from '@prisma/client';
 import { UserRepository } from './infrastructures/repositories/UserRepository';
-import { verifyAccessToken, verifyAdmin } from '../../middlewares';
-import { adminItemsRouter } from '../items/admin';
-
-adminItemsRouter.use(verifyAccessToken);
-adminItemsRouter.use(verifyAdmin);
-
-import { CreateUserInteractor } from './interactors/CreateUserInteractor';
+import { verifyAccessToken } from '../../middlewares';
 import { UpdateUserProfileInteractor } from './interactors/UpdateUserProfileInteractor';
-import { DeleteUserInteractor } from './interactors/DeleteUserInteractor';
-
-import { CreateUserController } from './controllers/CreateUserController';
 import { UpdateUserProfileController } from './controllers/UpdateUserProfileController';
-import { DeleteUserController } from './controllers/DeleteUserController';
+import { prisma } from '../../libs/prisma';
 
 const UsersRouter = express.Router();
 
 // Core dependencies
-const prisma = new PrismaClient();
 const userRepository = new UserRepository(prisma);
 
-const createUserInteractor = new CreateUserInteractor(userRepository);
 const updateUserInteractor = new UpdateUserProfileInteractor(userRepository);
-const deleteUserInteractor = new DeleteUserInteractor(userRepository);
 
 // Controllers
 
-const createUserController = new CreateUserController(createUserInteractor);
 const updateUserProfileController = new UpdateUserProfileController(
   updateUserInteractor,
 );
-const deleteUserController = new DeleteUserController(deleteUserInteractor);
 
 // Routes
-UsersRouter.post(
-  '/signup',
-  createUserController.execute.bind(createUserController),
-);
-UsersRouter.put('/profile', verifyAccessToken, (req, res) => {
-  updateUserProfileController.execute(req, res);
-});
-UsersRouter.delete(
-  '/:id',
+UsersRouter.put(
+  '/profile',
   verifyAccessToken,
-  deleteUserController.execute.bind(deleteUserController),
+  updateUserProfileController.execute.bind(updateUserProfileController),
 );
 
 export { UsersRouter };

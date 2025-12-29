@@ -1,7 +1,9 @@
 import express from 'express';
 import { AuthenticatedRequest } from 'src/middlewares';
-import { IUpdateUserProfileInteractor } from '../usecases/IUpdateUserProfileInteractor';
-import { UpdateUserProfileInput } from '../interactors/UpdateUserProfileInteractor';
+import {
+  IUpdateUserProfileInteractor,
+  UpdateUserProfileInput,
+} from '../usecases/IUpdateUserProfileInteractor';
 import { PatchReq, PatchRes } from '@shared/types/patches';
 
 export class UpdateUserProfileController {

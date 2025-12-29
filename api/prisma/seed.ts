@@ -1,4 +1,4 @@
-import { PrismaClient, UserRole } from '@prisma/client';
+import { PrismaClient, UserRole, OrderStatus } from '@prisma/client';
 import { hashPassword } from '../src/contexts/utils/hashPassword';
 import { config } from 'dotenv';
 
@@ -95,7 +95,138 @@ export async function seedTestData(prismaClient?: PrismaClient) {
     items.push(item);
   }
 
-  return { testUser, testAdmin, items };
+  await client.inventory.deleteMany({});
+
+  const inventoryData = [
+    { itemId: items[0].id, amount: 85 }, 
+    { itemId: items[1].id, amount: 15 },
+    { itemId: items[2].id, amount: 42 },
+    { itemId: items[3].id, amount: 120 },
+    { itemId: items[4].id, amount: 28 },
+    { itemId: items[5].id, amount: 65 },
+    { itemId: items[6].id, amount: 38 },
+    { itemId: items[7].id, amount: 22 },
+    { itemId: items[8].id, amount: 0 },
+    { itemId: items[9].id, amount: 55 },
+  ];
+
+  for (const inventory of inventoryData) {
+    await client.inventory.create({
+      data: {
+        itemId: inventory.itemId,
+        amount: inventory.amount,
+      },
+    });
+  }
+
+  await client.orderItems.deleteMany({});
+  await client.orders.deleteMany({});
+
+  const now = new Date();
+  const ordersData = [
+    {
+      userId: testUser.id,
+      lastName: testUser.lastName,
+      firstName: testUser.firstName,
+      email: testUser.email,
+      address: '東京都渋谷区神南1-1-1 アパート101',
+      orderStatus: OrderStatus.COMPLETED,
+      createdAt: new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000), // 30日前
+      items: [
+        { itemId: items[0].id, itemName: items[0].name, itemPrice: items[0].price, amount: 1 },
+        { itemId: items[2].id, itemName: items[2].name, itemPrice: items[2].price, amount: 1 },
+        { itemId: items[3].id, itemName: items[3].name, itemPrice: items[3].price, amount: 2 },
+      ],
+    },
+    {
+      userId: testUser.id,
+      lastName: testUser.lastName,
+      firstName: testUser.firstName,
+      email: testUser.email,
+      address: '東京都渋谷区神南1-1-1 アパート101',
+      orderStatus: OrderStatus.SHIPPED,
+      createdAt: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000), // 7日前
+      items: [
+        { itemId: items[1].id, itemName: items[1].name, itemPrice: items[1].price, amount: 1 },
+        { itemId: items[4].id, itemName: items[4].name, itemPrice: items[4].price, amount: 1 },
+        { itemId: items[5].id, itemName: items[5].name, itemPrice: items[5].price, amount: 1 },
+        { itemId: items[6].id, itemName: items[6].name, itemPrice: items[6].price, amount: 1 },
+      ],
+    },
+    {
+      userId: testUser.id,
+      lastName: testUser.lastName,
+      firstName: testUser.firstName,
+      email: testUser.email,
+      address: '東京都渋谷区神南1-1-1 アパート101',
+      orderStatus: OrderStatus.COMPLETED,
+      createdAt: new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000), // 14日前
+      items: [
+        { itemId: items[7].id, itemName: items[7].name, itemPrice: items[7].price, amount: 1 },
+        { itemId: items[8].id, itemName: items[8].name, itemPrice: items[8].price, amount: 1 },
+      ],
+    },
+    {
+      userId: testUser.id,
+      lastName: testUser.lastName,
+      firstName: testUser.firstName,
+      email: testUser.email,
+      address: '東京都渋谷区神南1-1-1 アパート101',
+      orderStatus: OrderStatus.PENDING,
+      createdAt: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000), // 1日前
+      items: [
+        { itemId: items[9].id, itemName: items[9].name, itemPrice: items[9].price, amount: 1 },
+        { itemId: items[0].id, itemName: items[0].name, itemPrice: items[0].price, amount: 1 },
+      ],
+    },
+    {
+      userId: testUser.id,
+      lastName: testUser.lastName,
+      firstName: testUser.firstName,
+      email: testUser.email,
+      address: '東京都渋谷区神南1-1-1 アパート101',
+      orderStatus: OrderStatus.COMPLETED,
+      createdAt: new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000), // 60日前
+      items: [
+        { itemId: items[1].id, itemName: items[1].name, itemPrice: items[1].price, amount: 1 },
+        { itemId: items[2].id, itemName: items[2].name, itemPrice: items[2].price, amount: 1 },
+        { itemId: items[3].id, itemName: items[3].name, itemPrice: items[3].price, amount: 4 },
+        { itemId: items[5].id, itemName: items[5].name, itemPrice: items[5].price, amount: 2 },
+      ],
+    },
+  ];
+
+  const orders = [];
+  for (const orderData of ordersData) {
+    const totalPrice = orderData.items.reduce(
+      (sum, item) => sum + item.itemPrice * item.amount,
+      0,
+    );
+
+    const order = await client.orders.create({
+      data: {
+        userId: orderData.userId,
+        lastName: orderData.lastName,
+        firstName: orderData.firstName,
+        email: orderData.email,
+        address: orderData.address,
+        totalPrice,
+        orderStatus: orderData.orderStatus,
+        createdAt: orderData.createdAt,
+        orderItems: {
+          create: orderData.items.map((item) => ({
+            itemId: item.itemId,
+            itemName: item.itemName,
+            itemPrice: item.itemPrice,
+            amount: item.amount,
+          })),
+        },
+      },
+    });
+    orders.push(order);
+  }
+
+  return { testUser, testAdmin, items, orders };
 }
 
 async function main() {

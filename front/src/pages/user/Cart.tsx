@@ -1,42 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router';
-import { getCart, updateCartItem } from '../../services/api/cart';
+import React, { useState } from 'react';
+import { updateCartItem } from '../../services/api/cart';
 import { createCheckoutSession } from '../../services/api/checkout';
-import { CartItem } from '@shared/schemas/cart';
 import { PlusIcon, MinusIcon } from '@heroicons/react/24/outline';
-import { useUser } from '../../contexts/UserContext';
+import { useCart } from '../../contexts/CartContext';
 
 export const Cart: React.FC = () => {
-  const { isLoggedIn } = useUser();
-  const navigate = useNavigate();
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { cartItems, refreshCart } = useCart();
   const [error, setError] = useState<string | null>(null);
   const [isUpdating, setIsUpdating] = useState<number | null>(null);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
-
-  useEffect(() => {
-    const fetchCart = async () => {
-      if (!isLoggedIn()) {
-        navigate('/auth/user/login');
-        return;
-      }
-
-      try {
-        setIsLoading(true);
-        setError(null);
-        const response = await getCart();
-        setCartItems(response.items);
-      } catch (err) {
-        console.error('Failed to fetch cart:', err);
-        setError('カートの取得に失敗しました');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchCart();
-  }, [isLoggedIn, navigate]);
 
   const handleAmountChange = async (itemId: number, newAmount: number) => {
     if (newAmount < 0) {
@@ -45,15 +17,16 @@ export const Cart: React.FC = () => {
 
     try {
       setIsUpdating(itemId);
-      // 現在のカートアイテムを { id, amount } 形式に変換
+      setError(null);
       const currentItems = cartItems.map((item) => ({
         id: item.id,
         amount: item.amount,
       }));
-      const response = await updateCartItem(currentItems, itemId, newAmount);
-      setCartItems(response.items);
+      await updateCartItem(currentItems, itemId, newAmount);
+      await refreshCart();
     } catch (err) {
       console.error('Failed to update cart item:', err);
+      setError('カートの更新に失敗しました');
     } finally {
       setIsUpdating(null);
     }
@@ -70,17 +43,6 @@ export const Cart: React.FC = () => {
   const getTotalAmount = (): number => {
     return cartItems.reduce((sum, item) => sum + item.amount, 0);
   };
-
-  if (isLoading) {
-    return (
-      <div className="container mx-auto py-8">
-        <h1 className="text-3xl font-bold mb-6">カート</h1>
-        <div className="bg-white rounded-lg shadow p-8 text-center">
-          <p className="text-gray-500 text-lg">読み込み中...</p>
-        </div>
-      </div>
-    );
-  }
 
   if (error) {
     return (
@@ -108,9 +70,7 @@ export const Cart: React.FC = () => {
             {cartItems.map((item) => (
               <div
                 key={item.id}
-                className={`bg-white rounded-lg shadow p-6 flex items-center justify-between ${
-                  isUpdating === item.id ? 'opacity-50' : 'opacity-100'
-                }`}
+                className="bg-white rounded-lg shadow p-6 flex items-center justify-between"
               >
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold mb-1">{item.name}</h3>
@@ -121,9 +81,12 @@ export const Cart: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => handleAmountChange(item.id, item.amount - 1)}
+                    onClick={() =>
+                      isUpdating === item.id
+                        ? null
+                        : handleAmountChange(item.id, item.amount - 1)
+                    }
                     className="p-1 rounded border border-gray-300 hover:bg-gray-100 disabled:opacity-50"
-                    disabled={isUpdating === item.id}
                   >
                     <MinusIcon className="w-4 h-4" />
                   </button>
@@ -131,9 +94,12 @@ export const Cart: React.FC = () => {
                     {item.amount}
                   </span>
                   <button
-                    onClick={() => handleAmountChange(item.id, item.amount + 1)}
+                    onClick={() =>
+                      isUpdating === item.id
+                        ? null
+                        : handleAmountChange(item.id, item.amount + 1)
+                    }
                     className="p-1 rounded border border-gray-300 hover:bg-gray-100 disabled:opacity-50"
-                    disabled={isUpdating === item.id}
                   >
                     <PlusIcon className="w-4 h-4" />
                   </button>

@@ -6,8 +6,9 @@ import { DisplayStatus, Item } from '../../domains/entities/Item';
 export class ItemRepository implements IItemRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
-  async findAll(): Promise<Item[]> {
+  async findAll(displayStatus?: DisplayStatus): Promise<Item[]> {
     const items = await this.prisma.items.findMany({
+      where: displayStatus ? { displayStatus } : undefined,
       orderBy: { createdAt: 'desc' },
       include: {
         Inventory: true,
