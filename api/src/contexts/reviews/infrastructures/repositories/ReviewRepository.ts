@@ -1,5 +1,9 @@
 import { PrismaClient } from '@prisma/client';
-import { IReviewRepository } from '../../domains/repositories/IReviewRepository';
+import {
+  IReviewRepository,
+  FindReviewsParams,
+  FindReviewsResult,
+} from '../../domains/repositories/IReviewRepository';
 import { Review } from '../../domains/entities/Review';
 
 export class ReviewRepository implements IReviewRepository {
@@ -65,26 +69,45 @@ export class ReviewRepository implements IReviewRepository {
     };
   }
 
-  async findByItemId(itemId: number): Promise<Review[]> {
-    const reviews = await this.prisma.reviews.findMany({
-      where: {
-        itemId,
-      },
-      orderBy: {
-        postedAt: 'desc',
-      },
-    });
+  async findByItemId(
+    itemId: number,
+    params?: FindReviewsParams,
+  ): Promise<FindReviewsResult> {
+    const page = params?.page ?? 1;
+    const limit = params?.limit ?? 20;
+    const skip = (page - 1) * limit;
 
-    return reviews.map((review) => ({
-      id: review.id,
-      userId: review.userId,
-      itemId: review.itemId,
-      title: review.title,
-      body: review.body,
-      rating: review.rating,
-      postedAt: review.postedAt,
-      createdAt: review.createdAt,
-      updatedAt: review.updatedAt,
-    }));
+    const [reviews, total] = await Promise.all([
+      this.prisma.reviews.findMany({
+        where: {
+          itemId,
+        },
+        orderBy: {
+          postedAt: 'desc',
+        },
+        skip,
+        take: limit,
+      }),
+      this.prisma.reviews.count({
+        where: {
+          itemId,
+        },
+      }),
+    ]);
+
+    return {
+      reviews: reviews.map((review) => ({
+        id: review.id,
+        userId: review.userId,
+        itemId: review.itemId,
+        title: review.title,
+        body: review.body,
+        rating: review.rating,
+        postedAt: review.postedAt,
+        createdAt: review.createdAt,
+        updatedAt: review.updatedAt,
+      })),
+      total,
+    };
   }
 }

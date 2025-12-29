@@ -1,12 +1,18 @@
 import express from 'express';
 import { GetRes } from '@shared/types/gets';
 import { IGetReviewsInteractor } from '../usecases/IGetReviewsInteractor';
+import { FindReviewsParams } from '../domains/repositories/IReviewRepository';
 
 export class GetReviewsController {
   constructor(private readonly getReviewsInteractor: IGetReviewsInteractor) {}
 
   async execute(
-    req: express.Request<{ itemId: string }>,
+    req: express.Request<
+      { itemId: string },
+      unknown,
+      unknown,
+      { page?: string; limit?: string }
+    >,
     res: express.Response<
       GetRes['/reviews/items/:itemId'] | { message: string }
     >,
@@ -18,9 +24,27 @@ export class GetReviewsController {
         return res.status(400).json({ message: 'Invalid item ID' });
       }
 
-      const reviews = await this.getReviewsInteractor.execute(itemId);
+      const params: FindReviewsParams = {};
+      if (req.query.page) {
+        const page = parseInt(req.query.page);
+        if (!isNaN(page) && page > 0) {
+          params.page = page;
+        } else {
+          return res.status(400).json({ message: 'Invalid page parameter' });
+        }
+      }
+      if (req.query.limit) {
+        const limit = parseInt(req.query.limit);
+        if (!isNaN(limit) && limit > 0) {
+          params.limit = limit;
+        } else {
+          return res.status(400).json({ message: 'Invalid limit parameter' });
+        }
+      }
 
-      const responseReviews = reviews.map((review) => ({
+      const result = await this.getReviewsInteractor.execute(itemId, params);
+
+      const responseReviews = result.reviews.map((review) => ({
         id: review.id,
         userId: review.userId,
         itemId: review.itemId,
@@ -30,7 +54,10 @@ export class GetReviewsController {
         postedAt: review.postedAt,
       }));
 
-      return res.status(200).json({ reviews: responseReviews });
+      return res.status(200).json({
+        reviews: responseReviews,
+        total: result.total,
+      });
     } catch (error: unknown) {
       console.error('Error fetching reviews:', error);
       return res.status(500).json({ message: 'Internal server error' });

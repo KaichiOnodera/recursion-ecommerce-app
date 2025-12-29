@@ -1,5 +1,11 @@
-import { Review } from '../domains/entities/Review';
+import {
+  FindReviewsParams,
+  FindReviewsResult,
+} from '../domains/repositories/IReviewRepository';
 
 export interface IGetReviewsInteractor {
-  execute(itemId: number): Promise<Review[]>;
+  execute(
+    itemId: number,
+    params?: FindReviewsParams,
+  ): Promise<FindReviewsResult>;
 }
