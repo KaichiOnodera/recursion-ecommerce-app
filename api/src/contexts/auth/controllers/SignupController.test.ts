@@ -1,31 +1,31 @@
 import request from 'supertest';
 import { createTestApp } from '../../../tests/helpers/app';
 import { createRouter } from '../../../tests/helpers/router';
-import { CreateUserController } from './CreateUserController';
-import { CreateUserInteractor } from '../interactors/CreateUserInteractor';
+import { SignupController } from './SignupController';
+import { SignupInteractor } from '../interactors/SignupInteractor';
 import { UserRepository } from '../infrastructures/repositories/UserRepository';
 import { prismaTest } from '../../../libs/prisma-test';
 import { cleanDatabase } from '../../../tests/helpers/database';
 
-describe('CreateUserController', () => {
+describe('SignupController', () => {
   let app: ReturnType<typeof createTestApp>;
 
   beforeEach(async () => {
     await cleanDatabase();
 
     const userRepository = new UserRepository(prismaTest);
-    const createUserInteractor = new CreateUserInteractor(userRepository);
-    const createUserController = new CreateUserController(createUserInteractor);
-    const router = createRouter('POST', '/signup', createUserController);
+    const signupInteractor = new SignupInteractor(userRepository);
+    const signupController = new SignupController(signupInteractor);
+    const router = createRouter('POST', '/signup', signupController);
 
-    app = createTestApp([{ path: '/users', router }]);
+    app = createTestApp([{ path: '/auth', router }]);
   });
 
-  describe('POST /users/signup', () => {
+  describe('POST /auth/signup', () => {
     it('should create a user successfully', async () => {
       const email = 'test-success@example.com';
       const response = await request(app)
-        .post('/users/signup')
+        .post('/auth/signup')
         .send({
           lastName: '山田',
           firstName: '太郎',
@@ -54,7 +54,7 @@ describe('CreateUserController', () => {
 
     it('should return 400 when lastName is missing', async () => {
       const response = await request(app)
-        .post('/users/signup')
+        .post('/auth/signup')
         .send({
           firstName: '太郎',
           email: 'test-lastname@example.com',
@@ -70,7 +70,7 @@ describe('CreateUserController', () => {
 
     it('should return 400 when firstName is missing', async () => {
       const response = await request(app)
-        .post('/users/signup')
+        .post('/auth/signup')
         .send({
           lastName: '山田',
           email: 'test-firstname@example.com',
@@ -86,7 +86,7 @@ describe('CreateUserController', () => {
 
     it('should return 400 when email is missing', async () => {
       const response = await request(app)
-        .post('/users/signup')
+        .post('/auth/signup')
         .send({
           lastName: '山田',
           firstName: '太郎',
@@ -102,7 +102,7 @@ describe('CreateUserController', () => {
 
     it('should return 400 when password is missing', async () => {
       const response = await request(app)
-        .post('/users/signup')
+        .post('/auth/signup')
         .send({
           lastName: '山田',
           firstName: '太郎',
@@ -130,24 +130,22 @@ describe('CreateUserController', () => {
       });
 
       const response = await request(app)
-        .post('/users/signup')
+        .post('/auth/signup')
         .send({
           lastName: '新規',
           firstName: 'ユーザー',
           email: 'existing@example.com',
           password: 'password123',
         })
-        .expect(500);
+        .expect(400);
 
-      // コントローラーのエラーハンドリングが正しく動作していないため、
-      // interactorのエラーメッセージ "Email already exists" が500エラーとして返される
-      expect(response.body).toHaveProperty('message', 'Internal server error');
+      expect(response.body).toHaveProperty('message', 'Email already exists');
     });
 
     it('should hash password before saving', async () => {
       const email = 'test-hash@example.com';
       await request(app)
-        .post('/users/signup')
+        .post('/auth/signup')
         .send({
           lastName: '山田',
           firstName: '太郎',
