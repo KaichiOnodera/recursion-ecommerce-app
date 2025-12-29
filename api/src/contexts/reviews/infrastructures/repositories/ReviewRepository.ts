@@ -64,4 +64,27 @@ export class ReviewRepository implements IReviewRepository {
       updatedAt: review.updatedAt,
     };
   }
+
+  async findByItemId(itemId: number): Promise<Review[]> {
+    const reviews = await this.prisma.reviews.findMany({
+      where: {
+        itemId,
+      },
+      orderBy: {
+        postedAt: 'desc',
+      },
+    });
+
+    return reviews.map((review) => ({
+      id: review.id,
+      userId: review.userId,
+      itemId: review.itemId,
+      title: review.title,
+      body: review.body,
+      rating: review.rating,
+      postedAt: review.postedAt,
+      createdAt: review.createdAt,
+      updatedAt: review.updatedAt,
+    }));
+  }
 }

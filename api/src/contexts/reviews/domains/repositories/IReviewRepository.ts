@@ -9,4 +9,5 @@ export interface IReviewRepository {
     rating: number,
   ): Promise<Review>;
   findByUserIdAndItemId(userId: number, itemId: number): Promise<Review | null>;
+  findByItemId(itemId: number): Promise<Review[]>;
 }
