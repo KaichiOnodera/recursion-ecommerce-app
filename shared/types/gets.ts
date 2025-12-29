@@ -35,6 +35,7 @@ export type GetRes = {
       address: string;
       totalPrice: number;
       orderStatus: string;
+      trackingNumber: string | null;
       createdAt: string;
       updatedAt: string;
       items: Array<{
@@ -56,6 +57,29 @@ export type GetRes = {
       address: string;
       totalPrice: number;
       orderStatus: string;
+      trackingNumber: string | null;
+      createdAt: string;
+      updatedAt: string;
+      items: Array<{
+        id: number;
+        itemId: number | null;
+        itemName: string;
+        itemPrice: number;
+        amount: number;
+      }>;
+    }>;
+  };
+  '/admin/orders/shipping-needed': {
+    orders: Array<{
+      id: number;
+      userId: number | null;
+      lastName: string;
+      firstName: string;
+      email: string;
+      address: string;
+      totalPrice: number;
+      orderStatus: string;
+      trackingNumber: string | null;
       createdAt: string;
       updatedAt: string;
       items: Array<{
