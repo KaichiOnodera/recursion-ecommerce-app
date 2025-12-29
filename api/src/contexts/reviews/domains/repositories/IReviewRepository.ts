@@ -8,6 +8,7 @@ export interface FindReviewsParams {
 export interface FindReviewsResult {
   reviews: Review[];
   total: number;
+  averageRating: number;
 }
 
 export interface IReviewRepository {
