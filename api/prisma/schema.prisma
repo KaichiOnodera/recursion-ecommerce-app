@@ -60,6 +60,7 @@ model Items {
   Inventory  Inventory[]
   CartItems  CartItems[]
   OrderItems OrderItems[]
+  Reviews    Reviews[]
 }
 
 model ItemImages {
@@ -131,21 +132,43 @@ model OrderItems {
   @@index([orderId])
 }
 
-model Users {
-  id         Int      @id @default(autoincrement())
-  lastName   String
-  firstName  String
-  email      String   @unique
-  password   String
-  emailVerified Boolean @default(false)
-  isResigned Boolean  @default(false)
-  role       UserRole @default(USER)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+model Reviews {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  itemId    Int
+  title     String?  @db.VarChar(255)
+  body      String   @db.Text
+  rating    Int
+  postedAt  DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  cart   Cart?
+  user Users @relation(fields: [userId], references: [id], onDelete: Cascade)
+  item Items @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, itemId])
+  @@index([userId])
+  @@index([itemId])
+  @@index([itemId, rating])
+  @@index([itemId, postedAt])
+}
+
+model Users {
+  id            Int      @id @default(autoincrement())
+  lastName      String
+  firstName     String
+  email         String   @unique
+  password      String
+  emailVerified Boolean  @default(false)
+  isResigned    Boolean  @default(false)
+  role          UserRole @default(USER)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  cart                   Cart?
   emailVerificationToken EmailVerificationToken?
-  orders Orders[]
+  orders                 Orders[]
+  reviews                Reviews[]
 }
 
 enum UserRole {
@@ -160,13 +183,12 @@ enum OrderStatus {
   CANCELLED
 }
 
-
 model EmailVerificationToken {
   id        Int      @id @default(autoincrement())
-  token     String  @unique
-  userId    Int    @unique
+  token     String   @unique
+  userId    Int      @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
-  user      Users      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  user Users @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
