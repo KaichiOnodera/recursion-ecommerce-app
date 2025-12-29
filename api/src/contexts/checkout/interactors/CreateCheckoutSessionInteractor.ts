@@ -31,12 +31,16 @@ export class CreateCheckoutSessionInteractor
       throw new Error('User not found');
     }
 
+    const successUrlEnv = process.env.CHECKOUT_SUCCESS_URL?.trim();
     const successUrl =
-      process.env.CHECKOUT_SUCCESS_URL?.trim() ??
-      'http://localhost:3000/order/complete';
+      successUrlEnv && successUrlEnv.length > 0
+        ? successUrlEnv
+        : 'http://localhost:3000/order/complete';
+    const cancelUrlEnv = process.env.CHECKOUT_CANCEL_URL?.trim();
     const cancelUrl =
-      process.env.CHECKOUT_CANCEL_URL?.trim() ??
-      'http://localhost:3000/products';
+      cancelUrlEnv && cancelUrlEnv.length > 0
+        ? cancelUrlEnv
+        : 'http://localhost:3000/products';
 
     const lineItems = [];
     let hasPhysicalProduct = false;
