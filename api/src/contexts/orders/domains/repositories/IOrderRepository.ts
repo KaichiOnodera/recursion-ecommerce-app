@@ -35,6 +35,7 @@ export interface IOrderRepository {
   getByStripeSessionId(sessionId: string): Promise<Order | null>;
   updateStatus(id: number, status: OrderStatus): Promise<Order>;
   updateAddress(id: number, address: string): Promise<Order>;
+  updateEmail(id: number, email: string): Promise<Order>;
   createPaymentExternalId(
     data: CreateOrderPaymentExternalIdData,
   ): Promise<OrderPaymentExternalId>;

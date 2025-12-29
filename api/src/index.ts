@@ -36,10 +36,22 @@ app.use(cookieParser());
 // Stripeの署名検証には生のリクエストボディが必要
 const orderRepository = new OrderRepository(prisma);
 const inventoryRepository = new InventoryRepository(prisma);
-const stripeAdapter = new StripeAdapter();
+
+const secretKey = process.env.STRIPE_SECRET_KEY;
+if (!secretKey) {
+  throw new Error('STRIPE_SECRET_KEY is not set');
+}
+
+const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+if (!webhookSecret) {
+  throw new Error('STRIPE_WEBHOOK_SECRET is not set');
+}
+
+const stripeAdapter = new StripeAdapter(secretKey, webhookSecret);
 const handleStripeWebhookInteractor = new HandleStripeWebhookInteractor(
   orderRepository,
   inventoryRepository,
+  stripeAdapter,
 );
 const stripeWebhookController = new StripeWebhookController(
   handleStripeWebhookInteractor,
@@ -47,7 +59,7 @@ const stripeWebhookController = new StripeWebhookController(
 );
 
 app.post(
-  '/checkout/webhooks/stripe',
+  '/webhooks/stripe',
   express.raw({ type: 'application/json' }),
   stripeWebhookController.execute.bind(stripeWebhookController),
 );

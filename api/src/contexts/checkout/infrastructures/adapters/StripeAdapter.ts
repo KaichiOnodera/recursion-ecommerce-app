@@ -11,7 +11,7 @@ export class StripeAdapter implements IStripeAdapter {
 
   constructor(secretKey: string, webhookSecret: string) {
     this.stripe = new Stripe(secretKey, {
-      apiVersion: '2025-11-17.clover',
+      apiVersion: '2025-12-15.clover',
     });
     this.webhookSecret = webhookSecret;
   }
@@ -87,5 +87,16 @@ export class StripeAdapter implements IStripeAdapter {
       signature,
       this.webhookSecret,
     );
+  }
+
+  async retrieveCheckoutSession(
+    sessionId: string,
+  ): Promise<Stripe.Checkout.Session> {
+    // expandパラメータでcustomer情報を含める
+    // shipping_detailsは直接sessionオブジェクトに含まれているため、expandは不要
+    // ただし、StripeのAPIバージョンによっては、expandが必要な場合がある
+    return this.stripe.checkout.sessions.retrieve(sessionId, {
+      expand: ['customer'],
+    });
   }
 }
