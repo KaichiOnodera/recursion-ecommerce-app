@@ -9,6 +9,7 @@ import { LoadingState } from '../components/product/LoadingState';
 import { ErrorState } from '../components/product/ErrorState';
 import { QuantitySelector } from '../components/product/QuantitySelector';
 import { ActionButtons } from '../components/product/ActionButtons';
+import { ReviewSection } from '../components/product/ReviewSection';
 
 const MIN_QUANTITY = 1;
 
@@ -203,6 +204,11 @@ export const ProductDetail: React.FC = () => {
             </p>
           </div>
         </div>
+      </div>
+
+      {/* レビューセクション */}
+      <div className="mt-12">
+        <ReviewSection />
       </div>
     </div>
   );
