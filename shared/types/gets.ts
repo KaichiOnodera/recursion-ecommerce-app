@@ -70,5 +70,6 @@ export type GetRes = {
   '/reviews/items/:itemId': {
     reviews: Review[];
     total: number;
+    averageRating: number;
   };
 };
