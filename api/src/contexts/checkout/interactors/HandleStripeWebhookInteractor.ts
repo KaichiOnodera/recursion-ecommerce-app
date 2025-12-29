@@ -1,6 +1,7 @@
 import { IHandleStripeWebhookInteractor } from '../usecases/IHandleStripeWebhookInteractor';
 import { IOrderRepository } from '../../orders/domains/repositories/IOrderRepository';
 import { IInventoryRepository } from '../../items/domains/repositories/IInventoryRepository';
+import { IStripeAdapter } from '../domains/adapters/IStripeAdapter';
 import { OrderStatus } from '@prisma/client';
 import Stripe from 'stripe';
 
@@ -10,6 +11,7 @@ export class HandleStripeWebhookInteractor
   constructor(
     private readonly orderRepository: IOrderRepository,
     private readonly inventoryRepository: IInventoryRepository,
+    private readonly stripeAdapter: IStripeAdapter,
   ) {}
 
   async execute(event: Stripe.Event): Promise<void> {
@@ -46,12 +48,37 @@ export class HandleStripeWebhookInteractor
       return;
     }
 
+    // Stripe APIから詳細なsession情報を取得（shipping_detailsとcustomer_detailsを含む）
+    const detailedSession = await this.stripeAdapter.retrieveCheckoutSession(
+      session.id,
+    );
+
+    // ゲストユーザーのemailを更新（checkoutページで入力されたemail）
+    if (detailedSession.customer_details?.email) {
+      await this.orderRepository.updateEmail(
+        order.id,
+        detailedSession.customer_details.email,
+      );
+      console.log(
+        `Order ${order.id} email updated: ${detailedSession.customer_details.email}`,
+      );
+    } else if (detailedSession.customer_email) {
+      // customer_detailsがない場合、customer_emailを確認
+      await this.orderRepository.updateEmail(
+        order.id,
+        detailedSession.customer_email,
+      );
+      console.log(
+        `Order ${order.id} email updated: ${detailedSession.customer_email}`,
+      );
+    }
+
     // PaymentIDの保存
-    if (session.payment_intent) {
+    if (detailedSession.payment_intent) {
       const paymentId =
-        typeof session.payment_intent === 'string'
-          ? session.payment_intent
-          : session.payment_intent.id;
+        typeof detailedSession.payment_intent === 'string'
+          ? detailedSession.payment_intent
+          : detailedSession.payment_intent.id;
       await this.orderRepository.updatePaymentExternalIdBySessionId(
         session.id,
         paymentId,
@@ -60,12 +87,27 @@ export class HandleStripeWebhookInteractor
     }
 
     // 住所情報の更新（checkoutページで入力された住所）
-    if (session.shipping_details?.address) {
-      const address = this.formatShippingAddress(
-        session.shipping_details.address,
-      );
+    // shipping_details.addressまたはcustomer_details.addressから住所を取得
+    let shippingAddress: Stripe.Address | null = null;
+
+    // shipping_details.addressを確認（通常はここに含まれる）
+    if (detailedSession.shipping_details?.address) {
+      shippingAddress = detailedSession.shipping_details.address;
+    }
+    // customer_details.addressを確認（Stripeの設定によってはここに含まれる場合がある）
+    else if (detailedSession.customer_details?.address) {
+      shippingAddress = detailedSession.customer_details.address;
+    }
+
+    if (shippingAddress) {
+      const address = this.formatShippingAddress(shippingAddress);
       await this.orderRepository.updateAddress(order.id, address);
       console.log(`Order ${order.id} address updated: ${address}`);
+    } else {
+      // 物理商品があるのに住所が取得できない場合は警告
+      console.warn(
+        `Order ${order.id}: shipping address is not available. This may be expected for digital-only orders.`,
+      );
     }
 
     // 注文ステータスの更新

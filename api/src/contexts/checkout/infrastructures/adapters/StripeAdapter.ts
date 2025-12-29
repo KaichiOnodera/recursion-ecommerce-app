@@ -93,6 +93,8 @@ export class StripeAdapter implements IStripeAdapter {
     sessionId: string,
   ): Promise<Stripe.Checkout.Session> {
     // expandパラメータでcustomer情報を含める
+    // shipping_detailsは直接sessionオブジェクトに含まれているため、expandは不要
+    // ただし、StripeのAPIバージョンによっては、expandが必要な場合がある
     return this.stripe.checkout.sessions.retrieve(sessionId, {
       expand: ['customer'],
     });
