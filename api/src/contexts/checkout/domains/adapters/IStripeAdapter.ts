@@ -31,6 +31,5 @@ export interface IStripeAdapter {
   verifyWebhookSignature(
     payload: string | Buffer,
     signature: string,
-    secret: string,
   ): Promise<Stripe.Event>;
 }

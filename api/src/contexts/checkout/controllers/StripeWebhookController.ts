@@ -26,17 +26,10 @@ export class StripeWebhookController {
         .json({ message: 'Invalid stripe-signature header format' });
     }
 
-    // Webhook Secretの確認
-    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-    if (!webhookSecret) {
-      throw new Error('STRIPE_WEBHOOK_SECRET is not set');
-    }
-
     try {
       const event = await this.stripeAdapter.verifyWebhookSignature(
         req.body,
         signature,
-        webhookSecret,
       );
 
       await this.handleStripeWebhookInteractor.execute(event);
