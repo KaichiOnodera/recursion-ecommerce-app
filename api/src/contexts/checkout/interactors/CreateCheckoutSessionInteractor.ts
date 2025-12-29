@@ -21,16 +21,30 @@ export class CreateCheckoutSessionInteractor
   ) {}
 
   async execute(params: {
-    userId: number;
+    userId?: number;
+    sessionId?: string;
   }): Promise<{ sessionId: string; url: string }> {
-    const cart = await this.cartRepository.findByUserId(params.userId);
+    // カートを取得（ログインユーザーまたはゲストユーザー）
+    let cart;
+    if (params.userId !== undefined) {
+      cart = await this.cartRepository.findByUserId(params.userId);
+    } else if (params.sessionId !== undefined) {
+      cart = await this.cartRepository.findBySessionId(params.sessionId);
+    } else {
+      throw new Error('Either userId or sessionId must be provided');
+    }
+
     if (!cart?.items || cart.items.length === 0) {
       throw new Error('Cart is empty');
     }
 
-    const user = await this.userRepository.findById(params.userId);
-    if (!user) {
-      throw new Error('User not found');
+    // ログインユーザーの場合のみユーザー情報を取得
+    let user = null;
+    if (params.userId !== undefined) {
+      user = await this.userRepository.findById(params.userId);
+      if (!user) {
+        throw new Error('User not found');
+      }
     }
 
     const lineItems = [];
@@ -73,11 +87,12 @@ export class CreateCheckoutSessionInteractor
     }
 
     // Orderの作成
+    // ゲストユーザーの場合、ユーザー情報はStripe Checkoutで入力してもらうため、一時的な値を設定
     const order = await this.orderRepository.create({
-      userId: params.userId,
-      lastName: user.lastName,
-      firstName: user.firstName,
-      email: user.email,
+      userId: params.userId ?? undefined,
+      lastName: user?.lastName ?? '',
+      firstName: user?.firstName ?? '',
+      email: user?.email ?? '',
       address: '', // 後でWebhookで更新: checkoutページでアドレスを入力する
       totalPrice,
       orderStatus: OrderStatus.PENDING,
@@ -95,10 +110,12 @@ export class CreateCheckoutSessionInteractor
       mode: CheckoutSessionMode.Payment,
       successUrl: this.successUrl,
       cancelUrl: this.cancelUrl,
-      customerEmail: user.email, // ログインユーザーのメールアドレスを設定
+      customerEmail: user?.email, // ログインユーザーのメールアドレスを設定（ゲストの場合は未設定でStripeが収集）
       requireShippingAddress: hasPhysicalProduct, // 物理商品がある場合のみ住所入力を必須にする
       metadata: {
-        userId: params.userId.toString(),
+        ...(params.userId !== undefined && {
+          userId: params.userId.toString(),
+        }),
         cartId: cart.id.toString(),
         orderId: order.id.toString(),
       },

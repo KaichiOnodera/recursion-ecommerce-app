@@ -7,7 +7,7 @@ import { UserRepository } from '../users/infrastructures/repositories/UserReposi
 import { OrderRepository } from '../orders/infrastructures/repositories/OrderRepository';
 import { prisma } from '../../libs/prisma';
 import express from 'express';
-import { verifyAccessToken } from '../../middlewares';
+import { optionalVerifyAccessToken } from '../../middlewares';
 
 const checkoutRouter = express.Router();
 
@@ -55,7 +55,7 @@ const createCheckoutSessionController = new CreateCheckoutSessionController(
 
 checkoutRouter.post(
   '/session',
-  verifyAccessToken,
+  optionalVerifyAccessToken,
   createCheckoutSessionController.execute.bind(createCheckoutSessionController),
 );
 
