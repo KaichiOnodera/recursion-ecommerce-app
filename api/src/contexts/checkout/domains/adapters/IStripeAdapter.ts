@@ -32,4 +32,7 @@ export interface IStripeAdapter {
     payload: string | Buffer,
     signature: string,
   ): Promise<Stripe.Event>;
+
+  // Checkout Sessionを取得
+  retrieveCheckoutSession(sessionId: string): Promise<Stripe.Checkout.Session>;
 }

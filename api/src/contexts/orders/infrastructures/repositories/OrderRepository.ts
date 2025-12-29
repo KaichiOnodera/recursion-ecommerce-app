@@ -115,6 +115,20 @@ export class OrderRepository implements IOrderRepository {
     return this.mapToOrder(order);
   }
 
+  async updateEmail(id: number, email: string): Promise<Order> {
+    const order = await this.prisma.orders.update({
+      where: { id },
+      data: {
+        email,
+      },
+      include: {
+        orderItems: true,
+      },
+    });
+
+    return this.mapToOrder(order);
+  }
+
   async createPaymentExternalId(
     data: CreateOrderPaymentExternalIdData,
   ): Promise<OrderPaymentExternalId> {
