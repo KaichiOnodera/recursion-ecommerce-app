@@ -16,6 +16,8 @@ export class CreateCheckoutSessionInteractor
     private readonly userRepository: IUserRepository,
     private readonly stripeAdapter: IStripeAdapter,
     private readonly orderRepository: IOrderRepository,
+    private readonly successUrl: string,
+    private readonly cancelUrl: string,
   ) {}
 
   async execute(params: {
@@ -30,17 +32,6 @@ export class CreateCheckoutSessionInteractor
     if (!user) {
       throw new Error('User not found');
     }
-
-    const successUrlEnv = process.env.CHECKOUT_SUCCESS_URL?.trim();
-    const successUrl =
-      successUrlEnv && successUrlEnv.length > 0
-        ? successUrlEnv
-        : 'http://localhost:3000/order/complete';
-    const cancelUrlEnv = process.env.CHECKOUT_CANCEL_URL?.trim();
-    const cancelUrl =
-      cancelUrlEnv && cancelUrlEnv.length > 0
-        ? cancelUrlEnv
-        : 'http://localhost:3000/products';
 
     const lineItems = [];
     let hasPhysicalProduct = false;
@@ -102,8 +93,8 @@ export class CreateCheckoutSessionInteractor
     const session = await this.stripeAdapter.createCheckoutSession({
       lineItems,
       mode: CheckoutSessionMode.Payment,
-      successUrl,
-      cancelUrl,
+      successUrl: this.successUrl,
+      cancelUrl: this.cancelUrl,
       customerEmail: user.email, // ログインユーザーのメールアドレスを設定
       requireShippingAddress: hasPhysicalProduct, // 物理商品がある場合のみ住所入力を必須にする
       metadata: {
