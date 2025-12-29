@@ -30,7 +30,9 @@ module.exports = [
         console: 'readonly',
         document: 'readonly',
         HTMLElement: 'readonly',
+        HTMLInputElement: 'readonly',
         window: 'readonly',
+        alert: 'readonly',
         URLSearchParams: 'readonly'
       }
     },

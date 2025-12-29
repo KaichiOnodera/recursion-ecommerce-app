@@ -23,8 +23,19 @@ const ProductCard: React.FC<ProductCardProps> = ({ item, isAdmin = false }) => {
     }
   };
 
+  const handleCardClick = (): void => {
+    if (!isAdmin) {
+      navigate(`/products/${item.id}`);
+    }
+  };
+
   return (
-    <div className="bg-white border duration-200 rounded-lg">
+    <div
+      className={`bg-white border duration-200 rounded-lg ${
+        !isAdmin ? 'cursor-pointer hover:shadow-lg' : ''
+      }`}
+      onClick={handleCardClick}
+    >
       {/* 商品画像 */}
       <div className="bg-green-100 h-48 items-center">
         <span>画像</span>
@@ -48,7 +59,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ item, isAdmin = false }) => {
           </div>
         ) : (
           <button
-            onClick={handleAddToCart}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleAddToCart();
+            }}
             disabled={item.inventoryStatus === InventoryStatus.OUT_OF_STOCK}
             className="w-full bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600 text-sm disabled:bg-gray-400 disabled:cursor-not-allowed disabled:hover:bg-gray-400"
           >
