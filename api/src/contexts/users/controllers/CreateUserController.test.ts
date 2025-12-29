@@ -23,12 +23,13 @@ describe('CreateUserController', () => {
 
   describe('POST /users/signup', () => {
     it('should create a user successfully', async () => {
+      const email = 'test-success@example.com';
       const response = await request(app)
         .post('/users/signup')
         .send({
           lastName: '山田',
           firstName: '太郎',
-          email: 'test@example.com',
+          email,
           password: 'password123',
         })
         .expect(201);
@@ -37,17 +38,14 @@ describe('CreateUserController', () => {
       expect(response.body.createdUser).toHaveProperty('id');
       expect(response.body.createdUser).toHaveProperty('lastName', '山田');
       expect(response.body.createdUser).toHaveProperty('firstName', '太郎');
-      expect(response.body.createdUser).toHaveProperty(
-        'email',
-        'test@example.com',
-      );
+      expect(response.body.createdUser).toHaveProperty('email', email);
       expect(response.body.createdUser).toHaveProperty('password');
       expect(response.body.createdUser).toHaveProperty('role', 'USER');
       expect(response.body.createdUser).toHaveProperty('isResigned', false);
 
       // データベースに保存されていることを確認
       const createdUser = await prismaTest.users.findUnique({
-        where: { email: 'test@example.com' },
+        where: { email },
       });
       expect(createdUser).not.toBeNull();
       expect(createdUser?.lastName).toBe('山田');
@@ -59,7 +57,7 @@ describe('CreateUserController', () => {
         .post('/users/signup')
         .send({
           firstName: '太郎',
-          email: 'test@example.com',
+          email: 'test-lastname@example.com',
           password: 'password123',
         })
         .expect(400);
@@ -75,7 +73,7 @@ describe('CreateUserController', () => {
         .post('/users/signup')
         .send({
           lastName: '山田',
-          email: 'test@example.com',
+          email: 'test-firstname@example.com',
           password: 'password123',
         })
         .expect(400);
@@ -108,7 +106,7 @@ describe('CreateUserController', () => {
         .send({
           lastName: '山田',
           firstName: '太郎',
-          email: 'test@example.com',
+          email: 'test-password@example.com',
         })
         .expect(400);
 
@@ -147,18 +145,19 @@ describe('CreateUserController', () => {
     });
 
     it('should hash password before saving', async () => {
+      const email = 'test-hash@example.com';
       await request(app)
         .post('/users/signup')
         .send({
           lastName: '山田',
           firstName: '太郎',
-          email: 'test@example.com',
+          email,
           password: 'password123',
         })
         .expect(201);
 
       const createdUser = await prismaTest.users.findUnique({
-        where: { email: 'test@example.com' },
+        where: { email },
       });
 
       expect(createdUser).not.toBeNull();
