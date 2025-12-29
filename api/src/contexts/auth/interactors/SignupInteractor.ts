@@ -1,12 +1,15 @@
 import { IUserRepository } from '../domains/repositories/IUserRepository';
 import { User } from '../domains/entities/User';
 import { hashPassword } from '../../utils/hashPassword';
-import { ICreateUserRequest } from '../usecases/ICreateUserInteractor';
+import {
+  ISignupRequest,
+  ISignupInteractor,
+} from '../usecases/ISignupInteractor';
 
-export class CreateUserInteractor {
+export class SignupInteractor implements ISignupInteractor {
   constructor(private readonly userRepository: IUserRepository) {}
 
-  async execute(input: ICreateUserRequest): Promise<User> {
+  async execute(input: ISignupRequest): Promise<User> {
     const { lastName, firstName, email, password } = input;
 
     //validation for email

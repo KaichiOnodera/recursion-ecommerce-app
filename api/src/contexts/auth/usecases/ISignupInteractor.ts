@@ -1,12 +1,12 @@
 import { User } from '../domains/entities/User';
 
-export interface ICreateUserRequest {
+export interface ISignupRequest {
   lastName: string;
   firstName: string;
   email: string;
   password: string;
 }
 
-export interface ICreateUserInteractor {
-  execute(input: ICreateUserRequest): Promise<User>;
+export interface ISignupInteractor {
+  execute(input: ISignupRequest): Promise<User>;
 }

@@ -1,5 +1,11 @@
 import { User } from '../domains/entities/User';
-import { UpdateUserProfileInput } from '../interactors/UpdateUserProfileInteractor';
+
+export interface UpdateUserProfileInput {
+  id: number;
+  lastName?: string;
+  firstName?: string;
+  email?: string;
+}
 
 export interface IUpdateUserProfileInteractor {
   execute(input: UpdateUserProfileInput): Promise<User>;

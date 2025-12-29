@@ -13,7 +13,7 @@ export type PostReq = {
     type: number;
     price: number;
   };
-  '/users/signup': {
+  '/auth/signup': {
     lastName: string;
     firstName: string;
     email: string;
@@ -34,7 +34,7 @@ export type PostRes = {
   '/admin/items': {
     item: AdminItem;
   };
-  '/users/signup': {
+  '/auth/signup': {
     createdUser: User;
   };
   '/cart': {

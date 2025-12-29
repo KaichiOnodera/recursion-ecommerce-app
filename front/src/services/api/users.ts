@@ -3,10 +3,10 @@ import { PostReq, PostRes } from '@shared/types/posts';
 import { PatchReq, PatchRes } from '@shared/types/patches';
 
 export async function signup(
-  data: PostReq['/users/signup'],
-): Promise<PostRes['/users/signup']> {
-  const response = await apiClient.post<PostRes['/users/signup']>(
-    '/users/signup',
+  data: PostReq['/auth/signup'],
+): Promise<PostRes['/auth/signup']> {
+  const response = await apiClient.post<PostRes['/auth/signup']>(
+    '/auth/signup',
     data,
   );
 

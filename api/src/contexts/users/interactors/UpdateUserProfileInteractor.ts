@@ -1,14 +1,13 @@
 import { IUserRepository } from '../domains/repositories/IUserRepository';
 import { User } from '../domains/entities/User';
+import {
+  IUpdateUserProfileInteractor,
+  UpdateUserProfileInput,
+} from '../usecases/IUpdateUserProfileInteractor';
 
-export interface UpdateUserProfileInput {
-  id: number;
-  lastName?: string;
-  firstName?: string;
-  email?: string;
-}
-
-export class UpdateUserProfileInteractor {
+export class UpdateUserProfileInteractor
+  implements IUpdateUserProfileInteractor
+{
   constructor(private readonly userRepository: IUserRepository) {}
 
   async execute(input: UpdateUserProfileInput): Promise<User> {
@@ -19,9 +18,12 @@ export class UpdateUserProfileInteractor {
       throw new Error('User not found');
     }
 
-    const existedUser = await this.userRepository.findByEmail(String(email));
-    if (existedUser) {
-      throw new Error('Mail is registered already');
+    // emailが変更される場合、isResigned=falseのレコードに絞って重複チェック
+    if (email && email !== existingUser.email) {
+      const existedUser = await this.userRepository.findByEmail(email);
+      if (existedUser && existedUser.id !== id && !existedUser.isResigned) {
+        throw new Error('Mail is registered already');
+      }
     }
 
     const updatedUser = await this.userRepository.update(id, {
