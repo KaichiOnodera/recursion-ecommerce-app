@@ -14,18 +14,13 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({ itemId }) => {
   const {
     reviews,
     total,
+    averageRating,
     isLoading,
     error,
     currentPage,
     totalPages,
     changePage,
   } = useReviews(itemId);
-
-  const averageRating = useMemo(() => {
-    if (reviews.length === 0) return 0;
-    const sum = reviews.reduce((acc, review) => acc + review.rating, 0);
-    return sum / reviews.length;
-  }, [reviews]);
 
   const handleWriteReview = () => {
     // TODO: レビュー投稿機能は別PRで実装
