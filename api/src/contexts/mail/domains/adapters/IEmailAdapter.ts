@@ -1,5 +1,5 @@
-import { EmailMessage, EmailSender } from '../../domains/entities/EmailSender';
+import { EmailMessage } from '../entities/EmailMessage';
 
-export interface IEmailAdapter extends EmailSender {
+export interface IEmailAdapter {
   send(message: EmailMessage): Promise<void>;
 }

@@ -1,8 +1,9 @@
 import 'dotenv/config';
 import sgMail from '@sendgrid/mail';
-import { EmailSender, EmailMessage } from '../../domains/entities/EmailSender';
+import { IEmailAdapter } from '../../domains/adapters/IEmailAdapter';
+import { EmailMessage } from '../../domains/entities/EmailMessage';
 
-export class EmailAdapter implements EmailSender {
+export class EmailAdapter implements IEmailAdapter {
   constructor() {
     const key = process.env.SENDGRID_API_KEY;
     if (!key) throw new Error('SENDGRID_API_KEY is missing');

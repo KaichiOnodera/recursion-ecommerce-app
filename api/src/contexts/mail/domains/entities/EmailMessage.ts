@@ -4,7 +4,3 @@ export type EmailMessage = {
   text?: string;
   html?: string;
 };
-
-export interface EmailSender {
-  send(message: EmailMessage): Promise<void>;
-}
