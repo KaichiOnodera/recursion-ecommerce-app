@@ -8,6 +8,9 @@ export const AdminOrderList: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [editingOrderId, setEditingOrderId] = useState<number | null>(null);
+  const [trackingNumber, setTrackingNumber] = useState('');
+  const [updating, setUpdating] = useState(false);
 
   useEffect(() => {
     const fetchOrders = async (): Promise<void> => {
@@ -25,6 +28,16 @@ export const AdminOrderList: React.FC = () => {
 
     fetchOrders();
   }, []);
+
+  const handleShipOrder = async (orderId: number): Promise<void> => {
+    if (!trackingNumber.trim()) {
+      alert('追跡番号を入力してください');
+      return;
+    }
+
+    // TODO: バックエンドAPI実装後に有効化
+    alert('追跡番号を登録する機能は、バックエンドAPI実装後に有効化');
+  };
 
   if (loading) {
     return (
@@ -96,7 +109,7 @@ export const AdminOrderList: React.FC = () => {
                     )}
                   </div>
                 </div>
-                <div className="ml-4">
+                <div className="ml-4 flex flex-col items-end gap-2">
                   <span
                     className={`px-3 py-1 rounded-full text-sm font-medium ${
                       order.orderStatus === 'COMPLETED'
@@ -112,6 +125,46 @@ export const AdminOrderList: React.FC = () => {
                         ? '発送済み'
                         : order.orderStatus}
                   </span>
+                  {order.orderStatus === 'COMPLETED' && (
+                    <div>
+                      {editingOrderId === order.id ? (
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={trackingNumber}
+                            onChange={(e) => setTrackingNumber(e.target.value)}
+                            placeholder="追跡番号"
+                            className="border rounded px-3 py-2 text-sm w-48"
+                            disabled={updating}
+                          />
+                          <button
+                            onClick={() => handleShipOrder(order.id)}
+                            disabled={updating}
+                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 text-sm disabled:bg-gray-400 disabled:cursor-not-allowed"
+                          >
+                            {updating ? '処理中...' : '発送'}
+                          </button>
+                          <button
+                            onClick={() => {
+                              setEditingOrderId(null);
+                              setTrackingNumber('');
+                            }}
+                            disabled={updating}
+                            className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 text-sm disabled:bg-gray-400 disabled:cursor-not-allowed"
+                          >
+                            キャンセル
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => setEditingOrderId(order.id)}
+                          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 text-sm"
+                        >
+                          発送処理
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
 
