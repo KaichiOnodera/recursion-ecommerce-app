@@ -12,7 +12,7 @@ export class OrderCompletedInteractor implements IOrderCompletedInteractor {
   ) {}
 
   async OrderCompleted(orderId: number): Promise<void> {
-    const order = await this.orderRepository.getById(Number(orderId));
+    const order = await this.orderRepository.getById(orderId);
     if (order === null) {
       throw new Error('Order not found');
     }
