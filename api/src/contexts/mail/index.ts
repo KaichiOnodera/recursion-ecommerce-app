@@ -39,6 +39,7 @@ const orderCompletedController = new OrderCompletedController(
 
 mailRouter.post(
   '/send-delivery-notification',
+  verifyAdmin,
   orderconfirmationController.execute.bind(orderconfirmationController),
 );
 

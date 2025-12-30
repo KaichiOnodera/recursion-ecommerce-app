@@ -11,13 +11,17 @@ export class OrderCompletedInteractor implements IOrderCompletedInteractor {
     private readonly userRepository: IUserRepository,
   ) {}
 
-  async OrderCompleted(orderId: string): Promise<void> {
+  async OrderCompleted(orderId: number): Promise<void> {
     const order = await this.orderRepository.getById(Number(orderId));
     if (order === null) {
       throw new Error('Order not found');
     }
 
-    const user = await this.userRepository.findById(Number(order.userId));
+    if (order.userId == null) {
+      throw new Error('User related OrderId not found');
+    }
+
+    const user = await this.userRepository.findById(order.userId);
 
     if (!user) {
       throw new Error('User not found');
