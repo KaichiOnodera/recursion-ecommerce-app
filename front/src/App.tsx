@@ -20,6 +20,8 @@ import { AdminProductList } from './pages/admin/AdminProductList';
 import { AdminProductCreate } from './pages/admin/AdminProductCreate';
 import { AdminProductEdit } from './pages/admin/AdminProductEdit';
 import { AdminProductDelete } from './pages/admin/AdminProductDelete';
+import { AdminAllOrdersList } from './pages/admin/AdminAllOrdersList';
+import { AdminOrderList } from './pages/admin/AdminOrderList';
 import { Cart } from './pages/user/Cart';
 import { MyPage } from './pages/user/MyPage';
 import { OrderHistory } from './pages/user/OrderHistory';
@@ -76,6 +78,11 @@ function App(): React.JSX.Element {
                 <Route
                   path="/admin/products/:id/delete"
                   element={<AdminProductDelete />}
+                />
+                <Route path="/admin/orders" element={<AdminAllOrdersList />} />
+                <Route
+                  path="/admin/orders/shipping"
+                  element={<AdminOrderList />}
                 />
               </Routes>
               <Routes>

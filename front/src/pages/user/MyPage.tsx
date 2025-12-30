@@ -85,6 +85,16 @@ export const MyPage: React.FC = () => {
               </div>
               <ChevronRightIcon className="w-5 h-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
             </Link>
+            <Link
+              to="/admin/orders/shipping"
+              className="flex items-center justify-between p-4 rounded-lg hover:bg-gray-50 transition-colors group"
+            >
+              <div className="flex items-center space-x-4">
+                <ClipboardDocumentListIcon className="w-6 h-6 text-gray-600 group-hover:text-gray-900 transition-colors" />
+                <span className="text-gray-900 font-medium">配送管理</span>
+              </div>
+              <ChevronRightIcon className="w-5 h-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+            </Link>
           </div>
         </div>
       )}
