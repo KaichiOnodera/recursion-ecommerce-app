@@ -20,3 +20,16 @@ export async function getOrdersNeedingShipping(): Promise<
   );
   return response.data;
 }
+
+export async function updateOrderTracking(
+  orderId: number,
+  trackingNumber: string,
+): Promise<void> {
+  const response = await apiClient.patch(`/admin/orders/${orderId}/tracking`, {
+    trackingNumber,
+  });
+  if (response.status !== 200) {
+    const error = response.data as { error?: string };
+    throw new Error(error.error || 'Failed to update tracking number');
+  }
+}
