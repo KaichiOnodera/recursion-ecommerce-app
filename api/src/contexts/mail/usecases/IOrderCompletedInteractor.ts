@@ -1,3 +1,3 @@
 export interface IOrderCompletedInteractor {
-  OrderCompleted(orderId: string): Promise<void>;
+  OrderCompleted(orderId: number): Promise<void>;
 }
