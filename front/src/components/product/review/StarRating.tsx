@@ -87,7 +87,7 @@ export const StarRating: React.FC<StarRatingProps> = React.memo(
 
     return (
       <div
-        className={`flex items-center ${interactive ? 'cursor-pointer' : ''}`}
+        className="flex items-center"
         onMouseLeave={handleMouseLeave}
       >
         {STARS.map((star) => {
@@ -97,7 +97,7 @@ export const StarRating: React.FC<StarRatingProps> = React.memo(
               key={star}
               onClick={() => handleClick(star)}
               onMouseEnter={() => handleMouseEnter(star)}
-              className="px-0.5 py-1 -mx-0.5 -my-1 inline-block"
+              className={`inline-flex items-center justify-center p-1 ${interactive ? 'cursor-pointer' : ''}`}
             >
               {star <= Math.round(displayRating) ? (
                 <StarIcon

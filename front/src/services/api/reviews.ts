@@ -1,5 +1,6 @@
 import { apiClient } from './apiClient';
 import { GetRes } from '@shared/types/gets';
+import { PostReq, PostRes } from '@shared/types/posts';
 
 export interface GetReviewsParams {
   page?: number;
@@ -21,5 +22,12 @@ export async function getReviews(
   const queryString = queryParams.toString();
   const url = `/reviews/items/${itemId}${queryString ? `?${queryString}` : ''}`;
   const response = await apiClient.get<GetRes['/reviews/items/:itemId']>(url);
+  return response.data;
+}
+
+export async function createReview(
+  data: PostReq['/reviews'],
+): Promise<PostRes['/reviews']> {
+  const response = await apiClient.post<PostRes['/reviews']>('/reviews', data);
   return response.data;
 }

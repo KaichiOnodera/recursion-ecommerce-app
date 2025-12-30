@@ -5,12 +5,11 @@ interface ReviewHeaderProps {
   averageRating: number;
   totalReviews: number;
   isLoading: boolean;
-  showForm: boolean;
   onWriteReview: () => void;
 }
 
 export const ReviewHeader: React.FC<ReviewHeaderProps> = React.memo(
-  ({ averageRating, totalReviews, isLoading, showForm, onWriteReview }) => {
+  ({ averageRating, totalReviews, isLoading, onWriteReview }) => {
     return (
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -32,14 +31,12 @@ export const ReviewHeader: React.FC<ReviewHeaderProps> = React.memo(
             </div>
           )}
         </div>
-        {!showForm && (
-          <button
-            onClick={onWriteReview}
-            className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
-          >
-            レビューを書く
-          </button>
-        )}
+        <button
+          onClick={onWriteReview}
+          className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
+        >
+          レビューを書く
+        </button>
       </div>
     );
   },
