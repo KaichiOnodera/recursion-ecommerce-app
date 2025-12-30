@@ -28,7 +28,7 @@ authRouter.get(
 );
 
 authRouter.post(
-  'verify-email',
+  '/verify-email',
   verifyUserInteractor.execute.bind(verifyUserInteractor),
 );
 
