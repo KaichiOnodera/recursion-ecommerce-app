@@ -44,4 +44,6 @@ export interface IOrderRepository {
     paymentId: string,
   ): Promise<OrderPaymentExternalId | null>;
   findOrdersNeedingShipping(): Promise<Order[]>;
+  findById(id: number): Promise<Order | null>;
+  updateTrackingNumber(id: number, trackingNumber: string): Promise<Order>;
 }
