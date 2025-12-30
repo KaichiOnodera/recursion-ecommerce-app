@@ -43,4 +43,5 @@ export interface IOrderRepository {
     paymentSessionId: string,
     paymentId: string,
   ): Promise<OrderPaymentExternalId | null>;
+  findOrdersNeedingShipping(): Promise<Order[]>;
 }

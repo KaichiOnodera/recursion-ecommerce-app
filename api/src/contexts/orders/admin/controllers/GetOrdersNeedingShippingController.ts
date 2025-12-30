@@ -1,15 +1,17 @@
 import express from 'express';
 import { GetRes } from '@shared/types/gets';
-import { IGetOrdersInteractor } from '../usecases/IGetOrdersInteractor';
+import { IGetOrdersNeedingShippingInteractor } from '../usecases/IGetOrdersNeedingShippingInteractor';
 
-export class GetOrdersController {
-  constructor(private readonly getOrdersInteractor: IGetOrdersInteractor) {}
+export class GetOrdersNeedingShippingController {
+  constructor(
+    private readonly getOrdersNeedingShippingInteractor: IGetOrdersNeedingShippingInteractor,
+  ) {}
 
   async execute(
     _req: express.Request<null>,
-    res: express.Response<GetRes['/admin/orders']>,
+    res: express.Response<GetRes['/admin/orders/shipping-needed']>,
   ) {
-    const orders = await this.getOrdersInteractor.execute();
+    const orders = await this.getOrdersNeedingShippingInteractor.execute();
 
     const responseOrders = orders.map((order) => ({
       id: order.id,

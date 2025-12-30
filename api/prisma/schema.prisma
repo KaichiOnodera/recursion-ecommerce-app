@@ -77,16 +77,17 @@ model ItemImages {
 }
 
 model Orders {
-  id          Int         @id @default(autoincrement())
-  userId      Int?
-  lastName    String
-  firstName   String
-  email       String
-  address     String
-  totalPrice  Int
-  orderStatus OrderStatus @default(PENDING)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id             Int          @id @default(autoincrement())
+  userId         Int?
+  lastName       String
+  firstName      String
+  email          String
+  address        String
+  totalPrice     Int
+  orderStatus    OrderStatus  @default(PENDING)
+  trackingNumber String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 
   user               Users?                    @relation(fields: [userId], references: [id], onDelete: SetNull)
   orderItems         OrderItems[]
