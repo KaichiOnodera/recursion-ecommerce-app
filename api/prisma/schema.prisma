@@ -71,23 +71,23 @@ model ItemImages {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  item Items @relation(fields: [itemId], references: [id])
+  item Items @relation(fields: [itemId], references: [id], onDelete: Cascade)
 
   @@index([itemId])
 }
 
 model Orders {
-  id             Int          @id @default(autoincrement())
+  id             Int         @id @default(autoincrement())
   userId         Int?
   lastName       String
   firstName      String
   email          String
   address        String
   totalPrice     Int
-  orderStatus    OrderStatus  @default(PENDING)
+  orderStatus    OrderStatus @default(PENDING)
   trackingNumber String?
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
 
   user               Users?                    @relation(fields: [userId], references: [id], onDelete: SetNull)
   orderItems         OrderItems[]
