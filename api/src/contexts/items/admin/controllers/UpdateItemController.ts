@@ -39,7 +39,8 @@ export class UpdateItemController {
         return res.status(400).json({ message: 'Invalid item ID' });
       }
 
-      const { name, description, type, price, inventoryAmount } = req.body;
+      const { name, description, type, price, inventoryAmount, displayStatus } =
+        req.body;
 
       // 少なくとも1つのフィールドが更新されるか確認する
       if (
@@ -47,7 +48,8 @@ export class UpdateItemController {
         description === undefined &&
         type === undefined &&
         price === undefined &&
-        inventoryAmount === undefined
+        inventoryAmount === undefined &&
+        displayStatus === undefined
       ) {
         const typedReq = req as UpdateItemRequest;
         const hasFiles =
@@ -71,6 +73,7 @@ export class UpdateItemController {
         price !== undefined ? Number(price) : undefined,
         inventoryAmount !== undefined ? Number(inventoryAmount) : undefined,
         files,
+        displayStatus as 'public' | 'private' | undefined,
       );
 
       if (!result) {

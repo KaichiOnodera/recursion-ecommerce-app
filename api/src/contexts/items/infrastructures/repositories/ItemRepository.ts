@@ -121,6 +121,7 @@ export class ItemRepository implements IItemRepository {
     type?: number,
     price?: number,
     inventoryAmount?: number,
+    displayStatus?: DisplayStatus,
   ): Promise<Item | null> {
     const existingItem = await this.findById(id);
 
@@ -133,12 +134,14 @@ export class ItemRepository implements IItemRepository {
       description?: string;
       type?: number;
       price?: number;
+      displayStatus?: DisplayStatus;
     } = {};
 
     if (name !== undefined) updateData.name = name;
     if (description !== undefined) updateData.description = description;
     if (type !== undefined) updateData.type = type;
     if (price !== undefined) updateData.price = price;
+    if (displayStatus !== undefined) updateData.displayStatus = displayStatus;
 
     const item = await this.prisma.items.update({
       where: { id },

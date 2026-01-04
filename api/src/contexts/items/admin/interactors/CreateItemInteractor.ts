@@ -2,7 +2,7 @@ import { ICreateItemInteractor } from '../usecases/ICreateItemInteractor';
 import { IItemRepository } from '../../domains/repositories/IItemRepository';
 import { IItemImageRepository } from '../../domains/repositories/IItemImageRepository';
 import { IImageStorageAdapter } from '../../domains/adapters/IImageStorageAdapter';
-import { Item } from '../../domains/entities/Item';
+import { Item, DisplayStatus } from '../../domains/entities/Item';
 import { ItemImage } from '../../domains/entities/ItemImage';
 import {
   isAllowedExtension,
@@ -26,18 +26,24 @@ export class CreateItemInteractor implements ICreateItemInteractor {
     type: number,
     price: number,
     files?: Express.Multer.File[],
+    displayStatus?: DisplayStatus,
   ): Promise<{ item: Item; images: ItemImage[] }> {
     // 商品を作成
     const item = await this.itemRepository.create(name, description, type);
 
-    // 価格を設定（商品作成後に更新）
-    if (price !== undefined) {
+    // 価格とdisplayStatusを設定（商品作成後に更新）
+    // displayStatusが指定されていない場合はデフォルトでPRIVATE
+    const finalDisplayStatus = displayStatus ?? DisplayStatus.PRIVATE;
+    const needsUpdate = price !== undefined || displayStatus !== undefined;
+    if (needsUpdate) {
       await this.itemRepository.update(
         item.id,
         undefined,
         undefined,
         undefined,
         price,
+        undefined,
+        finalDisplayStatus,
       );
       // 更新後の商品を取得
       const updatedItem = await this.itemRepository.findById(item.id);
