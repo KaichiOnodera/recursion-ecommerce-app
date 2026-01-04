@@ -155,6 +155,39 @@ export class OrderRepository implements IOrderRepository {
     return ordersWithPhysicalItems.map((order) => this.mapToOrder(order));
   }
 
+  async findById(id: number): Promise<Order | null> {
+    const order = await this.prisma.orders.findUnique({
+      where: { id },
+      include: {
+        orderItems: true,
+      },
+    });
+
+    if (!order) {
+      return null;
+    }
+
+    return this.mapToOrder(order);
+  }
+
+  async updateTrackingNumber(
+    id: number,
+    trackingNumber: string,
+  ): Promise<Order> {
+    const order = await this.prisma.orders.update({
+      where: { id },
+      data: {
+        trackingNumber,
+        orderStatus: OrderStatus.SHIPPED,
+      },
+      include: {
+        orderItems: true,
+      },
+    });
+
+    return this.mapToOrder(order);
+  }
+
   async createPaymentExternalId(
     data: CreateOrderPaymentExternalIdData,
   ): Promise<OrderPaymentExternalId> {

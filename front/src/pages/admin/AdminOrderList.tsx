@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { getOrdersNeedingShipping } from '../../services/api/orders';
+import {
+  getOrdersNeedingShipping,
+  updateOrderTracking,
+} from '../../services/api/orders';
 import { GetRes } from '@shared/types/gets';
 
 type Order = GetRes['/admin/orders/shipping-needed']['orders'][0];
@@ -35,8 +38,22 @@ export const AdminOrderList: React.FC = () => {
       return;
     }
 
-    // TODO: バックエンドAPI実装後に有効化
-    alert('追跡番号を登録する機能は、バックエンドAPI実装後に有効化');
+    try {
+      setUpdating(true);
+      await updateOrderTracking(orderId, trackingNumber.trim());
+      // 注文リストを再取得
+      const response = await getOrdersNeedingShipping();
+      setOrders(response.orders);
+      setEditingOrderId(null);
+      setTrackingNumber('');
+      alert('追跡番号を登録しました');
+    } catch (err) {
+      alert(
+        err instanceof Error ? err.message : '追跡番号の登録に失敗しました',
+      );
+    } finally {
+      setUpdating(false);
+    }
   };
 
   if (loading) {
