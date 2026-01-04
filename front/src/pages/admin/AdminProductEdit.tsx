@@ -1,7 +1,11 @@
-import React, { useState, useEffect } from 'react';
+/* eslint-env browser */
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import { getAdminItems, updateItem } from '../../services/api/items';
-import { AdminItem } from '@shared/schemas/item';
+import { getAdminItem, updateItem } from '../../services/api/items';
+import { ItemImage } from '@shared/schemas/item';
+import { API_BASE_URL } from '../../services/api/config';
+
+const MAX_IMAGES = 10;
 
 export const AdminProductEdit: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -12,7 +16,11 @@ export const AdminProductEdit: React.FC = () => {
   const [displayStatus, setDisplayStatus] = useState<'public' | 'private'>(
     'private',
   );
+  const [existingImages, setExistingImages] = useState<ItemImage[]>([]);
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,8 +30,8 @@ export const AdminProductEdit: React.FC = () => {
         return;
       }
 
-      const response = await getAdminItems();
-      const item = response.items.find((i: AdminItem) => i.id === parseInt(id));
+      const response = await getAdminItem(parseInt(id));
+      const item = response.item;
 
       if (!item) {
         navigate('/admin/products');
@@ -35,10 +43,45 @@ export const AdminProductEdit: React.FC = () => {
       setType(item.type);
       setPrice(item.price);
       setDisplayStatus(item.displayStatus);
+      setExistingImages(item.images || []);
     };
 
     fetchItem();
   }, [id, navigate]);
+
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    const newFiles = Array.from(files);
+    const totalImages = existingImages.length + selectedImages.length + newFiles.length;
+
+    if (totalImages > MAX_IMAGES) {
+      alert(`画像は最大${MAX_IMAGES}枚まで選択できます。`);
+      return;
+    }
+
+    const newPreviews: string[] = [];
+    newFiles.forEach((file) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        newPreviews.push(reader.result as string);
+        if (newPreviews.length === newFiles.length) {
+          setImagePreviews([...imagePreviews, ...newPreviews]);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+
+    setSelectedImages([...selectedImages, ...newFiles]);
+  };
+
+  const handleRemoveNewImage = (index: number) => {
+    const newImages = selectedImages.filter((_, i) => i !== index);
+    const newPreviews = imagePreviews.filter((_, i) => i !== index);
+    setSelectedImages(newImages);
+    setImagePreviews(newPreviews);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,13 +93,17 @@ export const AdminProductEdit: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      await updateItem(parseInt(id), {
-        name,
-        description,
-        type,
-        price,
-        displayStatus,
-      });
+      await updateItem(
+        parseInt(id),
+        {
+          name,
+          description,
+          type,
+          price,
+          displayStatus,
+        },
+        selectedImages.length > 0 ? selectedImages : undefined,
+      );
 
       navigate('/admin/products');
     } finally {
@@ -144,6 +191,73 @@ export const AdminProductEdit: React.FC = () => {
             <p className="mt-1 text-sm text-gray-500">
               公開: 一般ユーザーに表示 / 非公開: 管理者のみ表示
             </p>
+          </div>
+
+          {/* 商品画像 */}
+          <div>
+            <label className="block mb-2 font-medium">商品画像</label>
+            
+            {/* 既存画像の表示 */}
+            {existingImages.length > 0 && (
+              <div className="mb-4">
+                <p className="text-sm text-gray-600 mb-2">既存の画像</p>
+                <div className="grid grid-cols-4 gap-4">
+                  {existingImages.map((image, index) => (
+                    <div key={image.id} className="relative">
+                      <img
+                        src={`${API_BASE_URL}${image.src}`}
+                        alt={`既存画像 ${index + 1}`}
+                        className="w-full h-32 object-cover rounded border"
+                      />
+                      <div className="absolute bottom-1 left-1 bg-black bg-opacity-50 text-white text-xs px-1 rounded">
+                        {image.order}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* 新規画像のアップロード */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleImageSelect}
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <p className="mt-1 text-sm text-gray-500">
+              画像は最大{MAX_IMAGES}枚まで選択できます（jpg, jpeg, png, gif, webp, svg, avif）
+            </p>
+
+            {/* 新規画像のプレビュー */}
+            {imagePreviews.length > 0 && (
+              <div className="mt-4">
+                <p className="text-sm text-gray-600 mb-2">新規追加する画像</p>
+                <div className="grid grid-cols-4 gap-4">
+                  {imagePreviews.map((preview, index) => (
+                    <div key={index} className="relative">
+                      <img
+                        src={preview}
+                        alt={`プレビュー ${index + 1}`}
+                        className="w-full h-32 object-cover rounded border"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveNewImage(index)}
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
+                      >
+                        ×
+                      </button>
+                      <div className="absolute bottom-1 left-1 bg-blue-500 bg-opacity-50 text-white text-xs px-1 rounded">
+                        新規
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* ボタン */}

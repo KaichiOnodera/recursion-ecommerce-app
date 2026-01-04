@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+/* eslint-env browser */
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router';
 import { createItem } from '../../services/api/items';
+
+const MAX_IMAGES = 10;
 
 export const AdminProductCreate: React.FC = () => {
   const [name, setName] = useState('');
@@ -10,21 +13,61 @@ export const AdminProductCreate: React.FC = () => {
   const [displayStatus, setDisplayStatus] = useState<'public' | 'private'>(
     'private',
   );
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    const newFiles = Array.from(files);
+    const totalImages = selectedImages.length + newFiles.length;
+
+    if (totalImages > MAX_IMAGES) {
+      alert(`画像は最大${MAX_IMAGES}枚まで選択できます。`);
+      return;
+    }
+
+    const newPreviews: string[] = [];
+    newFiles.forEach((file) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        newPreviews.push(reader.result as string);
+        if (newPreviews.length === newFiles.length) {
+          setImagePreviews([...imagePreviews, ...newPreviews]);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+
+    setSelectedImages([...selectedImages, ...newFiles]);
+  };
+
+  const handleRemoveImage = (index: number) => {
+    const newImages = selectedImages.filter((_, i) => i !== index);
+    const newPreviews = imagePreviews.filter((_, i) => i !== index);
+    setSelectedImages(newImages);
+    setImagePreviews(newPreviews);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      await createItem({
-        name,
-        description,
-        type,
-        price,
-        displayStatus,
-      });
+      await createItem(
+        {
+          name,
+          description,
+          type,
+          price,
+          displayStatus,
+        },
+        selectedImages.length > 0 ? selectedImages : undefined,
+      );
 
       navigate('/admin/products');
     } finally {
@@ -114,6 +157,47 @@ export const AdminProductCreate: React.FC = () => {
             <p className="mt-1 text-sm text-gray-500">
               公開: 一般ユーザーに表示 / 非公開: 管理者のみ表示
             </p>
+          </div>
+
+          {/* 商品画像 */}
+          <div>
+            <label className="block mb-2 font-medium">商品画像</label>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleImageSelect}
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <p className="mt-1 text-sm text-gray-500">
+              画像は最大{MAX_IMAGES}枚まで選択できます（jpg, jpeg, png, gif, webp, svg, avif）
+            </p>
+
+            {/* 画像プレビュー */}
+            {imagePreviews.length > 0 && (
+              <div className="mt-4 grid grid-cols-4 gap-4">
+                {imagePreviews.map((preview, index) => (
+                  <div key={index} className="relative">
+                    <img
+                      src={preview}
+                      alt={`プレビュー ${index + 1}`}
+                      className="w-full h-32 object-cover rounded border"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveImage(index)}
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
+                    >
+                      ×
+                    </button>
+                    <div className="absolute bottom-1 left-1 bg-black bg-opacity-50 text-white text-xs px-1 rounded">
+                      {index + 1}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* ボタン */}

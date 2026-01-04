@@ -70,6 +70,7 @@ export type AdminItemDetail = {
   inventoryStatus: InventoryStatus;
   inventoryAmount: number;
   displayStatus: DisplayStatus;
+  images: ItemImage[];
   createdAt: Date;
   updatedAt: Date;
 };
