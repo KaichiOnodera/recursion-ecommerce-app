@@ -12,6 +12,12 @@ const upload = multer({
   },
 });
 
+interface CreateItemRequest extends express.Request {
+  files?: {
+    images?: Express.Multer.File[];
+  };
+}
+
 export class CreateItemController {
   constructor(private readonly createItemInteractor: ICreateItemInteractor) {}
 
@@ -27,7 +33,6 @@ export class CreateItemController {
     res: express.Response<PostRes['/admin/items'] | { message: string }>,
   ) {
     try {
-      // multipart/form-dataからテキストフィールドを取得
       const { name, description, type, price } = req.body;
 
       if (!name || !description || type === undefined || price === undefined) {
@@ -36,8 +41,8 @@ export class CreateItemController {
         });
       }
 
-      // ファイルを取得
-      const files = (req.files as { images?: Express.Multer.File[] })?.images;
+      const typedReq = req as CreateItemRequest;
+      const files = typedReq.files?.images;
 
       const result = await this.createItemInteractor.execute(
         name,
