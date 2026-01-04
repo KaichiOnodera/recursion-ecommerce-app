@@ -87,6 +87,7 @@ export class UpdateItemController {
           result.item.inventory.amount > 0
             ? InventoryStatus.IN_STOCK
             : InventoryStatus.OUT_OF_STOCK,
+        displayStatus: result.item.displayStatus,
         createdAt: result.item.createdAt,
         updatedAt: result.item.updatedAt,
       };
