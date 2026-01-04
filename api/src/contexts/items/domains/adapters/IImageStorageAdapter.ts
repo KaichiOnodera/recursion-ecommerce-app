@@ -23,12 +23,4 @@ export interface IImageStorageAdapter {
    * @returns エンドポイント経由のURL（例: /images/items/1/filename.jpg）
    */
   getUrl(filePath: string, itemId: number): string;
-
-  /**
-   * 画像ファイルを取得（エンドポイント経由配信用）
-   * @param filePath 保存時のパス（またはS3キー）
-   * @param itemId 商品ID
-   * @returns 画像ファイルのBuffer
-   */
-  getFile(filePath: string, itemId: number): Promise<Buffer>;
 }
