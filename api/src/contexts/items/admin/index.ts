@@ -44,6 +44,7 @@ const updateItemController = new UpdateItemController(updateItemInteractor);
 const deleteItemInteractor = new DeleteItemInteractor(itemRepository);
 const deleteItemController = new DeleteItemController(deleteItemInteractor);
 
+// 管理者向け: displayStatusを指定しないことで全ての商品（private含む）を取得
 const getItemsInteractor = new GetItemsInteractor(itemRepository);
 const getItemsController = new GetItemsController(getItemsInteractor);
 

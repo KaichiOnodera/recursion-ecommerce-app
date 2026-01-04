@@ -43,7 +43,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ item, isAdmin = false }) => {
 
       {/* 商品情報 */}
       <div className="p-4">
-        <h2>{item.name}</h2>
+        <h2>
+          {item.name}
+          {'displayStatus' in item && item.displayStatus === 'private' && (
+            <span className="text-xs text-red-600 font-normal ml-2">(非公開)</span>
+          )}
+        </h2>
         <p> {item.description} </p>
         <p> {item.price} </p>
 

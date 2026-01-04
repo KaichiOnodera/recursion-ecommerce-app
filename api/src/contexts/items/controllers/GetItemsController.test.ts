@@ -4,6 +4,7 @@ import { createRouter } from '../../../tests/helpers/router';
 import { GetItemsController } from './GetItemsController';
 import { GetItemsInteractor } from '../interactors/GetItemsInteractor';
 import { ItemRepository } from '../infrastructures/repositories/ItemRepository';
+import { DisplayStatus } from '../domains/entities/Item';
 import { prismaTest } from '../../../libs/prisma-test';
 import { cleanDatabase } from '../../../tests/helpers/database';
 
@@ -14,7 +15,11 @@ describe('GetItemsController', () => {
     await cleanDatabase();
 
     const itemRepository = new ItemRepository(prismaTest);
-    const getItemsInteractor = new GetItemsInteractor(itemRepository);
+    // 一般ユーザー向け: PUBLICな商品のみ取得
+    const getItemsInteractor = new GetItemsInteractor(
+      itemRepository,
+      DisplayStatus.PUBLIC,
+    );
     const getItemsController = new GetItemsController(getItemsInteractor);
     const router = createRouter('GET', '/', getItemsController);
 

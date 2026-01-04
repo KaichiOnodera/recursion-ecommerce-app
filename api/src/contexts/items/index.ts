@@ -5,13 +5,18 @@ import { GetItemInteractor } from './interactors/GetItemInteractor';
 import { SearchItemsController } from './controllers/SearchItemsController';
 import { SearchItemsInteractor } from './interactors/SearchItemsInteractor';
 import { ItemRepository } from './infrastructures/repositories/ItemRepository';
+import { DisplayStatus } from './domains/entities/Item';
 import { prisma } from '../../libs/prisma';
 import express from 'express';
 
 const itemsRouter = express.Router();
 
 const itemRepository = new ItemRepository(prisma);
-const getItemsInteractor = new GetItemsInteractor(itemRepository);
+// 一般ユーザー向け: PUBLICな商品のみ取得
+const getItemsInteractor = new GetItemsInteractor(
+  itemRepository,
+  DisplayStatus.PUBLIC,
+);
 const getItemsController = new GetItemsController(getItemsInteractor);
 const getItemInteractor = new GetItemInteractor(itemRepository);
 const getItemController = new GetItemController(getItemInteractor);
