@@ -34,7 +34,7 @@ export async function createItem(
   images?: File[],
 ): Promise<PostRes['/admin/items']> {
   const formData = new FormData();
-  
+
   // テキストフィールドを追加
   formData.append('name', data.name);
   formData.append('description', data.description);
@@ -43,14 +43,14 @@ export async function createItem(
   if (data.displayStatus) {
     formData.append('displayStatus', data.displayStatus);
   }
-  
+
   // 画像ファイルを追加
   if (images && images.length > 0) {
     images.forEach((image) => {
       formData.append('images', image);
     });
   }
-  
+
   const response = await apiClient.post<PostRes['/admin/items']>(
     '/admin/items',
     formData,
@@ -70,7 +70,7 @@ export async function updateItem(
   images?: File[],
 ): Promise<PatchRes['/admin/items/:id']> {
   const formData = new FormData();
-  
+
   // テキストフィールドを追加
   if (data.name !== undefined) {
     formData.append('name', data.name);
@@ -90,14 +90,14 @@ export async function updateItem(
   if (data.displayStatus !== undefined) {
     formData.append('displayStatus', data.displayStatus);
   }
-  
+
   // 画像ファイルを追加
   if (images && images.length > 0) {
     images.forEach((image) => {
       formData.append('images', image);
     });
   }
-  
+
   const response = await apiClient.patch<PatchRes['/admin/items/:id']>(
     `/admin/items/${id}`,
     formData,

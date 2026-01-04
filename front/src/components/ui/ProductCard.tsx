@@ -33,7 +33,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ item, isAdmin = false }) => {
   // 最初の画像をサムネイルとして使用
   const images = 'images' in item ? item.images : [];
   const thumbnailImage = images && images.length > 0 ? images[0] : null;
-  const imageUrl = thumbnailImage ? `${API_BASE_URL}${thumbnailImage.src}` : null;
+  const imageUrl = thumbnailImage
+    ? `${API_BASE_URL}${thumbnailImage.src}`
+    : null;
 
   return (
     <div
@@ -54,7 +56,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ item, isAdmin = false }) => {
               const target = e.target as HTMLImageElement;
               target.style.display = 'none';
               if (target.parentElement) {
-                target.parentElement.innerHTML = '<span class="text-gray-500">画像なし</span>';
+                target.parentElement.innerHTML =
+                  '<span class="text-gray-500">画像なし</span>';
               }
             }}
           />
@@ -68,7 +71,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ item, isAdmin = false }) => {
         <h2>
           {item.name}
           {'displayStatus' in item && item.displayStatus === 'private' && (
-            <span className="text-xs text-red-600 font-normal ml-2">(非公開)</span>
+            <span className="text-xs text-red-600 font-normal ml-2">
+              (非公開)
+            </span>
           )}
         </h2>
         <p> {item.description} </p>

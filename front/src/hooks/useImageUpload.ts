@@ -64,4 +64,3 @@ export const useImageUpload = (options: UseImageUploadOptions = {}) => {
     MAX_IMAGES,
   };
 };
-
