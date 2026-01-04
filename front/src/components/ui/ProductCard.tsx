@@ -31,7 +31,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ item, isAdmin = false }) => {
   };
 
   // 最初の画像をサムネイルとして使用
-  const thumbnailImage = item.images && item.images.length > 0 ? item.images[0] : null;
+  const images = 'images' in item ? item.images : [];
+  const thumbnailImage = images && images.length > 0 ? images[0] : null;
   const imageUrl = thumbnailImage ? `${API_BASE_URL}${thumbnailImage.src}` : null;
 
   return (

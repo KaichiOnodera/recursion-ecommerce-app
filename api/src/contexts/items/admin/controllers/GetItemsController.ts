@@ -23,6 +23,7 @@ export class GetItemsController {
           ? InventoryStatus.IN_STOCK
           : InventoryStatus.OUT_OF_STOCK,
       displayStatus: item.displayStatus,
+      images: item.images,
       createdAt: item.createdAt,
       updatedAt: item.updatedAt,
     }));

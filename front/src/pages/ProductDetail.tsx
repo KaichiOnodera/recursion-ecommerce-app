@@ -183,7 +183,7 @@ export const ProductDetail: React.FC = () => {
             </div>
 
             {/* サムネイル画像一覧 */}
-            {images.length > 1 && (
+            {images.length > 1 && state.item && (
               <div className="grid grid-cols-4 gap-2">
                 {images.map((image, index) => (
                   <button
