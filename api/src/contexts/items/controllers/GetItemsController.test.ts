@@ -150,6 +150,7 @@ describe('GetItemsController', () => {
         type: 1,
         price: 5000,
         inventoryStatus: 'outOfStock',
+        images: [],
       });
     });
 
