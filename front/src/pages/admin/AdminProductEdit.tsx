@@ -54,7 +54,6 @@ export const AdminProductEdit: React.FC = () => {
     fetchItem();
   }, [id, navigate]);
 
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -168,7 +167,7 @@ export const AdminProductEdit: React.FC = () => {
           {/* 商品画像 */}
           <div>
             <label className="block mb-2 font-medium">商品画像</label>
-            
+
             {/* 既存画像の表示 */}
             {existingImages.length > 0 && (
               <div className="mb-4">
@@ -200,7 +199,8 @@ export const AdminProductEdit: React.FC = () => {
               className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <p className="mt-1 text-sm text-gray-500">
-              画像は最大{MAX_IMAGES}枚まで選択できます（jpg, jpeg, png, gif, webp, svg, avif）
+              画像は最大{MAX_IMAGES}枚まで選択できます（jpg, jpeg, png, gif,
+              webp, svg, avif）
             </p>
 
             {/* 新規画像のプレビュー */}

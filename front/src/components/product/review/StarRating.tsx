@@ -34,15 +34,15 @@ export const StarRating: React.FC<StarRatingProps> = React.memo(
     const sizeClass = SIZE_CLASSES[size];
     const isHovering = hoveredRating !== null;
 
-  // クリックアニメーションのリセット
-  useEffect(() => {
-    if (clickedStar !== null) {
-      const timer = window.setTimeout(() => {
-        setClickedStar(null);
-      }, ANIMATION_DURATION);
-      return () => window.clearTimeout(timer);
-    }
-  }, [clickedStar]);
+    // クリックアニメーションのリセット
+    useEffect(() => {
+      if (clickedStar !== null) {
+        const timer = window.setTimeout(() => {
+          setClickedStar(null);
+        }, ANIMATION_DURATION);
+        return () => window.clearTimeout(timer);
+      }
+    }, [clickedStar]);
 
     const handleClick = useCallback(
       (star: number) => {
@@ -86,10 +86,7 @@ export const StarRating: React.FC<StarRatingProps> = React.memo(
     );
 
     return (
-      <div
-        className="flex items-center"
-        onMouseLeave={handleMouseLeave}
-      >
+      <div className="flex items-center" onMouseLeave={handleMouseLeave}>
         {STARS.map((star) => {
           const isClicked = clickedStar === star;
           return (

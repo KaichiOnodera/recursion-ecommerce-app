@@ -31,6 +31,11 @@ module.exports = [
         document: 'readonly',
         HTMLElement: 'readonly',
         HTMLInputElement: 'readonly',
+        HTMLDivElement: 'readonly',
+        HTMLImageElement: 'readonly',
+        File: 'readonly',
+        FileReader: 'readonly',
+        FormData: 'readonly',
         window: 'readonly',
         alert: 'readonly',
         URLSearchParams: 'readonly'
