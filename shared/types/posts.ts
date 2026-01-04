@@ -1,5 +1,5 @@
 import { User } from '../schemas/user';
-import { AdminItem } from '../schemas/item';
+import { AdminItem, ItemImage } from '../schemas/item';
 import { CartItem } from '../schemas/cart';
 import { Review } from '../schemas/review';
 
@@ -53,5 +53,8 @@ export type PostRes = {
   };
   '/reviews': {
     review: Review;
+  };
+  '/admin/items/:id/images': {
+    images: ItemImage[];
   };
 };

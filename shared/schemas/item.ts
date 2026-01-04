@@ -70,3 +70,12 @@ export type AdminItemDetail = {
   createdAt: Date;
   updatedAt: Date;
 };
+
+export type ItemImage = {
+  id: number;
+  itemId: number;
+  src: string;
+  order: number;
+  createdAt: Date;
+  updatedAt: Date;
+};
