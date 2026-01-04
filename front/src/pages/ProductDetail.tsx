@@ -129,7 +129,9 @@ export const ProductDetail: React.FC = () => {
 
   const images = useMemo(() => state.item?.images || [], [state.item?.images]);
   const currentImage = images[selectedImageIndex] || null;
-  const currentImageUrl = currentImage ? `${API_BASE_URL}${currentImage.src}` : null;
+  const currentImageUrl = currentImage
+    ? `${API_BASE_URL}${currentImage.src}`
+    : null;
 
   const handleImageSelect = useCallback((index: number): void => {
     setSelectedImageIndex(index);
@@ -169,8 +171,10 @@ export const ProductDetail: React.FC = () => {
                     target.style.display = 'none';
                     if (target.parentElement) {
                       const fallback = document.createElement('div');
-                      fallback.className = 'absolute inset-0 flex items-center justify-center';
-                      fallback.innerHTML = '<span class="text-gray-500 text-lg">画像なし</span>';
+                      fallback.className =
+                        'absolute inset-0 flex items-center justify-center';
+                      fallback.innerHTML =
+                        '<span class="text-gray-500 text-lg">画像なし</span>';
                       target.parentElement.appendChild(fallback);
                     }
                   }}
@@ -198,7 +202,7 @@ export const ProductDetail: React.FC = () => {
                   >
                     <img
                       src={`${API_BASE_URL}${image.src}`}
-                      alt={`${state.item.name} ${index + 1}`}
+                      alt={`${state.item?.name || '商品'} ${index + 1}`}
                       className="w-full h-full object-cover"
                     />
                   </button>
