@@ -23,6 +23,13 @@ import { OrderRepository } from './contexts/orders/infrastructures/repositories/
 import { InventoryRepository } from './contexts/items/infrastructures/repositories/InventoryRepository';
 import { CartRepository } from './contexts/cart/infrastructures/repositories/CartRepository';
 import { CartItemRepository } from './contexts/cart/infrastructures/repositories/CartItemRepository';
+import { GetItemImageController } from './contexts/items/controllers/GetItemImageController';
+import { GetItemImageInteractor } from './contexts/items/interactors/GetItemImageInteractor';
+import { ItemRepository } from './contexts/items/infrastructures/repositories/ItemRepository';
+import { ItemImageRepository } from './contexts/items/infrastructures/repositories/ItemImageRepository';
+import { LocalImageStorageAdapter } from './contexts/items/infrastructures/adapters/LocalImageStorageAdapter';
+import { optionalVerifyAccessToken } from './middlewares';
+import * as path from 'path';
 
 const app = express();
 
@@ -81,6 +88,25 @@ app.get('/', async (_req: Request, res: Response) => {
 app.use('/auth', authRouter);
 app.use('/items', itemsRouter);
 app.use('/admin/items', adminItemsRouter);
+
+const itemRepository = new ItemRepository(prisma);
+const itemImageRepository = new ItemImageRepository(prisma);
+const uploadDir = path.join(process.cwd(), 'uploads', 'items');
+const imageStorageAdapter = new LocalImageStorageAdapter(uploadDir);
+const getItemImageInteractor = new GetItemImageInteractor(
+  itemRepository,
+  itemImageRepository,
+  imageStorageAdapter,
+);
+const getItemImageController = new GetItemImageController(
+  getItemImageInteractor,
+);
+
+app.get(
+  '/images/items/:itemId/:filename',
+  optionalVerifyAccessToken,
+  getItemImageController.execute.bind(getItemImageController),
+);
 
 app.use('/users', usersRouter);
 app.use('/cart', cartRouter);
