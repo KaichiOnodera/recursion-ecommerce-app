@@ -54,6 +54,7 @@ export type AdminItem = {
   type: number;
   price: number;
   inventoryStatus: InventoryStatus;
+  displayStatus: DisplayStatus;
   createdAt: Date;
   updatedAt: Date;
 };

@@ -22,6 +22,7 @@ export class GetItemsController {
         item.inventory.amount > 0
           ? InventoryStatus.IN_STOCK
           : InventoryStatus.OUT_OF_STOCK,
+      displayStatus: item.displayStatus,
       createdAt: item.createdAt,
       updatedAt: item.updatedAt,
     }));

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import ProductCard from '../../components/ui/ProductCard';
-import { AdminItem } from '@shared/schemas/item';
+import { AdminItem, DisplayStatus } from '@shared/schemas/item';
 import { getAdminItems } from '../../services/api/items';
 
 export const AdminProductList: React.FC = () => {
@@ -32,6 +32,9 @@ export const AdminProductList: React.FC = () => {
         {items.map((item) => (
           <div key={item.id}>
             <ProductCard item={item} isAdmin={true} />
+            {item.displayStatus === DisplayStatus.PRIVATE && (
+              <div className="mt-1 text-xs text-red-600 font-bold">非公開</div>
+            )}
             <button
               onClick={() => navigate(`/admin/products/${item.id}/delete`)}
               className="mt-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
