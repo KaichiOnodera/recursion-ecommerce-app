@@ -141,3 +141,6 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
 front/build/
+
+# Uploaded files
+api/uploads/
