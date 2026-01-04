@@ -1,17 +1,23 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { useUser } from '../../contexts/UserContext';
 import {
   CubeIcon,
   ClipboardDocumentListIcon,
   ChevronRightIcon,
+  ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline';
 import { OrderHistoryPreview } from '../../components/user/OrderHistoryPreview';
 import { ORDER_HISTORY_PREVIEW_LIMIT } from '../../constants/order';
+import { ResignationModal } from '../../components/user/ResignationModal';
+import { resign } from '../../services/api/users';
+import { logout } from '../../services/api/auth';
 
 export const MyPage: React.FC = () => {
-  const { user, isAdmin } = useUser();
+  const { user, isAdmin, clearUser } = useUser();
   const [totalOrderCount, setTotalOrderCount] = useState(0);
+  const [isResignationModalOpen, setIsResignationModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <div className="container mx-auto py-8 px-4 max-w-4xl">
@@ -98,6 +104,45 @@ export const MyPage: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* 退会セクション */}
+      <div className="bg-white rounded-lg shadow-md p-6 border-t-2 border-red-100">
+        <div className="flex items-start space-x-3 mb-4">
+          <ExclamationTriangleIcon className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <h2 className="text-xl font-bold text-gray-900 mb-2">
+              アカウント設定
+            </h2>
+            <p className="text-gray-600 text-sm mb-4">
+              アカウントを削除すると、すべてのデータが永久に削除され、復元できません。
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={() => setIsResignationModalOpen(true)}
+          className="px-4 py-2 text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition-colors font-medium text-sm"
+        >
+          アカウントを退会する
+        </button>
+      </div>
+
+      {/* 退会確認モーダル */}
+      <ResignationModal
+        isOpen={isResignationModalOpen}
+        onClose={() => setIsResignationModalOpen(false)}
+        onConfirm={async () => {
+          await resign();
+          // 退会成功後、ログアウト処理を試みる（失敗しても続行）
+          try {
+            await logout();
+          } catch (error) {
+            // ログアウトが失敗しても、退会は完了しているので続行
+            console.warn('Logout failed after resignation:', error);
+          }
+          clearUser();
+          navigate('/products');
+        }}
+      />
     </div>
   );
 };
