@@ -18,10 +18,14 @@ import * as path from 'path';
 
 const adminItemsRouter = express.Router();
 
-const itemRepository = new ItemRepository(prisma);
 const itemImageRepository = new ItemImageRepository(prisma);
 const uploadDir = path.join(process.cwd(), 'uploads', 'items');
 const imageStorageAdapter = new LocalImageStorageAdapter(uploadDir);
+const itemRepository = new ItemRepository(
+  prisma,
+  itemImageRepository,
+  imageStorageAdapter,
+);
 
 // 認証チェック
 adminItemsRouter.use(verifyAccessToken);

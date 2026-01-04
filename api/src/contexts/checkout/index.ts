@@ -3,16 +3,26 @@ import { CreateCheckoutSessionInteractor } from './interactors/CreateCheckoutSes
 import { StripeAdapter } from './infrastructures/adapters/StripeAdapter';
 import { CartRepository } from '../cart/infrastructures/repositories/CartRepository';
 import { ItemRepository } from '../items/infrastructures/repositories/ItemRepository';
+import { ItemImageRepository } from '../items/infrastructures/repositories/ItemImageRepository';
+import { LocalImageStorageAdapter } from '../items/infrastructures/adapters/LocalImageStorageAdapter';
 import { UserRepository } from '../users/infrastructures/repositories/UserRepository';
 import { OrderRepository } from '../orders/infrastructures/repositories/OrderRepository';
 import { prisma } from '../../libs/prisma';
 import express from 'express';
 import { optionalVerifyAccessToken } from '../../middlewares';
+import * as path from 'path';
 
 const checkoutRouter = express.Router();
 
 const cartRepository = new CartRepository(prisma);
-const itemRepository = new ItemRepository(prisma);
+const itemImageRepository = new ItemImageRepository(prisma);
+const uploadDir = path.join(process.cwd(), 'uploads', 'items');
+const imageStorageAdapter = new LocalImageStorageAdapter(uploadDir);
+const itemRepository = new ItemRepository(
+  prisma,
+  itemImageRepository,
+  imageStorageAdapter,
+);
 const userRepository = new UserRepository(prisma);
 const orderRepository = new OrderRepository(prisma);
 

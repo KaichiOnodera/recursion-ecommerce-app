@@ -29,6 +29,7 @@ export type Item = {
   type: number;
   price: number;
   inventoryStatus: InventoryStatus;
+  images: ItemImage[];
 };
 
 export type ItemDetail = {
@@ -38,6 +39,7 @@ export type ItemDetail = {
   type: number;
   price: number;
   inventoryStatus: InventoryStatus;
+  images: ItemImage[];
 };
 
 export const DisplayStatus = {

@@ -5,13 +5,23 @@ import { GetItemInteractor } from './interactors/GetItemInteractor';
 import { SearchItemsController } from './controllers/SearchItemsController';
 import { SearchItemsInteractor } from './interactors/SearchItemsInteractor';
 import { ItemRepository } from './infrastructures/repositories/ItemRepository';
+import { ItemImageRepository } from './infrastructures/repositories/ItemImageRepository';
+import { LocalImageStorageAdapter } from './infrastructures/adapters/LocalImageStorageAdapter';
 import { DisplayStatus } from './domains/entities/Item';
 import { prisma } from '../../libs/prisma';
 import express from 'express';
+import * as path from 'path';
 
 const itemsRouter = express.Router();
 
-const itemRepository = new ItemRepository(prisma);
+const itemImageRepository = new ItemImageRepository(prisma);
+const uploadDir = path.join(process.cwd(), 'uploads', 'items');
+const imageStorageAdapter = new LocalImageStorageAdapter(uploadDir);
+const itemRepository = new ItemRepository(
+  prisma,
+  itemImageRepository,
+  imageStorageAdapter,
+);
 // 一般ユーザー向け: PUBLICな商品のみ取得
 const getItemsInteractor = new GetItemsInteractor(
   itemRepository,
