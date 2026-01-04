@@ -1,11 +1,10 @@
 /* eslint-env browser */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { getAdminItem, updateItem } from '../../services/api/items';
 import { ItemImage } from '@shared/schemas/item';
 import { API_BASE_URL } from '../../services/api/config';
-
-const MAX_IMAGES = 10;
+import { useImageUpload } from '../../hooks/useImageUpload';
 
 export const AdminProductEdit: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -17,11 +16,17 @@ export const AdminProductEdit: React.FC = () => {
     'private',
   );
   const [existingImages, setExistingImages] = useState<ItemImage[]>([]);
-  const [selectedImages, setSelectedImages] = useState<File[]>([]);
-  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+
+  const {
+    selectedImages,
+    imagePreviews,
+    fileInputRef,
+    handleImageSelect,
+    handleRemoveImage,
+    MAX_IMAGES,
+  } = useImageUpload({ existingImageCount: existingImages.length });
 
   useEffect(() => {
     const fetchItem = async () => {
@@ -49,39 +54,6 @@ export const AdminProductEdit: React.FC = () => {
     fetchItem();
   }, [id, navigate]);
 
-  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files) return;
-
-    const newFiles = Array.from(files);
-    const totalImages = existingImages.length + selectedImages.length + newFiles.length;
-
-    if (totalImages > MAX_IMAGES) {
-      alert(`画像は最大${MAX_IMAGES}枚まで選択できます。`);
-      return;
-    }
-
-    const newPreviews: string[] = [];
-    newFiles.forEach((file) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        newPreviews.push(reader.result as string);
-        if (newPreviews.length === newFiles.length) {
-          setImagePreviews([...imagePreviews, ...newPreviews]);
-        }
-      };
-      reader.readAsDataURL(file);
-    });
-
-    setSelectedImages([...selectedImages, ...newFiles]);
-  };
-
-  const handleRemoveNewImage = (index: number) => {
-    const newImages = selectedImages.filter((_, i) => i !== index);
-    const newPreviews = imagePreviews.filter((_, i) => i !== index);
-    setSelectedImages(newImages);
-    setImagePreviews(newPreviews);
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -245,7 +217,7 @@ export const AdminProductEdit: React.FC = () => {
                       />
                       <button
                         type="button"
-                        onClick={() => handleRemoveNewImage(index)}
+                        onClick={() => handleRemoveImage(index)}
                         className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
                       >
                         ×

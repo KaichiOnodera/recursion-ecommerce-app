@@ -1,9 +1,8 @@
 /* eslint-env browser */
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { createItem } from '../../services/api/items';
-
-const MAX_IMAGES = 10;
+import { useImageUpload } from '../../hooks/useImageUpload';
 
 export const AdminProductCreate: React.FC = () => {
   const [name, setName] = useState('');
@@ -13,45 +12,17 @@ export const AdminProductCreate: React.FC = () => {
   const [displayStatus, setDisplayStatus] = useState<'public' | 'private'>(
     'private',
   );
-  const [selectedImages, setSelectedImages] = useState<File[]>([]);
-  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
-  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files) return;
-
-    const newFiles = Array.from(files);
-    const totalImages = selectedImages.length + newFiles.length;
-
-    if (totalImages > MAX_IMAGES) {
-      alert(`画像は最大${MAX_IMAGES}枚まで選択できます。`);
-      return;
-    }
-
-    const newPreviews: string[] = [];
-    newFiles.forEach((file) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        newPreviews.push(reader.result as string);
-        if (newPreviews.length === newFiles.length) {
-          setImagePreviews([...imagePreviews, ...newPreviews]);
-        }
-      };
-      reader.readAsDataURL(file);
-    });
-
-    setSelectedImages([...selectedImages, ...newFiles]);
-  };
-
-  const handleRemoveImage = (index: number) => {
-    const newImages = selectedImages.filter((_, i) => i !== index);
-    const newPreviews = imagePreviews.filter((_, i) => i !== index);
-    setSelectedImages(newImages);
-    setImagePreviews(newPreviews);
-  };
+  const {
+    selectedImages,
+    imagePreviews,
+    fileInputRef,
+    handleImageSelect,
+    handleRemoveImage,
+    MAX_IMAGES,
+  } = useImageUpload();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
