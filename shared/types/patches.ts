@@ -8,6 +8,7 @@ export type PatchReq = {
     type?: number;
     price?: number;
     inventoryAmount?: number;
+    displayStatus?: 'public' | 'private';
   };
   '/users/profile': {
     lastName: string;

@@ -33,7 +33,7 @@ export class CreateItemController {
     res: express.Response<PostRes['/admin/items'] | { message: string }>,
   ) {
     try {
-      const { name, description, type, price } = req.body;
+      const { name, description, type, price, displayStatus } = req.body;
 
       if (!name || !description || type === undefined || price === undefined) {
         return res.status(400).json({
@@ -50,6 +50,7 @@ export class CreateItemController {
         Number(type),
         Number(price),
         files,
+        displayStatus as 'public' | 'private' | undefined,
       );
 
       const responseItem = {

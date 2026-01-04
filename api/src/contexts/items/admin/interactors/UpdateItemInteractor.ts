@@ -2,7 +2,7 @@ import { IUpdateItemInteractor } from '../usecases/IUpdateItemInteractor';
 import { IItemRepository } from '../../domains/repositories/IItemRepository';
 import { IItemImageRepository } from '../../domains/repositories/IItemImageRepository';
 import { IImageStorageAdapter } from '../../domains/adapters/IImageStorageAdapter';
-import { Item } from '../../domains/entities/Item';
+import { Item, DisplayStatus } from '../../domains/entities/Item';
 import { ItemImage } from '../../domains/entities/ItemImage';
 import {
   isAllowedExtension,
@@ -28,6 +28,7 @@ export class UpdateItemInteractor implements IUpdateItemInteractor {
     price?: number,
     inventoryAmount?: number,
     files?: Express.Multer.File[],
+    displayStatus?: DisplayStatus,
   ): Promise<{ item: Item; images: ItemImage[] } | null> {
     // 商品の存在確認
     const item = await this.itemRepository.findById(id);
@@ -43,6 +44,7 @@ export class UpdateItemInteractor implements IUpdateItemInteractor {
       type,
       price,
       inventoryAmount,
+      displayStatus,
     );
 
     if (!updatedItem) {
