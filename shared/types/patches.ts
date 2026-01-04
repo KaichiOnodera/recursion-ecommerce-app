@@ -1,4 +1,4 @@
-import { User } from 'schemas/user';
+import { User } from '../schemas/user';
 import { AdminItem } from '../schemas/item';
 
 export type PatchReq = {
@@ -17,12 +17,9 @@ export type PatchReq = {
   };
 };
 
-import { ItemImage } from '../schemas/item';
-
 export type PatchRes = {
   '/admin/items/:id': {
     item: AdminItem;
-    images: ItemImage[];
   };
   '/users/profile': {
     user: User;

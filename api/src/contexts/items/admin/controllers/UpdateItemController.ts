@@ -80,6 +80,15 @@ export class UpdateItemController {
         return res.status(404).json({ message: 'Item not found' });
       }
 
+      const responseImages = result.images.map((image) => ({
+        id: image.id,
+        itemId: image.itemId,
+        src: image.src,
+        order: image.order,
+        createdAt: image.createdAt,
+        updatedAt: image.updatedAt,
+      }));
+
       const responseItem = {
         id: result.item.id,
         name: result.item.name,
@@ -91,22 +100,13 @@ export class UpdateItemController {
             ? InventoryStatus.IN_STOCK
             : InventoryStatus.OUT_OF_STOCK,
         displayStatus: result.item.displayStatus,
+        images: responseImages,
         createdAt: result.item.createdAt,
         updatedAt: result.item.updatedAt,
       };
 
-      const responseImages = result.images.map((image) => ({
-        id: image.id,
-        itemId: image.itemId,
-        src: image.src,
-        order: image.order,
-        createdAt: image.createdAt,
-        updatedAt: image.updatedAt,
-      }));
-
       return res.status(200).json({
         item: responseItem,
-        images: responseImages,
       });
     } catch (error) {
       if (error instanceof Error) {

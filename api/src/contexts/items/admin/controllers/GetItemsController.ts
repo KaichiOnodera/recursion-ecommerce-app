@@ -23,7 +23,14 @@ export class GetItemsController {
           ? InventoryStatus.IN_STOCK
           : InventoryStatus.OUT_OF_STOCK,
       displayStatus: item.displayStatus,
-      images: item.images,
+      images: item.images.map((image) => ({
+        id: image.id,
+        itemId: image.itemId,
+        src: image.src,
+        order: image.order,
+        createdAt: image.createdAt,
+        updatedAt: image.updatedAt,
+      })),
       createdAt: item.createdAt,
       updatedAt: item.updatedAt,
     }));
