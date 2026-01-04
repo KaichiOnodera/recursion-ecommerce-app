@@ -3,27 +3,14 @@ import { IItemRepository } from '../../domains/repositories/IItemRepository';
 import { IItemImageRepository } from '../../domains/repositories/IItemImageRepository';
 import { IImageStorageAdapter } from '../../domains/adapters/IImageStorageAdapter';
 import { ItemImage } from '../../domains/entities/ItemImage';
+import {
+  isAllowedExtension,
+  isAllowedMimeType,
+} from '../../../../utils/imageUtils';
 import * as path from 'path';
 import * as crypto from 'crypto';
 
 const MAX_IMAGES_PER_ITEM = 10;
-const ALLOWED_EXTENSIONS = [
-  '.jpg',
-  '.jpeg',
-  '.png',
-  '.gif',
-  '.webp',
-  '.svg',
-  '.avif',
-];
-const ALLOWED_MIME_TYPES = [
-  'image/jpeg',
-  'image/png',
-  'image/gif',
-  'image/webp',
-  'image/svg+xml',
-  'image/avif',
-];
 
 export class UploadItemImagesInteractor implements IUploadItemImagesInteractor {
   constructor(
@@ -103,12 +90,12 @@ export class UploadItemImagesInteractor implements IUploadItemImagesInteractor {
     for (const file of files) {
       // 拡張子の検証
       const ext = path.extname(file.originalname).toLowerCase();
-      if (!ALLOWED_EXTENSIONS.includes(ext)) {
+      if (!isAllowedExtension(ext)) {
         throw new Error(`Unsupported file extension: ${ext}`);
       }
 
       // MIMEタイプの検証
-      if (!ALLOWED_MIME_TYPES.includes(file.mimetype)) {
+      if (!isAllowedMimeType(file.mimetype)) {
         throw new Error(`Unsupported MIME type: ${file.mimetype}`);
       }
 
