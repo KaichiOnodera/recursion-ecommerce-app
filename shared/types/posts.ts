@@ -56,7 +56,4 @@ export type PostRes = {
   '/reviews': {
     review: Review;
   };
-  '/admin/items/:id/images': {
-    images: ItemImage[];
-  };
 };
