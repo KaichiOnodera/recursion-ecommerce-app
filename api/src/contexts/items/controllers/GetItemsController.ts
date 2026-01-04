@@ -22,6 +22,7 @@ export class GetItemsController {
         item.inventory.amount > 0
           ? InventoryStatus.IN_STOCK
           : InventoryStatus.OUT_OF_STOCK,
+      images: item.images,
     }));
 
     res.status(201).json({ items: responseItems });

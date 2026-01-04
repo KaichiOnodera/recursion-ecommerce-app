@@ -89,10 +89,14 @@ app.use('/auth', authRouter);
 app.use('/items', itemsRouter);
 app.use('/admin/items', adminItemsRouter);
 
-const itemRepository = new ItemRepository(prisma);
 const itemImageRepository = new ItemImageRepository(prisma);
 const uploadDir = path.join(process.cwd(), 'uploads', 'items');
 const imageStorageAdapter = new LocalImageStorageAdapter(uploadDir);
+const itemRepository = new ItemRepository(
+  prisma,
+  itemImageRepository,
+  imageStorageAdapter,
+);
 const getItemImageInteractor = new GetItemImageInteractor(
   itemRepository,
   itemImageRepository,
