@@ -57,6 +57,7 @@ export type AdminItem = {
   price: number;
   inventoryStatus: InventoryStatus;
   displayStatus: DisplayStatus;
+  images: ItemImage[];
   createdAt: Date;
   updatedAt: Date;
 };

@@ -46,18 +46,4 @@ export class LocalImageStorageAdapter implements IImageStorageAdapter {
     const filename = pathParts[pathParts.length - 1];
     return `/images/items/${actualItemId}/${filename}`;
   }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async getFile(filePath: string, _itemId: number): Promise<Buffer> {
-    const fullPath = path.join(this.uploadDir, filePath);
-
-    try {
-      return await fs.readFile(fullPath);
-    } catch (error) {
-      if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
-        throw new Error(`Image file not found: ${filePath}`);
-      }
-      throw error;
-    }
-  }
 }
