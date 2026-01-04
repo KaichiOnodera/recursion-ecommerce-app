@@ -34,7 +34,11 @@ const createItemInteractor = new CreateItemInteractor(
 );
 const createItemController = new CreateItemController(createItemInteractor);
 
-const updateItemInteractor = new UpdateItemInteractor(itemRepository);
+const updateItemInteractor = new UpdateItemInteractor(
+  itemRepository,
+  itemImageRepository,
+  imageStorageAdapter,
+);
 const updateItemController = new UpdateItemController(updateItemInteractor);
 
 const deleteItemInteractor = new DeleteItemInteractor(itemRepository);
@@ -58,6 +62,7 @@ adminItemsRouter.post(
 
 adminItemsRouter.patch(
   '/:id',
+  updateItemController.getMulterMiddleware(),
   updateItemController.execute.bind(updateItemController),
 );
 

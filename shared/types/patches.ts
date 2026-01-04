@@ -16,9 +16,12 @@ export type PatchReq = {
   };
 };
 
+import { ItemImage } from '../schemas/item';
+
 export type PatchRes = {
   '/admin/items/:id': {
     item: AdminItem;
+    images: ItemImage[];
   };
   '/users/profile': {
     user: User;
