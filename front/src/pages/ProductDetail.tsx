@@ -10,6 +10,7 @@ import { ErrorState } from '../components/product/ErrorState';
 import { QuantitySelector } from '../components/product/QuantitySelector';
 import { ActionButtons } from '../components/product/ActionButtons';
 import { ReviewSection } from '../components/product/ReviewSection';
+import { API_BASE_URL } from '../services/api/config';
 
 const MIN_QUANTITY = 1;
 
@@ -29,6 +30,7 @@ export const ProductDetail: React.FC = () => {
   });
   const [quantity, setQuantity] = useState(MIN_QUANTITY);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   const itemId = useMemo(() => {
     if (!id) return null;
@@ -125,6 +127,19 @@ export const ProductDetail: React.FC = () => {
     [state.item?.inventoryStatus],
   );
 
+  const images = useMemo(() => state.item?.images || [], [state.item?.images]);
+  const currentImage = images[selectedImageIndex] || null;
+  const currentImageUrl = currentImage ? `${API_BASE_URL}${currentImage.src}` : null;
+
+  const handleImageSelect = useCallback((index: number): void => {
+    setSelectedImageIndex(index);
+  }, []);
+
+  // 商品が変わったら画像インデックスをリセット
+  useEffect(() => {
+    setSelectedImageIndex(0);
+  }, [state.item?.id]);
+
   if (state.isLoading) {
     return <LoadingState />;
   }
@@ -140,10 +155,56 @@ export const ProductDetail: React.FC = () => {
       <div className="md:flex md:gap-12 md:items-start">
         {/* 商品画像エリア（カルーセル対応） */}
         <div className="md:w-1/2 mb-8 md:mb-0 md:sticky md:top-8">
-          <div className="relative aspect-square w-full bg-green-100 rounded-lg overflow-hidden">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-gray-500 text-lg">画像</span>
+          <div className="space-y-4">
+            {/* メイン画像 */}
+            <div className="relative aspect-square w-full bg-gray-100 rounded-lg overflow-hidden">
+              {currentImageUrl ? (
+                <img
+                  src={currentImageUrl}
+                  alt={state.item.name}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    // 画像読み込みエラー時のフォールバック
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    if (target.parentElement) {
+                      const fallback = document.createElement('div');
+                      fallback.className = 'absolute inset-0 flex items-center justify-center';
+                      fallback.innerHTML = '<span class="text-gray-500 text-lg">画像なし</span>';
+                      target.parentElement.appendChild(fallback);
+                    }
+                  }}
+                />
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-gray-500 text-lg">画像なし</span>
+                </div>
+              )}
             </div>
+
+            {/* サムネイル画像一覧 */}
+            {images.length > 1 && (
+              <div className="grid grid-cols-4 gap-2">
+                {images.map((image, index) => (
+                  <button
+                    key={image.id}
+                    type="button"
+                    onClick={() => handleImageSelect(index)}
+                    className={`relative aspect-square w-full rounded overflow-hidden border-2 transition ${
+                      selectedImageIndex === index
+                        ? 'border-blue-500'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <img
+                      src={`${API_BASE_URL}${image.src}`}
+                      alt={`${state.item.name} ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 

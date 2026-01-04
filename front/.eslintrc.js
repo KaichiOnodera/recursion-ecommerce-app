@@ -9,6 +9,7 @@ module.exports = {
     FileReader: 'readonly',
     FormData: 'readonly',
     HTMLDivElement: 'readonly',
+    HTMLImageElement: 'readonly',
   },
 };
 
