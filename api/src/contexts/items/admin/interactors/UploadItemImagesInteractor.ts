@@ -23,53 +23,43 @@ export class UploadItemImagesInteractor implements IUploadItemImagesInteractor {
     itemId: number,
     files: Express.Multer.File[],
   ): Promise<ItemImage[]> {
-    // 商品の存在確認
     const item = await this.itemRepository.findById(itemId);
     if (!item) {
       throw new Error('Item not found');
     }
 
-    // 現在の画像枚数を取得
     const currentCount = await this.itemImageRepository.countByItemId(itemId);
 
-    // 最大枚数チェック
     if (currentCount + files.length > MAX_IMAGES_PER_ITEM) {
       throw new Error(
         `Maximum ${MAX_IMAGES_PER_ITEM} images allowed per item. Current: ${currentCount}, Trying to add: ${files.length}`,
       );
     }
 
-    // ファイル検証
     this.validateFiles(files);
 
-    // 現在の最大orderを取得
     const maxOrder = await this.itemImageRepository.getMaxOrder(itemId);
 
-    // 画像をアップロード
     const uploadedImages: ItemImage[] = [];
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       const order = maxOrder + i + 1;
 
-      // ファイル名を生成
       const filename = this.generateFilename(itemId, file.originalname);
 
-      // 画像を保存
       const filePath = await this.imageStorageAdapter.save(
         file.buffer,
         filename,
         itemId,
       );
 
-      // データベースにレコードを作成
       const image = await this.itemImageRepository.create(
         itemId,
         filePath,
         order,
       );
 
-      // URLを取得してレスポンス用のデータを作成
       const imageUrl = this.imageStorageAdapter.getUrl(filePath, itemId);
       const imageWithUrl: ItemImage = {
         id: image.id,
@@ -88,19 +78,14 @@ export class UploadItemImagesInteractor implements IUploadItemImagesInteractor {
 
   private validateFiles(files: Express.Multer.File[]): void {
     for (const file of files) {
-      // 拡張子の検証
       const ext = path.extname(file.originalname).toLowerCase();
       if (!isAllowedExtension(ext)) {
         throw new Error(`Unsupported file extension: ${ext}`);
       }
 
-      // MIMEタイプの検証
       if (!isAllowedMimeType(file.mimetype)) {
         throw new Error(`Unsupported MIME type: ${file.mimetype}`);
       }
-
-      // ファイルサイズのチェック（オプション、現時点では制限なし）
-      // 将来的に制限を追加する場合はここでチェック
     }
   }
 

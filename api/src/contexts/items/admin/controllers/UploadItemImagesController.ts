@@ -7,7 +7,7 @@ import { PostRes } from '@shared/types/posts';
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB（将来的に制限を追加する場合）
+    fileSize: 10 * 1024 * 1024, // 10MB（1ファイルあたりの最大サイズ）
   },
 });
 
