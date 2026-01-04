@@ -53,6 +53,15 @@ export class CreateItemController {
         displayStatus as 'public' | 'private' | undefined,
       );
 
+      const responseImages = result.images.map((image) => ({
+        id: image.id,
+        itemId: image.itemId,
+        src: image.src,
+        order: image.order,
+        createdAt: image.createdAt,
+        updatedAt: image.updatedAt,
+      }));
+
       const responseItem = {
         id: result.item.id,
         name: result.item.name,
@@ -64,18 +73,10 @@ export class CreateItemController {
             ? InventoryStatus.IN_STOCK
             : InventoryStatus.OUT_OF_STOCK,
         displayStatus: result.item.displayStatus,
+        images: responseImages,
         createdAt: result.item.createdAt,
         updatedAt: result.item.updatedAt,
       };
-
-      const responseImages = result.images.map((image) => ({
-        id: image.id,
-        itemId: image.itemId,
-        src: image.src,
-        order: image.order,
-        createdAt: image.createdAt,
-        updatedAt: image.updatedAt,
-      }));
 
       return res.status(201).json({
         item: responseItem,
