@@ -7,6 +7,9 @@ export const AdminProductCreate: React.FC = () => {
   const [description, setDescription] = useState('');
   const [type, setType] = useState<number>(1);
   const [price, setPrice] = useState<number>(0);
+  const [displayStatus, setDisplayStatus] = useState<'public' | 'private'>(
+    'private',
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
@@ -20,6 +23,7 @@ export const AdminProductCreate: React.FC = () => {
         description,
         type,
         price,
+        displayStatus,
       });
 
       navigate('/admin/products');
@@ -90,6 +94,25 @@ export const AdminProductCreate: React.FC = () => {
             />
             <p className="mt-1 text-sm text-gray-500">
               価格を円単位で入力してください
+            </p>
+          </div>
+
+          {/* 公開状態 */}
+          <div>
+            <label className="block mb-2 font-medium">公開状態</label>
+            <select
+              value={displayStatus}
+              onChange={(e) =>
+                setDisplayStatus(e.target.value as 'public' | 'private')
+              }
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option value="public">公開</option>
+              <option value="private">非公開</option>
+            </select>
+            <p className="mt-1 text-sm text-gray-500">
+              公開: 一般ユーザーに表示 / 非公開: 管理者のみ表示
             </p>
           </div>
 
