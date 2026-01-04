@@ -89,7 +89,6 @@ app.use('/auth', authRouter);
 app.use('/items', itemsRouter);
 app.use('/admin/items', adminItemsRouter);
 
-// 画像配信API（認証はオプショナル）
 const itemRepository = new ItemRepository(prisma);
 const itemImageRepository = new ItemImageRepository(prisma);
 const uploadDir = path.join(process.cwd(), 'uploads', 'items');
