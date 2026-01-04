@@ -107,7 +107,6 @@ export class UpdateItemController {
 
       return res.status(200).json({
         item: responseItem,
-        images: responseImages,
       });
     } catch (error) {
       if (error instanceof Error) {

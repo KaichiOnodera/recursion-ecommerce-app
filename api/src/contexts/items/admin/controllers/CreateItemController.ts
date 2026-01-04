@@ -80,7 +80,6 @@ export class CreateItemController {
 
       return res.status(201).json({
         item: responseItem,
-        images: responseImages,
       });
     } catch (error) {
       if (error instanceof Error) {
