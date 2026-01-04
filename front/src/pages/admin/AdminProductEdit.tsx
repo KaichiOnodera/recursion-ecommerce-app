@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import { getAdminItems, updateItem } from '../../services/api/items';
-import { AdminItem } from '@shared/schemas/item';
+import { getAdminItem, updateItem } from '../../services/api/items';
 
 export const AdminProductEdit: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -9,6 +8,7 @@ export const AdminProductEdit: React.FC = () => {
   const [description, setDescription] = useState('');
   const [type, setType] = useState<number>(1);
   const [price, setPrice] = useState<number>(0);
+  const [inventoryAmount, setInventoryAmount] = useState<number>(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
@@ -19,18 +19,18 @@ export const AdminProductEdit: React.FC = () => {
         return;
       }
 
-      const response = await getAdminItems();
-      const item = response.items.find((i: AdminItem) => i.id === parseInt(id));
+      const response = await getAdminItem(parseInt(id));
 
-      if (!item) {
+      if (!response.item) {
         navigate('/admin/products');
         return;
       }
 
-      setName(item.name);
-      setDescription(item.description);
-      setType(item.type);
-      setPrice(item.price);
+      setName(response.item.name);
+      setDescription(response.item.description);
+      setType(response.item.type);
+      setPrice(response.item.price);
+      setInventoryAmount(response.item.inventoryAmount);
     };
 
     fetchItem();
@@ -51,6 +51,7 @@ export const AdminProductEdit: React.FC = () => {
         description,
         type,
         price,
+        inventoryAmount,
       });
 
       navigate('/admin/products');
@@ -120,6 +121,22 @@ export const AdminProductEdit: React.FC = () => {
               placeholder="価格を円単位で入力してください"
             />
             <p className="mt-1 text-sm text-gray-500">価格の入力</p>
+          </div>
+
+          {/* 在庫数 */}
+          <div>
+            <label className="block mb-2 font-medium">在庫数</label>
+            <input
+              type="number"
+              value={inventoryAmount}
+              onChange={(e) => setInventoryAmount(Number(e.target.value))}
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+              min="0"
+              step="1"
+              placeholder="在庫数を入力してください"
+            />
+            <p className="mt-1 text-sm text-gray-500">在庫数の入力</p>
           </div>
 
           {/* ボタン */}
