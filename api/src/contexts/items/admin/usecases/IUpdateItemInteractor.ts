@@ -1,4 +1,5 @@
 import { Item } from '../../domains/entities/Item';
+import { ItemImage } from '../../domains/entities/ItemImage';
 
 export interface IUpdateItemInteractor {
   execute(
@@ -8,5 +9,6 @@ export interface IUpdateItemInteractor {
     type?: number,
     price?: number,
     inventoryAmount?: number,
-  ): Promise<Item | null>;
+    files?: Express.Multer.File[],
+  ): Promise<{ item: Item; images: ItemImage[] } | null>;
 }

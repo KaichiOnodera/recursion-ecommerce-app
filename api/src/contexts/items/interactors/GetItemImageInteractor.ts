@@ -3,6 +3,7 @@ import { IItemRepository } from '../domains/repositories/IItemRepository';
 import { IItemImageRepository } from '../domains/repositories/IItemImageRepository';
 import { IImageStorageAdapter } from '../domains/adapters/IImageStorageAdapter';
 import { DisplayStatus } from '../domains/entities/Item';
+import { getMimeTypeFromFilename } from '../../../utils/imageUtils';
 import * as path from 'path';
 
 export class GetItemImageInteractor implements IGetItemImageInteractor {
@@ -45,30 +46,8 @@ export class GetItemImageInteractor implements IGetItemImageInteractor {
     const buffer = await this.imageStorageAdapter.getFile(image.src, itemId);
 
     // MIMEタイプの判定
-    const mimeType = this.getMimeType(filename);
+    const mimeType = getMimeTypeFromFilename(filename);
 
     return { buffer, mimeType };
-  }
-
-  private getMimeType(filename: string): string {
-    const ext = path.extname(filename).toLowerCase();
-
-    const mimeTypes: Record<string, string> = {
-      '.jpg': 'image/jpeg',
-      '.jpeg': 'image/jpeg',
-      '.png': 'image/png',
-      '.gif': 'image/gif',
-      '.webp': 'image/webp',
-      '.svg': 'image/svg+xml',
-      '.avif': 'image/avif',
-    };
-
-    const mimeType = mimeTypes[ext];
-
-    if (!mimeType) {
-      throw new Error(`Unsupported image format: ${ext}`);
-    }
-
-    return mimeType;
   }
 }
