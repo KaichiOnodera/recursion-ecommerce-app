@@ -29,7 +29,11 @@ const imageStorageAdapter = new LocalImageStorageAdapter(uploadDir);
 adminItemsRouter.use(verifyAccessToken);
 adminItemsRouter.use(verifyAdmin);
 
-const createItemInteractor = new CreateItemInteractor(itemRepository);
+const createItemInteractor = new CreateItemInteractor(
+  itemRepository,
+  itemImageRepository,
+  imageStorageAdapter,
+);
 const createItemController = new CreateItemController(createItemInteractor);
 
 const updateItemInteractor = new UpdateItemInteractor(itemRepository);
@@ -50,6 +54,7 @@ adminItemsRouter.get('/:id', getItemController.execute.bind(getItemController));
 
 adminItemsRouter.post(
   '/',
+  createItemController.getMulterMiddleware(),
   createItemController.execute.bind(createItemController),
 );
 
@@ -63,7 +68,6 @@ adminItemsRouter.delete(
   deleteItemController.execute.bind(deleteItemController),
 );
 
-// 画像アップロード
 const uploadItemImagesInteractor = new UploadItemImagesInteractor(
   itemRepository,
   itemImageRepository,

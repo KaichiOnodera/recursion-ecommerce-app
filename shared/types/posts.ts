@@ -13,6 +13,7 @@ export type PostReq = {
     description: string;
     type: number;
     price: number;
+    // images: File[] (multipart/form-dataで送信されるため、型定義には含めない)
   };
   '/auth/signup': {
     lastName: string;
@@ -40,6 +41,7 @@ export type PostRes = {
   };
   '/admin/items': {
     item: AdminItem;
+    images: ItemImage[];
   };
   '/auth/signup': {
     createdUser: User;
