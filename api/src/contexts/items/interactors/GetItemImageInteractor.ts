@@ -63,6 +63,12 @@ export class GetItemImageInteractor implements IGetItemImageInteractor {
       '.avif': 'image/avif',
     };
 
-    return mimeTypes[ext] || 'application/octet-stream';
+    const mimeType = mimeTypes[ext];
+
+    if (!mimeType) {
+      throw new Error(`Unsupported image format: ${ext}`);
+    }
+
+    return mimeType;
   }
 }

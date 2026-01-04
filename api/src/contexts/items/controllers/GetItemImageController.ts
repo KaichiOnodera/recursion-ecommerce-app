@@ -27,11 +27,22 @@ export class GetItemImageController {
       const isAdmin = req.user?.role === 'ADMIN';
 
       // 画像を取得
-      const result = await this.getItemImageInteractor.execute(
-        itemId,
-        filename,
-        isAdmin,
-      );
+      let result;
+      try {
+        result = await this.getItemImageInteractor.execute(
+          itemId,
+          filename,
+          isAdmin,
+        );
+      } catch (error) {
+        if (
+          error instanceof Error &&
+          error.message.includes('Unsupported image format')
+        ) {
+          return res.status(400).json({ message: error.message });
+        }
+        throw error;
+      }
 
       if (!result) {
         return res.status(404).json({ message: 'Image not found' });
@@ -39,7 +50,9 @@ export class GetItemImageController {
 
       // 適切なヘッダーを設定
       res.setHeader('Content-Type', result.mimeType);
-      res.setHeader('Cache-Control', 'public, max-age=31536000'); // 1年間キャッシュ
+      // 商品画像は1週間キャッシュ（604800秒）
+      // ファイル名にタイムスタンプが含まれるため、新しい画像は新しいURLになる
+      res.setHeader('Cache-Control', 'public, max-age=604800');
 
       // 画像をバイナリで返す
       return res.status(200).send(result.buffer);
