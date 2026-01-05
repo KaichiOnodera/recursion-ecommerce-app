@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import { config } from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import * as path from 'path';
 
 // Load environment variables from .env file
 config();
@@ -35,6 +36,12 @@ app.use(
 );
 
 app.use(cookieParser());
+
+// 静的ファイル配信: 画像ファイルを /images/items パスで配信
+app.use(
+  '/images/items',
+  express.static(path.join(process.cwd(), 'uploads', 'items')),
+);
 
 // Webhookエンドポイントは express.json() の適用前に配置する必要がある
 // Stripeの署名検証には生のリクエストボディが必要
