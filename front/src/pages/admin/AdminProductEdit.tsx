@@ -12,6 +12,7 @@ export const AdminProductEdit: React.FC = () => {
   const [description, setDescription] = useState('');
   const [type, setType] = useState<number>(1);
   const [price, setPrice] = useState<number>(0);
+  const [inventoryAmount, setInventoryAmount] = useState<number>(0);
   const [displayStatus, setDisplayStatus] = useState<'public' | 'private'>(
     'private',
   );
@@ -38,7 +39,7 @@ export const AdminProductEdit: React.FC = () => {
       const response = await getAdminItem(parseInt(id));
       const item = response.item;
 
-      if (!item) {
+      if (!response.item) {
         navigate('/admin/products');
         return;
       }
@@ -49,6 +50,7 @@ export const AdminProductEdit: React.FC = () => {
       setPrice(item.price);
       setDisplayStatus(item.displayStatus);
       setExistingImages(item.images || []);
+      setInventoryAmount(response.item.inventoryAmount);
     };
 
     fetchItem();
@@ -71,6 +73,7 @@ export const AdminProductEdit: React.FC = () => {
           description,
           type,
           price,
+          inventoryAmount,
           displayStatus,
         },
         selectedImages.length > 0 ? selectedImages : undefined,
@@ -143,6 +146,22 @@ export const AdminProductEdit: React.FC = () => {
               placeholder="価格を円単位で入力してください"
             />
             <p className="mt-1 text-sm text-gray-500">価格の入力</p>
+          </div>
+
+          {/* 在庫数 */}
+          <div>
+            <label className="block mb-2 font-medium">在庫数</label>
+            <input
+              type="number"
+              value={inventoryAmount}
+              onChange={(e) => setInventoryAmount(Number(e.target.value))}
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+              min="0"
+              step="1"
+              placeholder="在庫数を入力してください"
+            />
+            <p className="mt-1 text-sm text-gray-500">在庫数の入力</p>
           </div>
 
           {/* 公開状態 */}
