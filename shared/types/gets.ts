@@ -96,4 +96,23 @@ export type GetRes = {
     total: number;
     averageRating: number;
   };
+  '/favorites': {
+    favorites: Array<{
+      id: number;
+      userId: number;
+      itemId: number;
+      createdAt: Date;
+      item: {
+        id: number;
+        name: string;
+        price: number;
+        images: Array<{
+          id: number;
+          src: string;
+          order: number;
+        }>;
+      };
+    }>;
+    total: number;
+  };
 };
