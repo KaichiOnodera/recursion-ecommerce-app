@@ -37,6 +37,7 @@ export class GetItemController {
         inventoryStatus,
         inventoryAmount: item.inventory.amount,
         displayStatus: item.displayStatus,
+        images: item.images,
         createdAt: item.createdAt,
         updatedAt: item.updatedAt,
       },

@@ -1,5 +1,5 @@
 import { Cart } from '../domains/entities/Cart';
 
 export interface IGetCartInteractor {
-  execute(userId: number): Promise<Cart | null>;
+  execute(userId?: number, sessionId?: string): Promise<Cart | null>;
 }

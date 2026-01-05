@@ -19,6 +19,7 @@ export class GetMeInteractor implements IGetMeInteractor {
       email: user.email,
       password: user.password,
       role: user.role,
+      isResigned: user.isResigned,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };

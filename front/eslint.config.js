@@ -30,7 +30,14 @@ module.exports = [
         console: 'readonly',
         document: 'readonly',
         HTMLElement: 'readonly',
+        HTMLInputElement: 'readonly',
+        HTMLDivElement: 'readonly',
+        HTMLImageElement: 'readonly',
+        File: 'readonly',
+        FileReader: 'readonly',
+        FormData: 'readonly',
         window: 'readonly',
+        alert: 'readonly',
         URLSearchParams: 'readonly'
       }
     },
@@ -48,6 +55,7 @@ module.exports = [
       'no-debugger': 'error',
       'no-var': 'error',
       'react/react-in-jsx-scope': 'off',
+      'react/prop-types': 'off',
       '@typescript-eslint/explicit-function-return-type': 'warn',
       '@typescript-eslint/no-explicit-any': 'warn',
       'prettier/prettier': 'error',

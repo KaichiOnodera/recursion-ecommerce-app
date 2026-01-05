@@ -35,6 +35,7 @@ export class GetItemController {
         type: item.type,
         price: item.price,
         inventoryStatus,
+        images: item.images,
       },
     });
   }

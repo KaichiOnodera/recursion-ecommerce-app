@@ -1,6 +1,11 @@
 import { Cart } from '../entities/Cart';
 
 export interface ICartRepository {
-  find(userId: number): Promise<Cart | null>;
-  create(userId: number): Promise<Cart>;
+  findByUserId(userId: number): Promise<Cart | null>;
+  createByUserId(userId: number): Promise<Cart>;
+  findBySessionId(sessionId: string): Promise<Cart | null>;
+  createWithSessionId(sessionId: string): Promise<Cart>;
+  findBySessionIdOrCreate(sessionId: string): Promise<Cart>;
+  deleteBySessionId(sessionId: string): Promise<void>;
+  findById(cartId: number): Promise<Cart | null>;
 }

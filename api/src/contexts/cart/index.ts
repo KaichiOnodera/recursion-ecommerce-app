@@ -1,38 +1,62 @@
-import { CartController } from './controllers/CartController';
-import { CartInteractor } from './interactors/CartInteractor';
+import { PostCartController } from './controllers/PostCartController';
+import { UpdateCartInteractor } from './interactors/UpdateCartInteractor';
 import { GetCartController } from './controllers/GetCartController';
 import { GetCartInteractor } from './interactors/GetCartInteractor';
+import { MergeCartInteractor } from './interactors/MergeCartInteractor';
 import { CartRepository } from './infrastructures/repositories/CartRepository';
 import { CartItemRepository } from './infrastructures/repositories/CartItemRepository';
 import { ItemRepository } from '../items/infrastructures/repositories/ItemRepository';
+import { ItemImageRepository } from '../items/infrastructures/repositories/ItemImageRepository';
+import { LocalImageStorageAdapter } from '../items/infrastructures/adapters/LocalImageStorageAdapter';
 import { prisma } from '../../libs/prisma';
 import express from 'express';
-import { verifyAccessToken } from '../../middlewares';
+import { optionalVerifyAccessToken } from '../../middlewares';
+import * as path from 'path';
 
 const cartRouter = express.Router();
 
 const cartRepository = new CartRepository(prisma);
 const cartItemRepository = new CartItemRepository(prisma);
-const itemRepository = new ItemRepository(prisma);
-const cartInteractor = new CartInteractor(
+const itemImageRepository = new ItemImageRepository(prisma);
+const uploadDir = path.join(process.cwd(), 'uploads', 'items');
+const imageStorageAdapter = new LocalImageStorageAdapter(uploadDir);
+const itemRepository = new ItemRepository(
+  prisma,
+  itemImageRepository,
+  imageStorageAdapter,
+);
+const updateCartInteractor = new UpdateCartInteractor(
   cartRepository,
   cartItemRepository,
   itemRepository,
 );
-const cartController = new CartController(cartInteractor);
-
 const getCartInteractor = new GetCartInteractor(cartRepository);
-const getCartController = new GetCartController(getCartInteractor);
+const mergeCartInteractor = new MergeCartInteractor(
+  cartRepository,
+  cartItemRepository,
+);
+const cartController = new PostCartController(
+  updateCartInteractor,
+  getCartInteractor,
+  mergeCartInteractor,
+  cartRepository,
+);
+
+const getCartController = new GetCartController(
+  getCartInteractor,
+  mergeCartInteractor,
+  cartRepository,
+);
 
 cartRouter.get(
   '/',
-  verifyAccessToken,
+  optionalVerifyAccessToken,
   getCartController.execute.bind(getCartController),
 );
 
 cartRouter.post(
   '/',
-  verifyAccessToken,
+  optionalVerifyAccessToken,
   cartController.execute.bind(cartController),
 );
 

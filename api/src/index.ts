@@ -12,6 +12,18 @@ import { authRouter } from './contexts/auth';
 import { prisma } from './libs/prisma';
 import { UsersRouter as usersRouter } from './contexts/users';
 import { cartRouter } from './contexts/cart';
+import { checkoutRouter } from './contexts/checkout';
+import { ordersRouter } from './contexts/orders';
+import { adminOrdersRouter } from './contexts/orders/admin';
+import { reviewsRouter } from './contexts/reviews';
+import { favoritesRouter } from './contexts/favorites';
+import { StripeWebhookController } from './contexts/checkout/controllers/StripeWebhookController';
+import { HandleStripeWebhookInteractor } from './contexts/checkout/interactors/HandleStripeWebhookInteractor';
+import { StripeAdapter } from './contexts/checkout/infrastructures/adapters/StripeAdapter';
+import { OrderRepository } from './contexts/orders/infrastructures/repositories/OrderRepository';
+import { InventoryRepository } from './contexts/items/infrastructures/repositories/InventoryRepository';
+import { CartRepository } from './contexts/cart/infrastructures/repositories/CartRepository';
+import { CartItemRepository } from './contexts/cart/infrastructures/repositories/CartItemRepository';
 
 const app = express();
 
@@ -23,6 +35,44 @@ app.use(
 );
 
 app.use(cookieParser());
+
+// Webhookエンドポイントは express.json() の適用前に配置する必要がある
+// Stripeの署名検証には生のリクエストボディが必要
+const orderRepository = new OrderRepository(prisma);
+const inventoryRepository = new InventoryRepository(prisma);
+const cartRepository = new CartRepository(prisma);
+const cartItemRepository = new CartItemRepository(prisma);
+
+const secretKey = process.env.STRIPE_SECRET_KEY;
+if (!secretKey) {
+  throw new Error('STRIPE_SECRET_KEY is not set');
+}
+
+const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+if (!webhookSecret) {
+  throw new Error('STRIPE_WEBHOOK_SECRET is not set');
+}
+
+const stripeAdapter = new StripeAdapter(secretKey, webhookSecret);
+const handleStripeWebhookInteractor = new HandleStripeWebhookInteractor(
+  orderRepository,
+  inventoryRepository,
+  stripeAdapter,
+  cartRepository,
+  cartItemRepository,
+);
+const stripeWebhookController = new StripeWebhookController(
+  handleStripeWebhookInteractor,
+  stripeAdapter,
+);
+
+app.post(
+  '/webhooks/stripe',
+  express.raw({ type: 'application/json' }),
+  stripeWebhookController.execute.bind(stripeWebhookController),
+);
+
+// その他のエンドポイントには express.json() を適用
 app.use(express.json());
 
 app.get('/', async (_req: Request, res: Response) => {
@@ -35,6 +85,11 @@ app.use('/admin/items', adminItemsRouter);
 
 app.use('/users', usersRouter);
 app.use('/cart', cartRouter);
+app.use('/checkout', checkoutRouter);
+app.use('/orders', ordersRouter);
+app.use('/admin/orders', adminOrdersRouter);
+app.use('/reviews', reviewsRouter);
+app.use('/favorites', favoritesRouter);
 
 app.listen(8000, '0.0.0.0', () => {
   // eslint-disable-next-line no-console

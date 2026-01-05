@@ -5,7 +5,7 @@ import { Cart } from '../../domains/entities/Cart';
 export class CartRepository implements ICartRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
-  async find(userId: number): Promise<Cart | null> {
+  async findByUserId(userId: number): Promise<Cart | null> {
     const cart = await this.prisma.cart.findUnique({
       where: { userId },
       include: {
@@ -20,7 +20,7 @@ export class CartRepository implements ICartRepository {
     return cart ? this.mapToCart(cart) : null;
   }
 
-  async create(userId: number): Promise<Cart> {
+  async createByUserId(userId: number): Promise<Cart> {
     const cart = await this.prisma.cart.create({
       data: {
         userId,
@@ -35,6 +35,68 @@ export class CartRepository implements ICartRepository {
     });
 
     return this.mapToCart(cart);
+  }
+
+  async findBySessionId(sessionId: string): Promise<Cart | null> {
+    const cart = await this.prisma.cart.findUnique({
+      where: { sessionId },
+      include: {
+        cartItems: {
+          include: {
+            item: true,
+          },
+        },
+      },
+    });
+
+    return cart ? this.mapToCart(cart) : null;
+  }
+
+  async createWithSessionId(sessionId: string): Promise<Cart> {
+    const cart = await this.prisma.cart.create({
+      data: {
+        sessionId,
+      },
+      include: {
+        cartItems: {
+          include: {
+            item: true,
+          },
+        },
+      },
+    });
+
+    return this.mapToCart(cart);
+  }
+
+  async findBySessionIdOrCreate(sessionId: string): Promise<Cart> {
+    const existingCart = await this.findBySessionId(sessionId);
+    if (existingCart) {
+      return existingCart;
+    }
+
+    return this.createWithSessionId(sessionId);
+  }
+
+  async deleteBySessionId(sessionId: string): Promise<void> {
+    await this.prisma.cart.delete({
+      where: { sessionId },
+    });
+  }
+
+  async findById(cartId: number): Promise<Cart | null> {
+    const cart = await this.prisma.cart.findUnique({
+      where: { id: cartId },
+      include: {
+        cartItems: {
+          include: {
+            item: true,
+          },
+        },
+      },
+    });
+
+    return cart ? this.mapToCart(cart) : null;
   }
 
   private mapToCart(cart: {
