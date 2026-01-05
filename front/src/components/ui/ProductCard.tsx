@@ -4,6 +4,7 @@ import { Item, AdminItem } from '@shared/schemas/item';
 import { InventoryStatus } from '../../services/api/items';
 import { addToCart } from '../../services/api/cart';
 import { useCart } from '../../contexts/CartContext';
+import { API_BASE_URL } from '../../services/api/config';
 
 interface ProductCardProps {
   item: Item | AdminItem;
@@ -29,21 +30,52 @@ const ProductCard: React.FC<ProductCardProps> = ({ item, isAdmin = false }) => {
     }
   };
 
+  // 最初の画像をサムネイルとして使用
+  const images = 'images' in item ? item.images : [];
+  const thumbnailImage = images && images.length > 0 ? images[0] : null;
+  const imageUrl = thumbnailImage
+    ? `${API_BASE_URL}${thumbnailImage.src}`
+    : null;
+
   return (
     <div
-      className={`bg-white border duration-200 rounded-lg ${
+      className={`bg-white border duration-200 rounded-lg overflow-hidden ${
         !isAdmin ? 'cursor-pointer hover:shadow-lg' : ''
       }`}
       onClick={handleCardClick}
     >
       {/* 商品画像 */}
-      <div className="bg-green-100 h-48 items-center">
-        <span>画像</span>
+      <div className="bg-gray-100 h-48 flex items-center justify-center overflow-hidden">
+        {imageUrl ? (
+          <img
+            src={imageUrl}
+            alt={item.name}
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              // 画像読み込みエラー時のフォールバック
+              const target = e.target as HTMLImageElement;
+              target.style.display = 'none';
+              if (target.parentElement) {
+                target.parentElement.innerHTML =
+                  '<span class="text-gray-500">画像なし</span>';
+              }
+            }}
+          />
+        ) : (
+          <span className="text-gray-500">画像なし</span>
+        )}
       </div>
 
       {/* 商品情報 */}
       <div className="p-4">
-        <h2>{item.name}</h2>
+        <h2>
+          {item.name}
+          {'displayStatus' in item && item.displayStatus === 'private' && (
+            <span className="text-xs text-red-600 font-normal ml-2">
+              (非公開)
+            </span>
+          )}
+        </h2>
         <p> {item.description} </p>
         <p> {item.price} </p>
 

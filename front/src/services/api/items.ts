@@ -1,3 +1,4 @@
+/* eslint-env browser */
 import { apiClient } from './apiClient';
 import { SearchItemsParams } from '@shared/schemas/item';
 import { DeleteRes } from '@shared/types/delete';
@@ -30,10 +31,34 @@ export async function getAdminItems(): Promise<GetRes['/admin/items']> {
 
 export async function createItem(
   data: PostReq['/admin/items'],
+  images?: File[],
 ): Promise<PostRes['/admin/items']> {
+  const formData = new FormData();
+
+  // テキストフィールドを追加
+  formData.append('name', data.name);
+  formData.append('description', data.description);
+  formData.append('type', data.type.toString());
+  formData.append('price', data.price.toString());
+  if (data.displayStatus) {
+    formData.append('displayStatus', data.displayStatus);
+  }
+
+  // 画像ファイルを追加
+  if (images && images.length > 0) {
+    images.forEach((image) => {
+      formData.append('images', image);
+    });
+  }
+
   const response = await apiClient.post<PostRes['/admin/items']>(
     '/admin/items',
-    data,
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    },
   );
 
   return response.data;
@@ -42,10 +67,45 @@ export async function createItem(
 export async function updateItem(
   id: number,
   data: PatchReq['/admin/items/:id'],
+  images?: File[],
 ): Promise<PatchRes['/admin/items/:id']> {
+  const formData = new FormData();
+
+  // テキストフィールドを追加
+  if (data.name !== undefined) {
+    formData.append('name', data.name);
+  }
+  if (data.description !== undefined) {
+    formData.append('description', data.description);
+  }
+  if (data.type !== undefined) {
+    formData.append('type', data.type.toString());
+  }
+  if (data.price !== undefined) {
+    formData.append('price', data.price.toString());
+  }
+  if (data.inventoryAmount !== undefined) {
+    formData.append('inventoryAmount', data.inventoryAmount.toString());
+  }
+  if (data.displayStatus !== undefined) {
+    formData.append('displayStatus', data.displayStatus);
+  }
+
+  // 画像ファイルを追加
+  if (images && images.length > 0) {
+    images.forEach((image) => {
+      formData.append('images', image);
+    });
+  }
+
   const response = await apiClient.patch<PatchRes['/admin/items/:id']>(
     `/admin/items/${id}`,
-    data,
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    },
   );
   return response.data;
 }

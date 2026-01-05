@@ -4,8 +4,12 @@ import { createRouter } from '../../../tests/helpers/router';
 import { GetItemsController } from './GetItemsController';
 import { GetItemsInteractor } from '../interactors/GetItemsInteractor';
 import { ItemRepository } from '../infrastructures/repositories/ItemRepository';
+import { ItemImageRepository } from '../infrastructures/repositories/ItemImageRepository';
+import { LocalImageStorageAdapter } from '../infrastructures/adapters/LocalImageStorageAdapter';
+import { DisplayStatus } from '../domains/entities/Item';
 import { prismaTest } from '../../../libs/prisma-test';
 import { cleanDatabase } from '../../../tests/helpers/database';
+import * as path from 'path';
 
 describe('GetItemsController', () => {
   let app: ReturnType<typeof createTestApp>;
@@ -13,8 +17,19 @@ describe('GetItemsController', () => {
   beforeEach(async () => {
     await cleanDatabase();
 
-    const itemRepository = new ItemRepository(prismaTest);
-    const getItemsInteractor = new GetItemsInteractor(itemRepository);
+    const itemImageRepository = new ItemImageRepository(prismaTest);
+    const uploadDir = path.join(process.cwd(), 'uploads', 'items');
+    const imageStorageAdapter = new LocalImageStorageAdapter(uploadDir);
+    const itemRepository = new ItemRepository(
+      prismaTest,
+      itemImageRepository,
+      imageStorageAdapter,
+    );
+    // 一般ユーザー向け: PUBLICな商品のみ取得
+    const getItemsInteractor = new GetItemsInteractor(
+      itemRepository,
+      DisplayStatus.PUBLIC,
+    );
     const getItemsController = new GetItemsController(getItemsInteractor);
     const router = createRouter('GET', '/', getItemsController);
 
@@ -135,6 +150,7 @@ describe('GetItemsController', () => {
         type: 1,
         price: 5000,
         inventoryStatus: 'outOfStock',
+        images: [],
       });
     });
 

@@ -29,6 +29,7 @@ export type Item = {
   type: number;
   price: number;
   inventoryStatus: InventoryStatus;
+  images: ItemImage[];
 };
 
 export type ItemDetail = {
@@ -38,6 +39,7 @@ export type ItemDetail = {
   type: number;
   price: number;
   inventoryStatus: InventoryStatus;
+  images: ItemImage[];
 };
 
 export const DisplayStatus = {
@@ -54,6 +56,8 @@ export type AdminItem = {
   type: number;
   price: number;
   inventoryStatus: InventoryStatus;
+  displayStatus: DisplayStatus;
+  images: ItemImage[];
   createdAt: Date;
   updatedAt: Date;
 };
@@ -67,6 +71,16 @@ export type AdminItemDetail = {
   inventoryStatus: InventoryStatus;
   inventoryAmount: number;
   displayStatus: DisplayStatus;
+  images: ItemImage[];
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type ItemImage = {
+  id: number;
+  itemId: number;
+  src: string;
+  order: number;
   createdAt: Date;
   updatedAt: Date;
 };
