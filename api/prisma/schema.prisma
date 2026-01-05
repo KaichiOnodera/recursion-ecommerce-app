@@ -62,6 +62,7 @@ model Items {
   OrderItems OrderItems[]
   Reviews    Reviews[]
   Favorites  Favorites[]
+  ItemFiles ItemFiles[]
 }
 
 model ItemImages {
@@ -75,6 +76,20 @@ model ItemImages {
   item Items @relation(fields: [itemId], references: [id], onDelete: Cascade)
 
   @@index([itemId])
+}
+
+model ItemFiles {
+    id      Int @id @default(autoincrement())
+    itemId  Int @unique
+    filename    String
+    size        String
+    storageKey  String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    item Items @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+    @@index([itemId])
 }
 
 model Orders {
@@ -116,6 +131,7 @@ model OrderPaymentExternalIds {
   @@index([orderId])
   @@index([provider])
 }
+
 
 model OrderItems {
   id        Int      @id @default(autoincrement())
