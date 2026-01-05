@@ -2,6 +2,7 @@ import { Item, ItemDetail, AdminItem, AdminItemDetail } from '../schemas/item';
 import { User } from '../schemas/user';
 import { CartItem } from '../schemas/cart';
 import { Review } from '../schemas/review';
+import { FavoriteItem } from '../schemas/favorite';
 
 export type GetRes = {
   '/items': {
@@ -97,22 +98,7 @@ export type GetRes = {
     averageRating: number;
   };
   '/favorites': {
-    favorites: Array<{
-      id: number;
-      userId: number;
-      itemId: number;
-      createdAt: Date;
-      item: {
-        id: number;
-        name: string;
-        price: number;
-        images: Array<{
-          id: number;
-          src: string;
-          order: number;
-        }>;
-      };
-    }>;
+    favorites: FavoriteItem[];
     total: number;
   };
 };
