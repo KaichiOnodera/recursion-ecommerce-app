@@ -6,4 +6,5 @@ export interface IFavoriteRepository {
     userId: number,
     itemId: number,
   ): Promise<Favorite | null>;
+  delete(userId: number, itemId: number): Promise<void>;
 }

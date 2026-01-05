@@ -47,4 +47,15 @@ export class FavoriteRepository implements IFavoriteRepository {
       updatedAt: favorite.updatedAt,
     };
   }
+
+  async delete(userId: number, itemId: number): Promise<void> {
+    await this.prisma.favorites.delete({
+      where: {
+        userId_itemId: {
+          userId,
+          itemId,
+        },
+      },
+    });
+  }
 }

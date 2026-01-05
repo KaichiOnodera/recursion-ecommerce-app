@@ -1,6 +1,8 @@
 import express from 'express';
 import { AddFavoriteController } from './controllers/AddFavoriteController';
+import { RemoveFavoriteController } from './controllers/RemoveFavoriteController';
 import { AddFavoriteInteractor } from './interactors/AddFavoriteInteractor';
+import { RemoveFavoriteInteractor } from './interactors/RemoveFavoriteInteractor';
 import { FavoriteRepository } from './infrastructures/repositories/FavoriteRepository';
 import { ItemRepository } from '../items/infrastructures/repositories/ItemRepository';
 import { ItemImageRepository } from '../items/infrastructures/repositories/ItemImageRepository';
@@ -24,12 +26,24 @@ const addFavoriteInteractor = new AddFavoriteInteractor(
   favoriteRepository,
   itemRepository,
 );
+const removeFavoriteInteractor = new RemoveFavoriteInteractor(
+  favoriteRepository,
+);
 const addFavoriteController = new AddFavoriteController(addFavoriteInteractor);
+const removeFavoriteController = new RemoveFavoriteController(
+  removeFavoriteInteractor,
+);
 
 favoritesRouter.post(
   '/',
   verifyAccessToken,
   addFavoriteController.execute.bind(addFavoriteController),
+);
+
+favoritesRouter.delete(
+  '/:itemId',
+  verifyAccessToken,
+  removeFavoriteController.execute.bind(removeFavoriteController),
 );
 
 export { favoritesRouter };
