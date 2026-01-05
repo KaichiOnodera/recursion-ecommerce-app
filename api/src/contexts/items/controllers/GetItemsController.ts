@@ -2,15 +2,17 @@ import express from 'express';
 import { GetRes } from '@shared/types/gets';
 import { IGetItemsInteractor } from '../usecases/IGetItemsInteractor';
 import { InventoryStatus } from '@shared/schemas/item';
+import { AuthenticatedRequest } from '../../../middlewares';
 
 export class GetItemsController {
   constructor(private readonly getItemsInteractor: IGetItemsInteractor) {}
 
   async execute(
-    _req: express.Request<null>,
+    req: AuthenticatedRequest<Record<string, never>>,
     res: express.Response<GetRes['/items']>,
   ) {
-    const items = await this.getItemsInteractor.execute();
+    const userId = req.user?.userId;
+    const items = await this.getItemsInteractor.execute(userId);
 
     const responseItems = items.map((item) => ({
       id: item.id,
@@ -23,6 +25,7 @@ export class GetItemsController {
           ? InventoryStatus.IN_STOCK
           : InventoryStatus.OUT_OF_STOCK,
       images: item.images,
+      isFavorite: item.isFavorite ?? null,
     }));
 
     res.status(201).json({ items: responseItems });

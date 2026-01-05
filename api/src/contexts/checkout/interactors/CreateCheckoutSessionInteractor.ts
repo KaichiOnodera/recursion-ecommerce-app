@@ -55,7 +55,12 @@ export class CreateCheckoutSessionInteractor
     );
 
     for (const cartItem of cart.items) {
-      const item = await this.itemRepository.findById(cartItem.id);
+      // チェックアウト処理ではお気に入り情報は不要
+      const item = await this.itemRepository.findById(
+        cartItem.id,
+        undefined,
+        undefined,
+      );
       if (!item) {
         throw new Error(`Item with id ${cartItem.id} not found`);
       }

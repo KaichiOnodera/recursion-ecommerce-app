@@ -4,15 +4,20 @@ import { ItemQuery } from '../../domains/repositories/ItemQuery';
 import { DisplayStatus, Item } from '../../domains/entities/Item';
 import { IItemImageRepository } from '../../domains/repositories/IItemImageRepository';
 import { IImageStorageAdapter } from '../../domains/adapters/IImageStorageAdapter';
+import { IFavoriteRepository } from '../../../favorites/domains/repositories/IFavoriteRepository';
 
 export class ItemRepository implements IItemRepository {
   constructor(
     private readonly prisma: PrismaClient,
     private readonly itemImageRepository: IItemImageRepository,
     private readonly imageStorageAdapter: IImageStorageAdapter,
+    private readonly favoriteRepository?: IFavoriteRepository,
   ) {}
 
-  async findAll(displayStatus?: DisplayStatus): Promise<Item[]> {
+  async findAll(
+    displayStatus?: DisplayStatus,
+    userId?: number,
+  ): Promise<Item[]> {
     const items = await this.prisma.items.findMany({
       where: displayStatus ? { displayStatus } : undefined,
       orderBy: { createdAt: 'desc' },
@@ -30,6 +35,16 @@ export class ItemRepository implements IItemRepository {
           src: this.imageStorageAdapter.getUrl(image.src, item.id),
         }));
 
+        // お気に入り情報を取得
+        let isFavorite: boolean | null = null;
+        if (userId && this.favoriteRepository) {
+          const favorite = await this.favoriteRepository.findByUserIdAndItemId(
+            userId,
+            item.id,
+          );
+          isFavorite = favorite !== null;
+        }
+
         return {
           id: item.id,
           name: item.name,
@@ -45,12 +60,13 @@ export class ItemRepository implements IItemRepository {
           images: imagesWithUrl,
           createdAt: item.createdAt,
           updatedAt: item.updatedAt,
+          isFavorite,
         };
       }),
     );
   }
 
-  async find(query?: ItemQuery): Promise<Item[]> {
+  async find(query?: ItemQuery, userId?: number): Promise<Item[]> {
     const prismaQuery = this.buildPrismaQuery(query);
     const items = await this.prisma.items.findMany({
       ...prismaQuery,
@@ -67,6 +83,16 @@ export class ItemRepository implements IItemRepository {
           src: this.imageStorageAdapter.getUrl(image.src, item.id),
         }));
 
+        // お気に入り情報を取得
+        let isFavorite: boolean | null = null;
+        if (userId && this.favoriteRepository) {
+          const favorite = await this.favoriteRepository.findByUserIdAndItemId(
+            userId,
+            item.id,
+          );
+          isFavorite = favorite !== null;
+        }
+
         return {
           id: item.id,
           name: item.name,
@@ -82,6 +108,7 @@ export class ItemRepository implements IItemRepository {
           images: imagesWithUrl,
           createdAt: item.createdAt,
           updatedAt: item.updatedAt,
+          isFavorite,
         };
       }),
     );
@@ -247,6 +274,7 @@ export class ItemRepository implements IItemRepository {
   async findById(
     id: number,
     displayStatus?: DisplayStatus,
+    userId?: number,
   ): Promise<Item | null> {
     const item = await this.prisma.items.findFirst({
       where: { id, displayStatus },
@@ -266,6 +294,16 @@ export class ItemRepository implements IItemRepository {
       src: this.imageStorageAdapter.getUrl(image.src, item.id),
     }));
 
+    // お気に入り情報を取得
+    let isFavorite: boolean | null = null;
+    if (userId && this.favoriteRepository) {
+      const favorite = await this.favoriteRepository.findByUserIdAndItemId(
+        userId,
+        item.id,
+      );
+      isFavorite = favorite !== null;
+    }
+
     return {
       id: item.id,
       name: item.name,
@@ -281,6 +319,7 @@ export class ItemRepository implements IItemRepository {
       images: imagesWithUrl,
       createdAt: item.createdAt,
       updatedAt: item.updatedAt,
+      isFavorite,
     };
   }
 
