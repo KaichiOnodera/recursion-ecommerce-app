@@ -30,6 +30,7 @@ export type Item = {
   price: number;
   inventoryStatus: InventoryStatus;
   images: ItemImage[];
+  isFavorite: boolean | null;
 };
 
 export type ItemDetail = {
@@ -40,6 +41,7 @@ export type ItemDetail = {
   price: number;
   inventoryStatus: InventoryStatus;
   images: ItemImage[];
+  isFavorite: boolean | null;
 };
 
 export const DisplayStatus = {

@@ -20,4 +20,5 @@ export type Item = {
   readonly images: ItemImage[];
   readonly createdAt: Date;
   readonly updatedAt: Date;
+  readonly isFavorite?: boolean | null;
 };

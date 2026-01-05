@@ -2,12 +2,13 @@ import express from 'express';
 import { GetRes } from '@shared/types/gets';
 import { IGetItemInteractor } from '../usecases/IGetItemInteractor';
 import { InventoryStatus } from '@shared/schemas/item';
+import { AuthenticatedRequest } from '../../../middlewares';
 
 export class GetItemController {
   constructor(private readonly getItemInteractor: IGetItemInteractor) {}
 
   async execute(
-    req: express.Request<{ id: string }>,
+    req: AuthenticatedRequest<Record<string, never>, { id: string }>,
     res: express.Response<GetRes['/items/:id'] | { message: string }>,
   ) {
     const itemId = parseInt(req.params.id);
@@ -16,7 +17,8 @@ export class GetItemController {
       return res.status(400).json({ message: 'Invalid item ID' });
     }
 
-    const item = await this.getItemInteractor.execute(itemId);
+    const userId = req.user?.userId;
+    const item = await this.getItemInteractor.execute(itemId, userId);
 
     if (!item) {
       return res.status(404).json({ message: 'Item not found' });
@@ -36,6 +38,7 @@ export class GetItemController {
         price: item.price,
         inventoryStatus,
         images: item.images,
+        isFavorite: item.isFavorite ?? null,
       },
     });
   }

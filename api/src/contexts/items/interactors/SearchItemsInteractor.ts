@@ -7,9 +7,9 @@ import { Item } from '../domains/entities/Item';
 export class SearchItemsInteractor implements ISearchItemsInteractor {
   constructor(private readonly itemRepository: IItemRepository) {}
 
-  async execute(params: SearchItemsParams): Promise<Item[]> {
+  async execute(params: SearchItemsParams, userId?: number): Promise<Item[]> {
     const query = this.buildQuery(params);
-    return await this.itemRepository.find(query);
+    return await this.itemRepository.find(query, userId);
   }
 
   private buildQuery(params: SearchItemsParams): ItemQuery {
