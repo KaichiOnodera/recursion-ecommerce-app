@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router';
 import { HeaderProps } from '../../types';
 import { LogoutButton } from '../auth/LogoutButton';
 import { useCart } from '../../contexts/CartContext';
+import { useUser } from '../../contexts/UserContext';
 import {
   ShoppingCartIcon,
   HeartIcon,
@@ -25,6 +26,7 @@ const Header = React.forwardRef<HTMLElement, HeaderProps>(
     const [searchQuery, setSearchQuery] = useState('');
     const navigate = useNavigate();
     const { totalQuantity } = useCart();
+    const { isLoggedIn } = useUser();
 
     const handleSearch = (e: React.FormEvent) => {
       e.preventDefault();
@@ -81,8 +83,18 @@ const Header = React.forwardRef<HTMLElement, HeaderProps>(
 
             {/* アイコン */}
             <div className="flex items-center space-x-4">
-              {/* ウィッシュリストアイコン */}
-              <button className="p-2 text-gray-700">
+              {/* お気に入りアイコン */}
+              <button
+                onClick={() => {
+                  if (isLoggedIn()) {
+                    navigate('/favorites');
+                  } else {
+                    navigate('/auth/user/login');
+                  }
+                }}
+                className="p-2 text-gray-700 hover:text-gray-900"
+                aria-label="お気に入り"
+              >
                 <HeartIcon className="w-5 h-5" />
               </button>
               {/* ユーザーアイコン */}
