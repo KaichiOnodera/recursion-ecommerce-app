@@ -6,6 +6,7 @@ import { GetItemsInteractor } from '../interactors/GetItemsInteractor';
 import { ItemRepository } from '../infrastructures/repositories/ItemRepository';
 import { ItemImageRepository } from '../infrastructures/repositories/ItemImageRepository';
 import { LocalImageStorageAdapter } from '../infrastructures/adapters/LocalImageStorageAdapter';
+import { FavoriteRepository } from '../../favorites/infrastructures/repositories/FavoriteRepository';
 import { DisplayStatus } from '../domains/entities/Item';
 import { prismaTest } from '../../../libs/prisma-test';
 import { cleanDatabase } from '../../../tests/helpers/database';
@@ -20,10 +21,16 @@ describe('GetItemsController', () => {
     const itemImageRepository = new ItemImageRepository(prismaTest);
     const uploadDir = path.join(process.cwd(), 'uploads', 'items');
     const imageStorageAdapter = new LocalImageStorageAdapter(uploadDir);
+    const favoriteRepository = new FavoriteRepository(
+      prismaTest,
+      itemImageRepository,
+      imageStorageAdapter,
+    );
     const itemRepository = new ItemRepository(
       prismaTest,
       itemImageRepository,
       imageStorageAdapter,
+      favoriteRepository,
     );
     // 一般ユーザー向け: PUBLICな商品のみ取得
     const getItemsInteractor = new GetItemsInteractor(
@@ -151,6 +158,7 @@ describe('GetItemsController', () => {
         price: 5000,
         inventoryStatus: 'outOfStock',
         images: [],
+        isFavorite: null,
       });
     });
 
