@@ -29,10 +29,6 @@ module.exports = [
         fetch: 'readonly',
         console: 'readonly',
         document: 'readonly',
-        HTMLElement: 'readonly',
-        HTMLInputElement: 'readonly',
-        HTMLDivElement: 'readonly',
-        HTMLImageElement: 'readonly',
         File: 'readonly',
         FileReader: 'readonly',
         FormData: 'readonly',
@@ -51,6 +47,7 @@ module.exports = [
       ...typescript.configs.recommended.rules,
       ...react.configs.recommended.rules,
       ...reactHooks.configs.recommended.rules,
+      'no-undef': 'off', // TypeScriptが型チェックを行うため無効化
       'no-console': 'warn',
       'no-debugger': 'error',
       'no-var': 'error',
