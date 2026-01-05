@@ -2,6 +2,7 @@ import { User } from '../schemas/user';
 import { AdminItem } from '../schemas/item';
 import { CartItem } from '../schemas/cart';
 import { Review } from '../schemas/review';
+import { Favorite } from '../schemas/favorite';
 
 export type PostReq = {
   '/auth/login': {
@@ -33,6 +34,9 @@ export type PostReq = {
     body: string;
     rating: number;
   };
+  '/favorites': {
+    itemId: number;
+  };
 };
 
 export type PostRes = {
@@ -54,5 +58,8 @@ export type PostRes = {
   };
   '/reviews': {
     review: Review;
+  };
+  '/favorites': {
+    favorite: Favorite;
   };
 };
