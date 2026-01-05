@@ -45,8 +45,12 @@ export class CreateItemInteractor implements ICreateItemInteractor {
         undefined,
         finalDisplayStatus,
       );
-      // 更新後の商品を取得
-      const updatedItem = await this.itemRepository.findById(item.id);
+      // 更新後の商品を取得（管理者向けなのでお気に入り情報は不要）
+      const updatedItem = await this.itemRepository.findById(
+        item.id,
+        undefined,
+        undefined,
+      );
       if (updatedItem) {
         Object.assign(item, updatedItem);
       }

@@ -5,6 +5,7 @@ import { CartRepository } from '../cart/infrastructures/repositories/CartReposit
 import { ItemRepository } from '../items/infrastructures/repositories/ItemRepository';
 import { ItemImageRepository } from '../items/infrastructures/repositories/ItemImageRepository';
 import { LocalImageStorageAdapter } from '../items/infrastructures/adapters/LocalImageStorageAdapter';
+import { FavoriteRepository } from '../favorites/infrastructures/repositories/FavoriteRepository';
 import { UserRepository } from '../users/infrastructures/repositories/UserRepository';
 import { OrderRepository } from '../orders/infrastructures/repositories/OrderRepository';
 import { prisma } from '../../libs/prisma';
@@ -18,10 +19,16 @@ const cartRepository = new CartRepository(prisma);
 const itemImageRepository = new ItemImageRepository(prisma);
 const uploadDir = path.join(process.cwd(), 'uploads', 'items');
 const imageStorageAdapter = new LocalImageStorageAdapter(uploadDir);
+const favoriteRepository = new FavoriteRepository(
+  prisma,
+  itemImageRepository,
+  imageStorageAdapter,
+);
 const itemRepository = new ItemRepository(
   prisma,
   itemImageRepository,
   imageStorageAdapter,
+  favoriteRepository,
 );
 const userRepository = new UserRepository(prisma);
 const orderRepository = new OrderRepository(prisma);

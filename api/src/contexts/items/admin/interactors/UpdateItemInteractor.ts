@@ -30,8 +30,8 @@ export class UpdateItemInteractor implements IUpdateItemInteractor {
     files?: Express.Multer.File[],
     displayStatus?: DisplayStatus,
   ): Promise<{ item: Item; images: ItemImage[] } | null> {
-    // 商品の存在確認
-    const item = await this.itemRepository.findById(id);
+    // 商品の存在確認（管理者向けなのでお気に入り情報は不要）
+    const item = await this.itemRepository.findById(id, undefined, undefined);
     if (!item) {
       return null;
     }
