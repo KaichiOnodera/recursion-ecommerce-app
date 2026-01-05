@@ -25,6 +25,7 @@ import { AdminOrderList } from './pages/admin/AdminOrderList';
 import { Cart } from './pages/user/Cart';
 import { MyPage } from './pages/user/MyPage';
 import { OrderHistory } from './pages/user/OrderHistory';
+import { FavoritesList } from './pages/user/FavoritesList';
 import { OrderComplete } from './pages/OrderComplete';
 
 function App(): React.JSX.Element {
@@ -64,6 +65,7 @@ function App(): React.JSX.Element {
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/mypage" element={<MyPage />} />
                 <Route path="/orders" element={<OrderHistory />} />
+                <Route path="/favorites" element={<FavoritesList />} />
                 <Route path="/auth/admin/login" element={<AdminLogin />} />
                 <Route path="/auth/admin/signup" element={<AdminSignup />} />
                 <Route
