@@ -27,6 +27,7 @@ const Header = React.forwardRef<HTMLElement, HeaderProps>(
     const navigate = useNavigate();
     const { totalQuantity } = useCart();
     const { isLoggedIn } = useUser();
+    const loggedIn = isLoggedIn();
 
     const handleSearch = (e: React.FormEvent) => {
       e.preventDefault();
@@ -36,6 +37,18 @@ const Header = React.forwardRef<HTMLElement, HeaderProps>(
         navigate('/products');
       }
     };
+
+    // ログイン状態に応じたナビゲーションアイテムをフィルタリング
+    const filteredNavigationItems = navigationItems.filter((item) => {
+      // ログイン状態の場合はログイン/新規登録を非表示
+      if (loggedIn) {
+        return (
+          item.href !== '/auth/user/login' && item.href !== '/auth/user/signup'
+        );
+      }
+      // ゲスト状態の場合は全て表示
+      return true;
+    });
 
     return (
       <header ref={ref} className="bg-white">
@@ -69,7 +82,7 @@ const Header = React.forwardRef<HTMLElement, HeaderProps>(
 
             {/* ナビゲーション */}
             <nav className="flex items-center space-x-6">
-              {navigationItems.map((item) => (
+              {filteredNavigationItems.map((item) => (
                 <Link
                   key={item.href}
                   to={item.href}
@@ -78,25 +91,22 @@ const Header = React.forwardRef<HTMLElement, HeaderProps>(
                   {item.label}
                 </Link>
               ))}
-              <LogoutButton className="text-gray-500" />
+              {/* ログイン状態の場合のみログアウトボタンを表示 */}
+              {loggedIn && <LogoutButton className="text-gray-500" />}
             </nav>
 
             {/* アイコン */}
             <div className="flex items-center space-x-4">
-              {/* お気に入りアイコン */}
-              <button
-                onClick={() => {
-                  if (isLoggedIn()) {
-                    navigate('/favorites');
-                  } else {
-                    navigate('/auth/user/login');
-                  }
-                }}
-                className="p-2 text-gray-700 hover:text-gray-900"
-                aria-label="お気に入り"
-              >
-                <HeartIcon className="w-5 h-5" />
-              </button>
+              {/* お気に入りアイコン（ログイン状態の場合のみ表示） */}
+              {loggedIn && (
+                <button
+                  onClick={() => navigate('/favorites')}
+                  className="p-2 text-gray-700 hover:text-gray-900"
+                  aria-label="お気に入り"
+                >
+                  <HeartIcon className="w-5 h-5" />
+                </button>
+              )}
               {/* ユーザーアイコン */}
               <Link
                 to="/mypage"
