@@ -12,9 +12,9 @@ COPY shared ./shared
 # フロントエンドのpackage.jsonをコピー
 COPY front/package*.json ./front/
 
-# ルートでnpm installを実行（すべてのworkspaceをインストール）
+# ルートでnpm ciを実行（すべてのworkspaceをインストール）
 # --ignore-scripts: huskyなどのスクリプトをスキップ（Docker内では不要）
-RUN npm install --ignore-scripts
+RUN npm ci --ignore-scripts
 
 # sharedディレクトリをビルド
 WORKDIR /app/shared
