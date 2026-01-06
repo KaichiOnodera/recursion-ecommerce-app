@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { login } from '../../services/api/auth';
 import { signup } from '../../services/api/users';
-import { useNavigate } from 'react-router';
+import { useNavigate, Link } from 'react-router';
 import { useUser } from '../../contexts/UserContext';
 import {
   LockClosedIcon,
@@ -201,6 +201,37 @@ export const AuthForm: React.FC<AuthFormProps> = ({
           {mode === 'login' ? 'ログイン' : 'アカウント作成'}
         </button>
       </form>
+
+      {/* 登録/ログインへのリンク */}
+      <div className="mt-6 text-center">
+        {mode === 'login' ? (
+          <p className="text-sm text-gray-600">
+            アカウントをお持ちでない方は{' '}
+            <Link
+              to={
+                userType === 'admin'
+                  ? '/auth/admin/signup'
+                  : '/auth/user/signup'
+              }
+              className="text-blue-600 hover:text-blue-700 font-medium transition-colors underline underline-offset-2"
+            >
+              こちらから登録
+            </Link>
+          </p>
+        ) : (
+          <p className="text-sm text-gray-600">
+            すでにアカウントをお持ちの方は{' '}
+            <Link
+              to={
+                userType === 'admin' ? '/auth/admin/login' : '/auth/user/login'
+              }
+              className="text-blue-600 hover:text-blue-700 font-medium transition-colors underline underline-offset-2"
+            >
+              こちらからログイン
+            </Link>
+          </p>
+        )}
+      </div>
     </div>
   );
 };
