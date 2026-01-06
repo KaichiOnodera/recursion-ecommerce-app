@@ -1,3 +1,3 @@
 export interface IVerifyTokenInteractor {
-  VerifyToken(to: string): Promise<void>;
+  VerifyToken(user: number): Promise<void>;
 }

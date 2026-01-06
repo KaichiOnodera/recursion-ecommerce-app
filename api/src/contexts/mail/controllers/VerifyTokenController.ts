@@ -6,7 +6,7 @@ export class VerifyTokenController {
   constructor(private verifyTokenInteractor: IVerifyTokenInteractor) {}
 
   async execute(req: AuthenticatedRequest, res: Response) {
-    const userId = String(req.user?.userId);
+    const userId = req.user?.userId;
 
     if (!userId) {
       return res.status(400).json({ message: 'User not authenticated' });
