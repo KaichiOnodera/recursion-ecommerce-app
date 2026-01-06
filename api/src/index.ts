@@ -3,6 +3,22 @@ import { config } from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import * as path from 'path';
+import * as fs from 'fs';
+
+// 本番環境（Docker）でのみ module-alias を使用
+// ローカル開発環境では tsx が TypeScript の paths 設定を理解するため不要
+// shared/dist が存在する場合（ビルド後）のみ module-alias を設定
+const sharedDistPath = path.join(process.cwd(), '../shared/dist');
+if (fs.existsSync(sharedDistPath)) {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  require('module-alias/register');
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const moduleAlias = require('module-alias');
+
+  // パスエイリアスの設定（@sharedをshared/distにマッピング）
+  // 実行時の作業ディレクトリは /app/api なので、../shared/dist で /app/shared/dist を指す
+  moduleAlias.addAlias('@shared', sharedDistPath);
+}
 
 // Load environment variables from .env file
 config();
@@ -28,9 +44,10 @@ import { CartItemRepository } from './contexts/cart/infrastructures/repositories
 
 const app = express();
 
+const corsOrigin = process.env.CORS_ORIGIN ?? 'http://localhost:3000';
 app.use(
   cors({
-    origin: 'http://localhost:3000',
+    origin: corsOrigin,
     credentials: true,
   }),
 );
