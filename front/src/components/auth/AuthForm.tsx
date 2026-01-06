@@ -54,8 +54,20 @@ export const AuthForm: React.FC<AuthFormProps> = ({
           password,
         });
 
-        if (response.createdUser) {
-          navigate('/login');
+        if (response.user) {
+          setUser({
+            id: response.user.id,
+            lastName: response.user.lastName,
+            firstName: response.user.firstName,
+            email: response.user.email,
+            role: response.user.role,
+          });
+        }
+
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          navigate('/');
         }
       }
     } catch (err: any) {
