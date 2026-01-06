@@ -63,7 +63,6 @@ model Items {
   OrderItems OrderItems[]
   Reviews    Reviews[]
   Favorites  Favorites[]
-  ItemFiles ItemFiles[]
 }
 
 model ItemFiles {
