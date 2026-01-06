@@ -275,4 +275,19 @@ export class OrderRepository implements IOrderRepository {
       })),
     };
   }
+
+  async getById(id: number): Promise<Order | null> {
+    const order = await this.prisma.orders.findUnique({
+      where: { id },
+      include: {
+        orderItems: true,
+      },
+    });
+
+    if (!order) {
+      return null;
+    }
+
+    return this.mapToOrder(order);
+  }
 }
