@@ -92,20 +92,6 @@ model ItemImages {
   @@index([itemId])
 }
 
-model ItemFiles {
-    id      Int @id @default(autoincrement())
-    itemId  Int @unique
-    filename    String
-    size        String
-    storageKey  String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    item Items @relation(fields: [itemId], references: [id], onDelete: Cascade)
-
-    @@index([itemId])
-}
-
 model Orders {
   id             Int         @id @default(autoincrement())
   userId         Int?
