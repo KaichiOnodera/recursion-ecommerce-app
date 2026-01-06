@@ -28,9 +28,10 @@ import { CartItemRepository } from './contexts/cart/infrastructures/repositories
 
 const app = express();
 
+const corsOrigin = process.env.CORS_ORIGIN ?? 'http://localhost:3000';
 app.use(
   cors({
-    origin: 'http://localhost:3000',
+    origin: corsOrigin,
     credentials: true,
   }),
 );
