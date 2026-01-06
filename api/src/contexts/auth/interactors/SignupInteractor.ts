@@ -28,6 +28,7 @@ export class SignupInteractor implements ISignupInteractor {
       email,
       password: hashedPassword,
       isResigned: false,
+      emailVerified: false,
       role: 'USER',
     });
 

@@ -40,6 +40,7 @@ describe('ResignController', () => {
           email: 'resign@example.com',
           password: 'hashedpassword',
           role: 'USER',
+          emailVerified: false,
           isResigned: false,
         },
       });

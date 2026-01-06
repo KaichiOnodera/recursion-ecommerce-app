@@ -41,6 +41,7 @@ describe('SignupController', () => {
       expect(response.body.createdUser).toHaveProperty('email', email);
       expect(response.body.createdUser).toHaveProperty('password');
       expect(response.body.createdUser).toHaveProperty('role', 'USER');
+      expect(response.body.createdUser).toHaveProperty('emailVerified', false);
       expect(response.body.createdUser).toHaveProperty('isResigned', false);
 
       // データベースに保存されていることを確認
@@ -125,6 +126,7 @@ describe('SignupController', () => {
           email: 'existing@example.com',
           password: 'hashedpassword',
           role: 'USER',
+          emailVerified: false,
           isResigned: false,
         },
       });
