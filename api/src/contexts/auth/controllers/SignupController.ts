@@ -1,6 +1,8 @@
 import express from 'express';
 import { ISignupInteractor } from '../usecases/ISignupInteractor';
 import { PostRes, PostReq } from '@shared/types/posts';
+import { generateJWT, TOKEN_VERSION } from '../../../utils/jwt';
+import { User } from '@shared/schemas/user';
 
 export class SignupController {
   constructor(private readonly signupInteractor: ISignupInteractor) {}
@@ -27,7 +29,30 @@ export class SignupController {
         password,
       });
 
-      return res.status(201).json({ createdUser });
+      const token = await generateJWT({
+        userId: createdUser.id,
+        email: createdUser.email,
+        role: createdUser.role,
+        version: TOKEN_VERSION,
+      });
+
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: false,
+        sameSite: 'lax',
+        maxAge: 86400000,
+        path: '/',
+      });
+
+      const user: User = {
+        id: createdUser.id,
+        lastName: createdUser.lastName,
+        firstName: createdUser.firstName,
+        email: createdUser.email,
+        role: createdUser.role,
+      };
+
+      return res.status(201).json({ user });
     } catch (error: unknown) {
       if (error instanceof Error) {
         if (error.message === 'Email already exists') {

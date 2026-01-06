@@ -47,7 +47,7 @@ export type PostRes = {
     item: AdminItem;
   };
   '/auth/signup': {
-    createdUser: User;
+    user: User;
   };
   '/cart': {
     items: CartItem[];
