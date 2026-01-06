@@ -30,8 +30,7 @@
     "multer": "^2.0.2",
     "mysql2": "^2.3.3",
     "prisma": "^6.17.1",
-    "stripe": "^20.1.0",
-    "tsconfig-paths": "^4.2.0"
+    "stripe": "^20.1.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
