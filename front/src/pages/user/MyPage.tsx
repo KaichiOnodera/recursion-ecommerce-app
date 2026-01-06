@@ -6,6 +6,8 @@ import {
   ClipboardDocumentListIcon,
   ChevronRightIcon,
   ExclamationTriangleIcon,
+  LockClosedIcon,
+  ArrowRightIcon,
 } from '@heroicons/react/24/outline';
 import { OrderHistoryPreview } from '../../components/user/OrderHistoryPreview';
 import { FavoritesPreview } from '../../components/user/FavoritesPreview';
@@ -15,10 +17,47 @@ import { resign } from '../../services/api/users';
 import { logout } from '../../services/api/auth';
 
 export const MyPage: React.FC = () => {
-  const { user, isAdmin, clearUser } = useUser();
+  const { user, isAdmin, clearUser, isLoggedIn } = useUser();
   const [totalOrderCount, setTotalOrderCount] = useState(0);
   const [isResignationModalOpen, setIsResignationModalOpen] = useState(false);
   const navigate = useNavigate();
+
+  if (!isLoggedIn()) {
+    return (
+      <div className="container mx-auto py-8 px-4 max-w-4xl">
+        <div className="bg-white rounded-lg shadow-lg p-8 md:p-12 text-center">
+          <div className="flex justify-center mb-6">
+            <div className="bg-blue-100 rounded-full p-4">
+              <LockClosedIcon className="w-12 h-12 text-blue-600" />
+            </div>
+          </div>
+          <h1 className="text-3xl font-bold mb-4 text-gray-900">
+            マイページにアクセスするには
+            <br />
+            ログインが必要です
+          </h1>
+          <p className="text-gray-600 mb-8 text-lg">
+            ログインすると、購入履歴やお気に入り商品を確認できます
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              to="/auth/user/login"
+              className="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-md hover:shadow-lg"
+            >
+              ログイン
+              <ArrowRightIcon className="w-5 h-5 ml-2" />
+            </Link>
+            <Link
+              to="/auth/user/signup"
+              className="inline-flex items-center justify-center px-6 py-3 bg-white text-blue-600 font-medium rounded-lg border-2 border-blue-600 hover:bg-blue-50 transition-colors"
+            >
+              新規登録
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto py-8 px-4 max-w-4xl">
