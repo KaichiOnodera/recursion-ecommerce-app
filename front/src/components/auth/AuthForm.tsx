@@ -90,8 +90,8 @@ export const AuthForm: React.FC<AuthFormProps> = ({
   return (
     <div className="bg-white rounded-lg shadow-md p-8 md:p-12 max-w-md mx-auto">
       {/* ヘッダー */}
-      <div className="text-center mb-8">
-        <div className="flex justify-center mb-4">
+      <div className="text-center mb-10">
+        <div className="flex justify-center mb-5">
           <div className="bg-blue-100 rounded-full p-3">
             {mode === 'login' ? (
               <LockClosedIcon className="w-8 h-8 text-blue-600" />
@@ -100,15 +100,10 @@ export const AuthForm: React.FC<AuthFormProps> = ({
             )}
           </div>
         </div>
-        <h2 className="text-3xl font-bold text-gray-900 mb-2">
-          {userType === 'admin' ? '管理者' : 'ユーザー'}
-          {mode === 'login' ? 'ログイン' : 'サインアップ'}
+        <h2 className="text-3xl font-bold text-gray-900">
+          {userType === 'admin' && '管理者'}
+          {mode === 'login' ? 'ログイン' : 'アカウント作成'}
         </h2>
-        <p className="text-gray-600 text-sm">
-          {mode === 'login'
-            ? 'アカウントにログインしてください'
-            : '新しいアカウントを作成してください'}
-        </p>
       </div>
 
       {/* エラーメッセージ */}
@@ -119,7 +114,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
       )}
 
       {/* フォーム */}
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit} className="space-y-6">
         {/* サインアップ時のみ表示 */}
         {mode === 'signup' && (
           <div className="grid grid-cols-2 gap-4">
@@ -134,7 +129,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
                 <input
                   type="text"
                   value={lastName}
-                  className="block w-full pl-10 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+                  className="block w-full pl-10 border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                   onChange={(e) => setLastName(e.target.value)}
                   required
                 />
@@ -151,7 +146,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
                 <input
                   type="text"
                   value={firstName}
-                  className="block w-full pl-10 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+                  className="block w-full pl-10 border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                   onChange={(e) => setFirstName(e.target.value)}
                   required
                 />
@@ -172,7 +167,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
             <input
               type="email"
               value={email}
-              className="block w-full pl-10 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+              className="block w-full pl-10 border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
               onChange={(e) => setEmail(e.target.value)}
               required
             />
@@ -191,7 +186,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
             <input
               type="password"
               value={password}
-              className="block w-full pl-10 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+              className="block w-full pl-10 border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
               onChange={(e) => setPassword(e.target.value)}
               required
             />
@@ -201,9 +196,9 @@ export const AuthForm: React.FC<AuthFormProps> = ({
         {/* 送信ボタン */}
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white font-medium rounded-lg py-3 px-4 hover:bg-blue-700 transition-colors shadow-md hover:shadow-lg mt-6"
+          className="w-full bg-blue-600 text-white font-medium rounded-lg py-3 px-4 hover:bg-blue-700 active:bg-blue-800 transition-all duration-200 shadow-md hover:shadow-lg mt-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
         >
-          {mode === 'login' ? 'ログイン' : 'サインアップ'}
+          {mode === 'login' ? 'ログイン' : 'アカウント作成'}
         </button>
       </form>
     </div>
