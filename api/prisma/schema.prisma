@@ -57,11 +57,25 @@ model Items {
   updatedAt     DateTime @updatedAt
 
   ItemImages ItemImages[]
+  ItemFiles  ItemFiles[]
   Inventory  Inventory[]
   CartItems  CartItems[]
   OrderItems OrderItems[]
   Reviews    Reviews[]
   Favorites  Favorites[]
+}
+
+model ItemFiles {
+    id      Int @id @default(autoincrement())
+    itemId  Int @unique
+    filename String
+    path    String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    item Items @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+    @@index([itemId])
 }
 
 model ItemImages {
@@ -116,6 +130,7 @@ model OrderPaymentExternalIds {
   @@index([orderId])
   @@index([provider])
 }
+
 
 model OrderItems {
   id        Int      @id @default(autoincrement())
