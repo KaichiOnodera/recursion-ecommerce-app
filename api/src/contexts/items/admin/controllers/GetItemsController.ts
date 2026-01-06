@@ -1,6 +1,7 @@
 import express from 'express';
 import { GetRes } from '@shared/types/gets';
 import { IGetItemsInteractor } from '../../usecases/IGetItemsInteractor';
+import { InventoryStatus } from '@shared/schemas/item';
 
 export class GetItemsController {
   constructor(private readonly getItemsInteractor: IGetItemsInteractor) {}
@@ -17,6 +18,19 @@ export class GetItemsController {
       description: item.description,
       type: item.type,
       price: item.price,
+      inventoryStatus:
+        item.inventory.amount > 0
+          ? InventoryStatus.IN_STOCK
+          : InventoryStatus.OUT_OF_STOCK,
+      displayStatus: item.displayStatus,
+      images: item.images.map((image) => ({
+        id: image.id,
+        itemId: image.itemId,
+        src: image.src,
+        order: image.order,
+        createdAt: image.createdAt,
+        updatedAt: image.updatedAt,
+      })),
       createdAt: item.createdAt,
       updatedAt: item.updatedAt,
     }));

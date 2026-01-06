@@ -29,8 +29,11 @@ module.exports = [
         fetch: 'readonly',
         console: 'readonly',
         document: 'readonly',
-        HTMLElement: 'readonly',
+        File: 'readonly',
+        FileReader: 'readonly',
+        FormData: 'readonly',
         window: 'readonly',
+        alert: 'readonly',
         URLSearchParams: 'readonly'
       }
     },
@@ -44,10 +47,12 @@ module.exports = [
       ...typescript.configs.recommended.rules,
       ...react.configs.recommended.rules,
       ...reactHooks.configs.recommended.rules,
+      'no-undef': 'off', // TypeScriptが型チェックを行うため無効化
       'no-console': 'warn',
       'no-debugger': 'error',
       'no-var': 'error',
       'react/react-in-jsx-scope': 'off',
+      'react/prop-types': 'off',
       '@typescript-eslint/explicit-function-return-type': 'warn',
       '@typescript-eslint/no-explicit-any': 'warn',
       'prettier/prettier': 'error',

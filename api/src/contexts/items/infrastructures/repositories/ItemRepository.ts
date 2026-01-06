@@ -2,36 +2,71 @@ import { PrismaClient, Prisma } from '@prisma/client';
 import { IItemRepository } from '../../domains/repositories/IItemRepository';
 import { ItemQuery } from '../../domains/repositories/ItemQuery';
 import { DisplayStatus, Item } from '../../domains/entities/Item';
+import { IItemImageRepository } from '../../domains/repositories/IItemImageRepository';
+import { IImageStorageAdapter } from '../../domains/adapters/IImageStorageAdapter';
+import { IFavoriteRepository } from '../../../favorites/domains/repositories/IFavoriteRepository';
 
 export class ItemRepository implements IItemRepository {
-  constructor(private readonly prisma: PrismaClient) {}
+  constructor(
+    private readonly prisma: PrismaClient,
+    private readonly itemImageRepository: IItemImageRepository,
+    private readonly imageStorageAdapter: IImageStorageAdapter,
+    private readonly favoriteRepository?: IFavoriteRepository,
+  ) {}
 
-  async findAll(): Promise<Item[]> {
+  async findAll(
+    displayStatus?: DisplayStatus,
+    userId?: number,
+  ): Promise<Item[]> {
     const items = await this.prisma.items.findMany({
+      where: displayStatus ? { displayStatus } : undefined,
       orderBy: { createdAt: 'desc' },
       include: {
         Inventory: true,
       },
     });
 
-    return items.map((item) => ({
-      id: item.id,
-      name: item.name,
-      description: item.description,
-      type: item.type,
-      price: item.price,
-      displayStatus: this.isDisplayStatus(item.displayStatus)
-        ? item.displayStatus
-        : DisplayStatus.PRIVATE,
-      inventory: {
-        amount: item.Inventory?.[0]?.amount ?? 0,
-      },
-      createdAt: item.createdAt,
-      updatedAt: item.updatedAt,
-    }));
+    return Promise.all(
+      items.map(async (item) => {
+        // 画像情報を取得してURLに変換
+        const images = await this.itemImageRepository.findByItemId(item.id);
+        const imagesWithUrl = images.map((image) => ({
+          ...image,
+          src: this.imageStorageAdapter.getUrl(image.src, item.id),
+        }));
+
+        // お気に入り情報を取得
+        let isFavorite: boolean | null = null;
+        if (userId && this.favoriteRepository) {
+          const favorite = await this.favoriteRepository.findByUserIdAndItemId(
+            userId,
+            item.id,
+          );
+          isFavorite = favorite !== null;
+        }
+
+        return {
+          id: item.id,
+          name: item.name,
+          description: item.description,
+          type: item.type,
+          price: item.price,
+          displayStatus: this.isDisplayStatus(item.displayStatus)
+            ? item.displayStatus
+            : DisplayStatus.PRIVATE,
+          inventory: {
+            amount: item.Inventory?.[0]?.amount ?? 0,
+          },
+          images: imagesWithUrl,
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
+          isFavorite,
+        };
+      }),
+    );
   }
 
-  async find(query?: ItemQuery): Promise<Item[]> {
+  async find(query?: ItemQuery, userId?: number): Promise<Item[]> {
     const prismaQuery = this.buildPrismaQuery(query);
     const items = await this.prisma.items.findMany({
       ...prismaQuery,
@@ -39,21 +74,44 @@ export class ItemRepository implements IItemRepository {
         Inventory: true,
       },
     });
-    return items.map((item) => ({
-      id: item.id,
-      name: item.name,
-      description: item.description,
-      type: item.type,
-      price: item.price,
-      displayStatus: this.isDisplayStatus(item.displayStatus)
-        ? item.displayStatus
-        : DisplayStatus.PRIVATE,
-      inventory: {
-        amount: item.Inventory?.[0]?.amount ?? 0,
-      },
-      createdAt: item.createdAt,
-      updatedAt: item.updatedAt,
-    }));
+    return Promise.all(
+      items.map(async (item) => {
+        // 画像情報を取得してURLに変換
+        const images = await this.itemImageRepository.findByItemId(item.id);
+        const imagesWithUrl = images.map((image) => ({
+          ...image,
+          src: this.imageStorageAdapter.getUrl(image.src, item.id),
+        }));
+
+        // お気に入り情報を取得
+        let isFavorite: boolean | null = null;
+        if (userId && this.favoriteRepository) {
+          const favorite = await this.favoriteRepository.findByUserIdAndItemId(
+            userId,
+            item.id,
+          );
+          isFavorite = favorite !== null;
+        }
+
+        return {
+          id: item.id,
+          name: item.name,
+          description: item.description,
+          type: item.type,
+          price: item.price,
+          displayStatus: this.isDisplayStatus(item.displayStatus)
+            ? item.displayStatus
+            : DisplayStatus.PRIVATE,
+          inventory: {
+            amount: item.Inventory?.[0]?.amount ?? 0,
+          },
+          images: imagesWithUrl,
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
+          isFavorite,
+        };
+      }),
+    );
   }
 
   private buildPrismaQuery(query?: ItemQuery): Prisma.ItemsFindManyArgs {
@@ -96,6 +154,7 @@ export class ItemRepository implements IItemRepository {
       },
     });
 
+    // 新規作成時は画像がないので空配列を返す
     return {
       id: item.id,
       name: item.name,
@@ -108,6 +167,7 @@ export class ItemRepository implements IItemRepository {
       inventory: {
         amount: 0,
       },
+      images: [],
       createdAt: item.createdAt,
       updatedAt: item.updatedAt,
     };
@@ -120,6 +180,7 @@ export class ItemRepository implements IItemRepository {
     type?: number,
     price?: number,
     inventoryAmount?: number,
+    displayStatus?: DisplayStatus,
   ): Promise<Item | null> {
     const existingItem = await this.findById(id);
 
@@ -132,12 +193,14 @@ export class ItemRepository implements IItemRepository {
       description?: string;
       type?: number;
       price?: number;
+      displayStatus?: DisplayStatus;
     } = {};
 
     if (name !== undefined) updateData.name = name;
     if (description !== undefined) updateData.description = description;
     if (type !== undefined) updateData.type = type;
     if (price !== undefined) updateData.price = price;
+    if (displayStatus !== undefined) updateData.displayStatus = displayStatus;
 
     const item = await this.prisma.items.update({
       where: { id },
@@ -169,6 +232,13 @@ export class ItemRepository implements IItemRepository {
       where: { itemId: item.id },
     });
 
+    // 画像情報を取得してURLに変換
+    const images = await this.itemImageRepository.findByItemId(item.id);
+    const imagesWithUrl = images.map((image) => ({
+      ...image,
+      src: this.imageStorageAdapter.getUrl(image.src, item.id),
+    }));
+
     return {
       id: item.id,
       name: item.name,
@@ -181,6 +251,7 @@ export class ItemRepository implements IItemRepository {
       inventory: {
         amount: inventory?.amount ?? 0,
       },
+      images: imagesWithUrl,
       createdAt: item.createdAt,
       updatedAt: item.updatedAt,
     };
@@ -203,6 +274,7 @@ export class ItemRepository implements IItemRepository {
   async findById(
     id: number,
     displayStatus?: DisplayStatus,
+    userId?: number,
   ): Promise<Item | null> {
     const item = await this.prisma.items.findFirst({
       where: { id, displayStatus },
@@ -211,23 +283,44 @@ export class ItemRepository implements IItemRepository {
       },
     });
 
-    return item
-      ? {
-          id: item.id,
-          name: item.name,
-          description: item.description,
-          type: item.type,
-          price: item.price,
-          displayStatus: this.isDisplayStatus(item.displayStatus)
-            ? item.displayStatus
-            : DisplayStatus.PRIVATE,
-          inventory: {
-            amount: item.Inventory?.[0]?.amount ?? 0,
-          },
-          createdAt: item.createdAt,
-          updatedAt: item.updatedAt,
-        }
-      : null;
+    if (!item) {
+      return null;
+    }
+
+    // 画像情報を取得してURLに変換
+    const images = await this.itemImageRepository.findByItemId(item.id);
+    const imagesWithUrl = images.map((image) => ({
+      ...image,
+      src: this.imageStorageAdapter.getUrl(image.src, item.id),
+    }));
+
+    // お気に入り情報を取得
+    let isFavorite: boolean | null = null;
+    if (userId && this.favoriteRepository) {
+      const favorite = await this.favoriteRepository.findByUserIdAndItemId(
+        userId,
+        item.id,
+      );
+      isFavorite = favorite !== null;
+    }
+
+    return {
+      id: item.id,
+      name: item.name,
+      description: item.description,
+      type: item.type,
+      price: item.price,
+      displayStatus: this.isDisplayStatus(item.displayStatus)
+        ? item.displayStatus
+        : DisplayStatus.PRIVATE,
+      inventory: {
+        amount: item.Inventory?.[0]?.amount ?? 0,
+      },
+      images: imagesWithUrl,
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt,
+      isFavorite,
+    };
   }
 
   private isDisplayStatus(

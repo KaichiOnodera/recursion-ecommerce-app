@@ -2,6 +2,7 @@ import express from 'express';
 import { ICreateCheckoutSessionInteractor } from '../usecases/ICreateCheckoutSessionInteractor';
 import { AuthenticatedRequest } from '../../../middlewares';
 import { PostRes } from '@shared/types/posts';
+import { getCartSessionIdFromCookie } from '../../../utils/cookie';
 
 export class CreateCheckoutSessionController {
   constructor(
@@ -12,16 +13,26 @@ export class CreateCheckoutSessionController {
     req: AuthenticatedRequest<Record<string, never>, Record<string, never>>,
     res: express.Response<PostRes['/checkout/session'] | { message: string }>,
   ) {
-    if (!req.user) {
-      return res.status(401).json({ message: 'User not authenticated' });
-    }
-
     try {
-      const result = await this.createCheckoutSessionInteractor.execute({
-        userId: req.user.userId,
-      });
+      // ログインユーザーの場合: userIdを使用
+      // ゲストユーザーの場合: sessionIdを使用
+      const sessionId = getCartSessionIdFromCookie(req);
 
-      return res.status(200).json(result);
+      if (req.user) {
+        const result = await this.createCheckoutSessionInteractor.execute({
+          userId: req.user.userId,
+        });
+        return res.status(200).json(result);
+      } else if (sessionId) {
+        const result = await this.createCheckoutSessionInteractor.execute({
+          sessionId,
+        });
+        return res.status(200).json(result);
+      } else {
+        return res.status(400).json({
+          message: 'Cart session not found. Please add items to cart first.',
+        });
+      }
     } catch (error) {
       console.error('Error creating checkout session:', error);
       if (error instanceof Error) {

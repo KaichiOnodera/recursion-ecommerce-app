@@ -21,7 +21,9 @@ export class UserRepository implements IUserRepository {
       firstName: user.firstName,
       email: user.email,
       password: user.password,
+      emailVerified: user.emailVerified,
       role: user.role,
+      isResigned: user.isResigned,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };
@@ -43,7 +45,51 @@ export class UserRepository implements IUserRepository {
       firstName: user.firstName,
       email: user.email,
       password: user.password,
+      emailVerified: user.emailVerified,
       role: user.role,
+      isResigned: user.isResigned,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
+  }
+
+  async create(
+    data: Omit<User, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<User> {
+    const user = await this.prisma.users.create({ data });
+    return {
+      id: user.id,
+      lastName: user.lastName,
+      firstName: user.firstName,
+      email: user.email,
+      password: user.password,
+      role: user.role,
+      emailVerified: user.emailVerified,
+      isResigned: user.isResigned,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
+  }
+
+  async update(
+    id: number,
+    data: Partial<Omit<User, 'id' | 'createdAt' | 'updatedAt'>>,
+  ): Promise<User> {
+    const user = await this.prisma.users.update({
+      where: { id },
+      data: {
+        ...data,
+      },
+    });
+    return {
+      id: user.id,
+      lastName: user.lastName,
+      firstName: user.firstName,
+      email: user.email,
+      password: user.password,
+      role: user.role,
+      emailVerified: user.emailVerified,
+      isResigned: user.isResigned,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };

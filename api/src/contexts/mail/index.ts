@@ -9,6 +9,11 @@ import { UserRepository } from '../auth/infrastructures/repositories/UserReposit
 import { OrderRepository } from 'src/contexts/orders/infrastructures/repositories/OrderRepository';
 import { EmailAdapter } from './infrastructures/adapters/EmailAdapter';
 import { verifyAdmin } from 'src/middlewares';
+import { VerifyTokenController } from './controllers/VerifyTokenController';
+import { VerifyTokenInteractor } from './interactors/VerifyTokenInteractor';
+import { CartRepository } from '../cart/infrastructures/repositories/CartRepository';
+import { UserRepository } from '../users/infrastructures/repositories/UserRepository';
+import { EmailAdapter } from './infrastructures/adapters/EmailAdapter';
 
 const mailRouter = express.Router();
 
@@ -47,6 +52,31 @@ mailRouter.post(
   '/send-order-completed/:orderId',
   verifyAdmin,
   orderCompletedController.execute.bind(orderCompletedController),
+const emailAdapter = new EmailAdapter();
+
+const verifyTokenInteractor = new VerifyTokenInteractor(
+  emailAdapter,
+  userRepository,
+);
+const verifyTokenController = new VerifyTokenController(verifyTokenInteractor);
+
+const orderConfirmationInteractor = new OrderConfirmationInteractor(
+  emailAdapter,
+  cartRepository,
+  userRepository,
+);
+const orderConfirmationController = new OrderConfirmationController(
+  orderConfirmationInteractor,
+);
+
+mailRouter.post(
+  '/send-order-confirmation',
+  orderConfirmationController.execute.bind(orderConfirmationController),
+);
+
+mailRouter.post(
+  '/verify-email',
+  verifyTokenController.execute.bind(verifyTokenController),
 );
 
 export { mailRouter };

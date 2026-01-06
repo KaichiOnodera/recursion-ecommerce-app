@@ -57,9 +57,25 @@ model Items {
   updatedAt     DateTime @updatedAt
 
   ItemImages ItemImages[]
+  ItemFiles  ItemFiles[]
   Inventory  Inventory[]
   CartItems  CartItems[]
   OrderItems OrderItems[]
+  Reviews    Reviews[]
+  Favorites  Favorites[]
+}
+
+model ItemFiles {
+    id      Int @id @default(autoincrement())
+    itemId  Int @unique
+    filename String
+    path    String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    item Items @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+    @@index([itemId])
 }
 
 model ItemImages {
@@ -70,22 +86,23 @@ model ItemImages {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  item Items @relation(fields: [itemId], references: [id])
+  item Items @relation(fields: [itemId], references: [id], onDelete: Cascade)
 
   @@index([itemId])
 }
 
 model Orders {
-  id          Int         @id @default(autoincrement())
-  userId      Int?
-  lastName    String
-  firstName   String
-  email       String
-  address     String
-  totalPrice  Int
-  orderStatus OrderStatus @default(PENDING)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id             Int         @id @default(autoincrement())
+  userId         Int?
+  lastName       String
+  firstName      String
+  email          String
+  address        String
+  totalPrice     Int
+  orderStatus    OrderStatus @default(PENDING)
+  trackingNumber String?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
 
   user               Users?                    @relation(fields: [userId], references: [id], onDelete: SetNull)
   orderItems         OrderItems[]
@@ -114,6 +131,7 @@ model OrderPaymentExternalIds {
   @@index([provider])
 }
 
+
 model OrderItems {
   id        Int      @id @default(autoincrement())
   orderId   Int
@@ -131,19 +149,59 @@ model OrderItems {
   @@index([orderId])
 }
 
-model Users {
-  id         Int      @id @default(autoincrement())
-  lastName   String
-  firstName  String
-  email      String   @unique
-  password   String
-  isResigned Boolean  @default(false)
-  role       UserRole @default(USER)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+model Reviews {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  itemId    Int
+  title     String?  @db.VarChar(255)
+  body      String   @db.Text
+  rating    Int
+  postedAt  DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  cart   Cart?
-  orders Orders[]
+  user Users @relation(fields: [userId], references: [id], onDelete: Cascade)
+  item Items @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, itemId])
+  @@index([userId])
+  @@index([itemId])
+  @@index([itemId, rating])
+  @@index([itemId, postedAt])
+}
+
+model Favorites {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  itemId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user Users @relation(fields: [userId], references: [id], onDelete: Cascade)
+  item Items @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, itemId])
+  @@index([userId])
+  @@index([itemId])
+}
+
+model Users {
+  id            Int      @id @default(autoincrement())
+  lastName      String
+  firstName     String
+  email         String   @unique
+  password      String
+  emailVerified Boolean  @default(false)
+  isResigned    Boolean  @default(false)
+  role          UserRole @default(USER)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  cart                   Cart?
+  emailVerificationToken EmailVerificationToken?
+  orders                 Orders[]
+  reviews                Reviews[]
+  favorites              Favorites[]
 }
 
 enum UserRole {
@@ -156,4 +214,14 @@ enum OrderStatus {
   COMPLETED
   SHIPPED
   CANCELLED
+}
+
+model EmailVerificationToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  userId    Int      @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user Users @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

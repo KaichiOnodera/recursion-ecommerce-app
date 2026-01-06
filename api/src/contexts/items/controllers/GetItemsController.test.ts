@@ -4,8 +4,13 @@ import { createRouter } from '../../../tests/helpers/router';
 import { GetItemsController } from './GetItemsController';
 import { GetItemsInteractor } from '../interactors/GetItemsInteractor';
 import { ItemRepository } from '../infrastructures/repositories/ItemRepository';
+import { ItemImageRepository } from '../infrastructures/repositories/ItemImageRepository';
+import { LocalImageStorageAdapter } from '../infrastructures/adapters/LocalImageStorageAdapter';
+import { FavoriteRepository } from '../../favorites/infrastructures/repositories/FavoriteRepository';
+import { DisplayStatus } from '../domains/entities/Item';
 import { prismaTest } from '../../../libs/prisma-test';
 import { cleanDatabase } from '../../../tests/helpers/database';
+import * as path from 'path';
 
 describe('GetItemsController', () => {
   let app: ReturnType<typeof createTestApp>;
@@ -13,8 +18,25 @@ describe('GetItemsController', () => {
   beforeEach(async () => {
     await cleanDatabase();
 
-    const itemRepository = new ItemRepository(prismaTest);
-    const getItemsInteractor = new GetItemsInteractor(itemRepository);
+    const itemImageRepository = new ItemImageRepository(prismaTest);
+    const uploadDir = path.join(process.cwd(), 'uploads', 'items');
+    const imageStorageAdapter = new LocalImageStorageAdapter(uploadDir);
+    const favoriteRepository = new FavoriteRepository(
+      prismaTest,
+      itemImageRepository,
+      imageStorageAdapter,
+    );
+    const itemRepository = new ItemRepository(
+      prismaTest,
+      itemImageRepository,
+      imageStorageAdapter,
+      favoriteRepository,
+    );
+    // 一般ユーザー向け: PUBLICな商品のみ取得
+    const getItemsInteractor = new GetItemsInteractor(
+      itemRepository,
+      DisplayStatus.PUBLIC,
+    );
     const getItemsController = new GetItemsController(getItemsInteractor);
     const router = createRouter('GET', '/', getItemsController);
 
@@ -63,12 +85,13 @@ describe('GetItemsController', () => {
       expect(firstItem).toHaveProperty('description');
       expect(firstItem).toHaveProperty('type');
       expect(firstItem).toHaveProperty('price');
-      expect(firstItem).toHaveProperty('createdAt');
-      expect(firstItem).toHaveProperty('updatedAt');
+      expect(firstItem).toHaveProperty('inventoryStatus');
 
-      // displayStatusとinventoryはレスポンスに含まれないことを確認
+      // displayStatus、inventory、createdAt、updatedAtはレスポンスに含まれないことを確認
       expect(firstItem).not.toHaveProperty('displayStatus');
       expect(firstItem).not.toHaveProperty('inventory');
+      expect(firstItem).not.toHaveProperty('createdAt');
+      expect(firstItem).not.toHaveProperty('updatedAt');
 
       // データの内容を検証
       const itemIds = response.body.items.map(
@@ -133,9 +156,95 @@ describe('GetItemsController', () => {
         description: '構造テスト商品の説明',
         type: 1,
         price: 5000,
-        createdAt: item.createdAt.toISOString(),
-        updatedAt: item.updatedAt.toISOString(),
+        inventoryStatus: 'outOfStock',
+        images: [],
+        isFavorite: null,
       });
+    });
+
+    it('should exclude private items from results', async () => {
+      // public商品を作成
+      const publicItem = await prismaTest.items.create({
+        data: {
+          name: '公開商品',
+          description: '公開商品の説明',
+          type: 1,
+          price: 1000,
+          displayStatus: 'public',
+        },
+      });
+
+      // private商品を作成
+      const privateItem = await prismaTest.items.create({
+        data: {
+          name: '非公開商品',
+          description: '非公開商品の説明',
+          type: 1,
+          price: 2000,
+          displayStatus: 'private',
+        },
+      });
+
+      const response = await request(app).get('/items').expect(201);
+
+      expect(response.body.items.length).toBe(1);
+      expect(response.body.items[0].id).toBe(publicItem.id);
+      expect(response.body.items[0].id).not.toBe(privateItem.id);
+    });
+
+    it('should return only public items when both public and private items exist', async () => {
+      // public商品を複数作成
+      const publicItem1 = await prismaTest.items.create({
+        data: {
+          name: '公開商品1',
+          description: '公開商品1の説明',
+          type: 1,
+          price: 1000,
+          displayStatus: 'public',
+        },
+      });
+
+      const publicItem2 = await prismaTest.items.create({
+        data: {
+          name: '公開商品2',
+          description: '公開商品2の説明',
+          type: 1,
+          price: 2000,
+          displayStatus: 'public',
+        },
+      });
+
+      // private商品を複数作成
+      const privateItem1 = await prismaTest.items.create({
+        data: {
+          name: '非公開商品1',
+          description: '非公開商品1の説明',
+          type: 1,
+          price: 3000,
+          displayStatus: 'private',
+        },
+      });
+
+      const privateItem2 = await prismaTest.items.create({
+        data: {
+          name: '非公開商品2',
+          description: '非公開商品2の説明',
+          type: 1,
+          price: 4000,
+          displayStatus: 'private',
+        },
+      });
+
+      const response = await request(app).get('/items').expect(201);
+
+      expect(response.body.items.length).toBe(2);
+      const itemIds = response.body.items.map(
+        (item: { id: number }) => item.id,
+      );
+      expect(itemIds).toContain(publicItem1.id);
+      expect(itemIds).toContain(publicItem2.id);
+      expect(itemIds).not.toContain(privateItem1.id);
+      expect(itemIds).not.toContain(privateItem2.id);
     });
   });
 });

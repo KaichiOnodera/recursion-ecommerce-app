@@ -4,7 +4,9 @@ export type User = {
   readonly firstName: string;
   readonly email: string;
   readonly password: string;
+  readonly emailVerified: boolean;
   readonly role: 'USER' | 'ADMIN';
+  readonly isResigned: boolean;
   readonly createdAt: Date;
   readonly updatedAt: Date;
 };

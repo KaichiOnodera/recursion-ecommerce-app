@@ -2,8 +2,10 @@ import { PrismaClient, Prisma, OrderStatus } from '@prisma/client';
 import {
   IOrderRepository,
   CreateOrderData,
+  CreateOrderPaymentExternalIdData,
 } from '../../domains/repositories/IOrderRepository';
 import { Order } from '../../domains/entities/Order';
+import { OrderPaymentExternalId } from '../../domains/entities/OrderPaymentExternalId';
 
 export class OrderRepository implements IOrderRepository {
   constructor(private readonly prisma: PrismaClient) {}
@@ -11,6 +13,17 @@ export class OrderRepository implements IOrderRepository {
   async findByUserId(userId: number): Promise<Order[]> {
     const orders = await this.prisma.orders.findMany({
       where: { userId },
+      include: {
+        orderItems: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return orders.map((order) => this.mapToOrder(order));
+  }
+
+  async findAll(): Promise<Order[]> {
+    const orders = await this.prisma.orders.findMany({
       include: {
         orderItems: true,
       },
@@ -88,6 +101,154 @@ export class OrderRepository implements IOrderRepository {
     return this.mapToOrder(order);
   }
 
+  async updateAddress(id: number, address: string): Promise<Order> {
+    const order = await this.prisma.orders.update({
+      where: { id },
+      data: {
+        address,
+      },
+      include: {
+        orderItems: true,
+      },
+    });
+
+    return this.mapToOrder(order);
+  }
+
+  async updateEmail(id: number, email: string): Promise<Order> {
+    const order = await this.prisma.orders.update({
+      where: { id },
+      data: {
+        email,
+      },
+      include: {
+        orderItems: true,
+      },
+    });
+
+    return this.mapToOrder(order);
+  }
+
+  async findOrdersNeedingShipping(): Promise<Order[]> {
+    // COMPLETEDステータスで、まだSHIPPEDでない注文を取得
+    const orders = await this.prisma.orders.findMany({
+      where: {
+        orderStatus: OrderStatus.COMPLETED,
+      },
+      include: {
+        orderItems: {
+          include: {
+            item: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    // 物理商品のみ取得
+    const ordersWithPhysicalItems = orders.filter((order) => {
+      return order.orderItems.some(
+        (orderItem) => orderItem.item && orderItem.item.type === 1,
+      );
+    });
+
+    return ordersWithPhysicalItems.map((order) => this.mapToOrder(order));
+  }
+
+  async findById(id: number): Promise<Order | null> {
+    const order = await this.prisma.orders.findUnique({
+      where: { id },
+      include: {
+        orderItems: true,
+      },
+    });
+
+    if (!order) {
+      return null;
+    }
+
+    return this.mapToOrder(order);
+  }
+
+  async updateTrackingNumber(
+    id: number,
+    trackingNumber: string,
+  ): Promise<Order> {
+    const order = await this.prisma.orders.update({
+      where: { id },
+      data: {
+        trackingNumber,
+        orderStatus: OrderStatus.SHIPPED,
+      },
+      include: {
+        orderItems: true,
+      },
+    });
+
+    return this.mapToOrder(order);
+  }
+
+  async createPaymentExternalId(
+    data: CreateOrderPaymentExternalIdData,
+  ): Promise<OrderPaymentExternalId> {
+    const paymentExternalId = await this.prisma.orderPaymentExternalIds.create({
+      data: {
+        orderId: data.orderId,
+        provider: data.provider,
+        paymentSessionId: data.paymentSessionId ?? null,
+        paymentId: data.paymentId ?? null,
+      },
+    });
+
+    return {
+      id: paymentExternalId.id,
+      orderId: paymentExternalId.orderId,
+      provider: paymentExternalId.provider,
+      paymentSessionId: paymentExternalId.paymentSessionId,
+      paymentId: paymentExternalId.paymentId,
+      createdAt: paymentExternalId.createdAt,
+      updatedAt: paymentExternalId.updatedAt,
+    };
+  }
+
+  async updatePaymentExternalIdBySessionId(
+    paymentSessionId: string,
+    paymentId: string,
+  ): Promise<OrderPaymentExternalId | null> {
+    const paymentExternalId =
+      await this.prisma.orderPaymentExternalIds.findUnique({
+        where: {
+          provider_paymentSessionId: {
+            provider: 'STRIPE',
+            paymentSessionId,
+          },
+        },
+      });
+
+    if (!paymentExternalId) {
+      return null;
+    }
+
+    const updated = await this.prisma.orderPaymentExternalIds.update({
+      where: {
+        id: paymentExternalId.id,
+      },
+      data: {
+        paymentId,
+      },
+    });
+
+    return {
+      id: updated.id,
+      orderId: updated.orderId,
+      provider: updated.provider,
+      paymentSessionId: updated.paymentSessionId,
+      paymentId: updated.paymentId,
+      createdAt: updated.createdAt,
+      updatedAt: updated.updatedAt,
+    };
+  }
+
   private mapToOrder(
     order: Prisma.OrdersGetPayload<{
       include: { orderItems: true };
@@ -102,6 +263,7 @@ export class OrderRepository implements IOrderRepository {
       address: order.address,
       totalPrice: order.totalPrice,
       orderStatus: order.orderStatus,
+      trackingNumber: order.trackingNumber,
       createdAt: order.createdAt,
       updatedAt: order.updatedAt,
       items: order.orderItems.map((item) => ({

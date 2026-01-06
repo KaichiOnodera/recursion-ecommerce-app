@@ -1,13 +1,15 @@
-import { Item, AdminItemDetail } from '../schemas/item';
+import { Item, ItemDetail, AdminItem, AdminItemDetail } from '../schemas/item';
 import { User } from '../schemas/user';
 import { CartItem } from '../schemas/cart';
+import { Review } from '../schemas/review';
+import { FavoriteItem } from '../schemas/favorite';
 
 export type GetRes = {
   '/items': {
     items: Item[];
   };
   '/admin/items': {
-    items: Item[];
+    items: AdminItem[];
   };
   '/items/search': {
     items: Item[];
@@ -19,7 +21,7 @@ export type GetRes = {
     user: User;
   };
   '/items/:id': {
-    item: Item;
+    item: ItemDetail;
   };
   '/cart': {
     items: CartItem[];
@@ -34,6 +36,7 @@ export type GetRes = {
       address: string;
       totalPrice: number;
       orderStatus: string;
+      trackingNumber: string | null;
       createdAt: string;
       updatedAt: string;
       items: Array<{
@@ -44,5 +47,58 @@ export type GetRes = {
         amount: number;
       }>;
     }>;
+  };
+  '/admin/orders': {
+    orders: Array<{
+      id: number;
+      userId: number | null;
+      lastName: string;
+      firstName: string;
+      email: string;
+      address: string;
+      totalPrice: number;
+      orderStatus: string;
+      trackingNumber: string | null;
+      createdAt: string;
+      updatedAt: string;
+      items: Array<{
+        id: number;
+        itemId: number | null;
+        itemName: string;
+        itemPrice: number;
+        amount: number;
+      }>;
+    }>;
+  };
+  '/admin/orders/shipping-needed': {
+    orders: Array<{
+      id: number;
+      userId: number | null;
+      lastName: string;
+      firstName: string;
+      email: string;
+      address: string;
+      totalPrice: number;
+      orderStatus: string;
+      trackingNumber: string | null;
+      createdAt: string;
+      updatedAt: string;
+      items: Array<{
+        id: number;
+        itemId: number | null;
+        itemName: string;
+        itemPrice: number;
+        amount: number;
+      }>;
+    }>;
+  };
+  '/reviews/items/:itemId': {
+    reviews: Review[];
+    total: number;
+    averageRating: number;
+  };
+  '/favorites': {
+    favorites: FavoriteItem[];
+    total: number;
   };
 };

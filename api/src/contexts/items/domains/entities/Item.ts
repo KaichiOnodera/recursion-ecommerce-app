@@ -5,6 +5,8 @@ export const DisplayStatus = {
 
 export type DisplayStatus = (typeof DisplayStatus)[keyof typeof DisplayStatus];
 
+import { ItemImage } from './ItemImage';
+
 export type Item = {
   readonly id: number;
   readonly name: string;
@@ -15,6 +17,8 @@ export type Item = {
   readonly inventory: {
     readonly amount: number;
   };
+  readonly images: ItemImage[];
   readonly createdAt: Date;
   readonly updatedAt: Date;
+  readonly isFavorite?: boolean | null;
 };
