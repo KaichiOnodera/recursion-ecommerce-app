@@ -1,32 +1,24 @@
 import express from 'express';
 import { prisma } from '../../libs/prisma';
-import { OrderConfirmationController } from './controllers/OrderConfirmationController';
-import { OrderConfirmationInteractor } from './interactors/OrderConfirmationInteractor';
 import { OrderCompletedController } from './controllers/OrderCompletedController';
 import { OrderCompletedInteractor } from './interactors/OrderCompletedInteractor';
-import { CartRepository } from '../cart/infrastructures/repositories/CartRepository';
-import { UserRepository } from '../auth/infrastructures/repositories/UserRepository';
+import { UserRepository } from '../users/infrastructures/repositories/UserRepository';
 import { OrderRepository } from 'src/contexts/orders/infrastructures/repositories/OrderRepository';
+import { EmailVerificationRepository } from '../auth/infrastructures/repositories/EmailVerificationRepository';
 import { EmailAdapter } from './infrastructures/adapters/EmailAdapter';
 import { verifyAdmin } from 'src/middlewares';
 import { VerifyTokenController } from './controllers/VerifyTokenController';
 import { VerifyTokenInteractor } from './interactors/VerifyTokenInteractor';
-import { CartRepository } from '../cart/infrastructures/repositories/CartRepository';
-import { UserRepository } from '../users/infrastructures/repositories/UserRepository';
-import { EmailAdapter } from './infrastructures/adapters/EmailAdapter';
 
 const mailRouter = express.Router();
 
-const cartRepository = new CartRepository(prisma);
 const userRepository = new UserRepository(prisma);
 const orderRepository = new OrderRepository(prisma);
-const emailAdapter = new EmailAdapter();
-
-const orderconfirmationInteractor = new OrderConfirmationInteractor(
-  emailAdapter,
-  cartRepository,
-  userRepository,
+const emailverificationtokenRepository = new EmailVerificationRepository(
+  prisma,
 );
+
+const emailAdapter = new EmailAdapter();
 
 const orderCompletedInteractor = new OrderCompletedInteractor(
   emailAdapter,
@@ -34,44 +26,21 @@ const orderCompletedInteractor = new OrderCompletedInteractor(
   userRepository,
 );
 
-const orderconfirmationController = new OrderConfirmationController(
-  orderconfirmationInteractor,
-);
-
 const orderCompletedController = new OrderCompletedController(
   orderCompletedInteractor,
 );
 
-mailRouter.post(
-  '/send-delivery-notification',
-  verifyAdmin,
-  orderconfirmationController.execute.bind(orderconfirmationController),
-);
-
-mailRouter.post(
-  '/send-order-completed/:orderId',
-  verifyAdmin,
-  orderCompletedController.execute.bind(orderCompletedController),
-const emailAdapter = new EmailAdapter();
-
 const verifyTokenInteractor = new VerifyTokenInteractor(
   emailAdapter,
   userRepository,
+  emailverificationtokenRepository,
 );
 const verifyTokenController = new VerifyTokenController(verifyTokenInteractor);
 
-const orderConfirmationInteractor = new OrderConfirmationInteractor(
-  emailAdapter,
-  cartRepository,
-  userRepository,
-);
-const orderConfirmationController = new OrderConfirmationController(
-  orderConfirmationInteractor,
-);
-
 mailRouter.post(
-  '/send-order-confirmation',
-  orderConfirmationController.execute.bind(orderConfirmationController),
+  '/order-completed',
+  verifyAdmin,
+  orderCompletedController.execute.bind(orderCompletedController),
 );
 
 mailRouter.post(

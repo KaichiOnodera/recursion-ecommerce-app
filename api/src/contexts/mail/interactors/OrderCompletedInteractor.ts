@@ -2,7 +2,7 @@ import { IOrderCompletedInteractor } from '../usecases/IOrderCompletedInteractor
 import { IOrderRepository } from 'src/contexts/orders/domains/repositories/IOrderRepository';
 import { IUserRepository } from '../../auth/domains/repositories/IUserRepository';
 import { IEmailAdapter } from '../domains/adapters/IEmailAdapter';
-import { ORDER_COMPLETED_TEMPLATE } from '../interactors/templates/OrderCompletedTemplate';
+import { ORDER_COMPLETED_TEMPLATE } from './templates/OrderCompletedTemplateTemplate';
 
 export class OrderCompletedInteractor implements IOrderCompletedInteractor {
   constructor(
