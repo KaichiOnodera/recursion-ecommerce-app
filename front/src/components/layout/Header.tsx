@@ -50,6 +50,19 @@ const Header = React.forwardRef<HTMLElement, HeaderProps>(
       return true;
     });
 
+    // 共通スタイル定義
+    const navLinkBaseStyles =
+      'relative inline-block text-gray-700 hover:text-gray-900 transition-all duration-200 whitespace-nowrap';
+    const navLinkHoverStyles =
+      'hover:[text-shadow:0.15px_0_0_currentColor,0_0.15px_0_currentColor,-0.15px_0_0_currentColor,0_-0.15px_0_currentColor]';
+    const navLinkUnderlineStyles =
+      'after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-gray-900 after:transition-all after:duration-300 hover:after:w-full';
+    const navLinkClassName = `${navLinkBaseStyles} ${navLinkHoverStyles} ${navLinkUnderlineStyles}`;
+
+    const iconBaseStyles =
+      'p-2 text-gray-700 hover:text-gray-900 transition-colors duration-200 hover:scale-110 active:scale-95';
+    const iconClassName = 'w-5 h-5 transition-transform duration-200';
+
     return (
       <header ref={ref} className="bg-white">
         <div className="container mx-auto px-4 py-4">
@@ -81,18 +94,34 @@ const Header = React.forwardRef<HTMLElement, HeaderProps>(
             </form>
 
             {/* ナビゲーション */}
-            <nav className="flex items-center space-x-6">
-              {filteredNavigationItems.map((item) => (
-                <Link
-                  key={item.href}
-                  to={item.href}
-                  className="text-gray-700 hover:text-gray-900"
-                >
-                  {item.label}
-                </Link>
+            <nav className="flex items-center">
+              {filteredNavigationItems.map((item, index) => (
+                <React.Fragment key={item.href}>
+                  {index > 0 && (
+                    <span
+                      className="h-4 w-px bg-gray-300 mx-3"
+                      aria-hidden="true"
+                    />
+                  )}
+                  <Link to={item.href} className={navLinkClassName}>
+                    {item.label}
+                  </Link>
+                </React.Fragment>
               ))}
               {/* ログイン状態の場合のみログアウトボタンを表示 */}
-              {loggedIn && <LogoutButton className="text-gray-500" />}
+              {loggedIn && (
+                <>
+                  {filteredNavigationItems.length > 0 && (
+                    <span
+                      className="h-4 w-px bg-gray-300 mx-3"
+                      aria-hidden="true"
+                    />
+                  )}
+                  <LogoutButton
+                    className={`${navLinkClassName} cursor-pointer`}
+                  />
+                </>
+              )}
             </nav>
 
             {/* アイコン */}
@@ -101,25 +130,19 @@ const Header = React.forwardRef<HTMLElement, HeaderProps>(
               {loggedIn && (
                 <button
                   onClick={() => navigate('/favorites')}
-                  className="p-2 text-gray-700 hover:text-gray-900"
+                  className={iconBaseStyles}
                   aria-label="お気に入り"
                 >
-                  <HeartIcon className="w-5 h-5" />
+                  <HeartIcon className={iconClassName} />
                 </button>
               )}
               {/* ユーザーアイコン */}
-              <Link
-                to="/mypage"
-                className="p-2 text-gray-700 hover:text-gray-900"
-              >
-                <UserIcon className="w-5 h-5" />
+              <Link to="/mypage" className={iconBaseStyles}>
+                <UserIcon className={iconClassName} />
               </Link>
               {/* カートアイコン */}
-              <Link
-                to="/cart"
-                className="relative p-2 text-gray-700 hover:text-gray-900"
-              >
-                <ShoppingCartIcon className="w-5 h-5" />
+              <Link to="/cart" className={`relative ${iconBaseStyles}`}>
+                <ShoppingCartIcon className={iconClassName} />
                 {totalQuantity > 0 && (
                   <span className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                     {totalQuantity}
