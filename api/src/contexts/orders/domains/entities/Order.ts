@@ -7,6 +7,7 @@ export type Order = {
   readonly address: string;
   readonly totalPrice: number;
   readonly orderStatus: string;
+  readonly trackingNumber: string | null;
   readonly createdAt: Date;
   readonly updatedAt: Date;
   readonly items: Array<{

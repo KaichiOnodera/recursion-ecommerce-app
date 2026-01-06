@@ -1,3 +1,4 @@
+import Stripe from 'stripe';
 import {
   CheckoutSession,
   CheckoutSessionMode,
@@ -21,6 +22,17 @@ export interface IStripeAdapter {
     successUrl: string;
     cancelUrl: string;
     customerEmail?: string;
+    requireEmail?: boolean;
+    requireShippingAddress?: boolean;
     metadata?: Record<string, string>;
   }): Promise<CheckoutSession>;
+
+  // Webhook署名を検証
+  verifyWebhookSignature(
+    payload: string | Buffer,
+    signature: string,
+  ): Promise<Stripe.Event>;
+
+  // Checkout Sessionを取得
+  retrieveCheckoutSession(sessionId: string): Promise<Stripe.Checkout.Session>;
 }

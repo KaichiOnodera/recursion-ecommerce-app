@@ -1,13 +1,3 @@
-export type Item = {
-  id: number;
-  name: string;
-  description: string;
-  type: number;
-  price: number;
-  createdAt: Date;
-  updatedAt: Date;
-};
-
 export const SearchSortType = {
   newest: 'newest',
   price_asc: 'price_asc',
@@ -32,6 +22,17 @@ export const InventoryStatus = {
 export type InventoryStatus =
   (typeof InventoryStatus)[keyof typeof InventoryStatus];
 
+export type Item = {
+  id: number;
+  name: string;
+  description: string;
+  type: number;
+  price: number;
+  inventoryStatus: InventoryStatus;
+  images: ItemImage[];
+  isFavorite: boolean | null;
+};
+
 export type ItemDetail = {
   id: number;
   name: string;
@@ -39,6 +40,8 @@ export type ItemDetail = {
   type: number;
   price: number;
   inventoryStatus: InventoryStatus;
+  images: ItemImage[];
+  isFavorite: boolean | null;
 };
 
 export const DisplayStatus = {
@@ -47,6 +50,19 @@ export const DisplayStatus = {
 } as const;
 
 export type DisplayStatus = (typeof DisplayStatus)[keyof typeof DisplayStatus];
+
+export type AdminItem = {
+  id: number;
+  name: string;
+  description: string;
+  type: number;
+  price: number;
+  inventoryStatus: InventoryStatus;
+  displayStatus: DisplayStatus;
+  images: ItemImage[];
+  createdAt: Date;
+  updatedAt: Date;
+};
 
 export type AdminItemDetail = {
   id: number;
@@ -57,6 +73,16 @@ export type AdminItemDetail = {
   inventoryStatus: InventoryStatus;
   inventoryAmount: number;
   displayStatus: DisplayStatus;
+  images: ItemImage[];
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type ItemImage = {
+  id: number;
+  itemId: number;
+  src: string;
+  order: number;
   createdAt: Date;
   updatedAt: Date;
 };

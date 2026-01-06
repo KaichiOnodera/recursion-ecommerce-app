@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router';
-import { Item } from '@shared/schemas/item';
+import { AdminItemDetail } from '@shared/schemas/item';
 import { getAdminItem } from '../../services/api/items';
 
 export const AdminProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const [item, setItem] = useState<Item | null>(null);
+  const [item, setItem] = useState<AdminItemDetail | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {

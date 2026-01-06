@@ -1,7 +1,12 @@
 import express from 'express';
 import { GetRes } from '@shared/types/gets';
 import { ISearchItemsInteractor } from '../usecases/ISearchItemsInteractor';
-import { SearchItemsParams, SearchSortType } from '@shared/schemas/item';
+import {
+  SearchItemsParams,
+  SearchSortType,
+  InventoryStatus,
+} from '@shared/schemas/item';
+import { AuthenticatedRequest } from '../../../middlewares';
 
 type SearchParamsResult =
   | { success: true; params: SearchItemsParams }
@@ -11,7 +16,7 @@ export class SearchItemsController {
   constructor(private readonly searchItemsInteractor: ISearchItemsInteractor) {}
 
   async execute(
-    req: express.Request,
+    req: AuthenticatedRequest<Record<string, never>>,
     res: express.Response<GetRes['/items/search'] | { message: string }>,
   ) {
     const result = this.buildSearchParams(req.query);
@@ -20,7 +25,11 @@ export class SearchItemsController {
       return res.status(400).json({ message: result.error });
     }
 
-    const items = await this.searchItemsInteractor.execute(result.params);
+    const userId = req.user?.userId;
+    const items = await this.searchItemsInteractor.execute(
+      result.params,
+      userId,
+    );
 
     const responseItems = items.map((item) => ({
       id: item.id,
@@ -28,8 +37,12 @@ export class SearchItemsController {
       description: item.description,
       type: item.type,
       price: item.price,
-      createdAt: item.createdAt,
-      updatedAt: item.updatedAt,
+      inventoryStatus:
+        item.inventory.amount > 0
+          ? InventoryStatus.IN_STOCK
+          : InventoryStatus.OUT_OF_STOCK,
+      images: item.images,
+      isFavorite: item.isFavorite ?? null,
     }));
 
     res.status(200).json({ items: responseItems });

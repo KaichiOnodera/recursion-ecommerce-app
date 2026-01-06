@@ -17,9 +17,14 @@ export class UpdateCartInteractor implements IUpdateCartInteractor {
     items: Array<{ id: number; amount: number }>,
   ): Promise<Cart> {
     // 在庫チェック（amount > 0の場合のみ）
+    // カート更新処理ではお気に入り情報は不要
     for (const item of items) {
       if (item.amount > 0) {
-        const product = await this.itemRepository.findById(item.id);
+        const product = await this.itemRepository.findById(
+          item.id,
+          undefined,
+          undefined,
+        );
         if (!product) {
           throw new Error(`Item with id ${item.id} not found`);
         }

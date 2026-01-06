@@ -1,6 +1,8 @@
 import { User } from '../schemas/user';
-import { Item } from '../schemas/item';
+import { AdminItem } from '../schemas/item';
 import { CartItem } from '../schemas/cart';
+import { Review } from '../schemas/review';
+import { Favorite } from '../schemas/favorite';
 
 export type PostReq = {
   '/auth/login': {
@@ -12,8 +14,9 @@ export type PostReq = {
     description: string;
     type: number;
     price: number;
+    displayStatus?: 'public' | 'private';
   };
-  '/users/signup': {
+  '/auth/signup': {
     lastName: string;
     firstName: string;
     email: string;
@@ -25,6 +28,15 @@ export type PostReq = {
       amount: number;
     }[];
   };
+  '/reviews': {
+    itemId: number;
+    title?: string;
+    body: string;
+    rating: number;
+  };
+  '/favorites': {
+    itemId: number;
+  };
 };
 
 export type PostRes = {
@@ -32,9 +44,9 @@ export type PostRes = {
     user: User;
   };
   '/admin/items': {
-    item: Item;
+    item: AdminItem;
   };
-  '/users/signup': {
+  '/auth/signup': {
     createdUser: User;
   };
   '/cart': {
@@ -43,5 +55,11 @@ export type PostRes = {
   '/checkout/session': {
     sessionId: string;
     url: string;
+  };
+  '/reviews': {
+    review: Review;
+  };
+  '/favorites': {
+    favorite: Favorite;
   };
 };

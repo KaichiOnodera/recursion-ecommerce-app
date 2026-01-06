@@ -25,6 +25,7 @@ export class GetOrdersController {
       address: order.address,
       totalPrice: order.totalPrice,
       orderStatus: order.orderStatus,
+      trackingNumber: order.trackingNumber,
       createdAt: order.createdAt.toISOString(),
       updatedAt: order.updatedAt.toISOString(),
       items: order.items.map((item) => ({
