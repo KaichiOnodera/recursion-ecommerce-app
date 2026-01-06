@@ -34,14 +34,21 @@ describe('SignupController', () => {
         })
         .expect(201);
 
-      expect(response.body).toHaveProperty('createdUser');
-      expect(response.body.createdUser).toHaveProperty('id');
-      expect(response.body.createdUser).toHaveProperty('lastName', '山田');
-      expect(response.body.createdUser).toHaveProperty('firstName', '太郎');
-      expect(response.body.createdUser).toHaveProperty('email', email);
-      expect(response.body.createdUser).toHaveProperty('password');
-      expect(response.body.createdUser).toHaveProperty('role', 'USER');
-      expect(response.body.createdUser).toHaveProperty('isResigned', false);
+      expect(response.body).toHaveProperty('user');
+      expect(response.body.user).toHaveProperty('id');
+      expect(response.body.user).toHaveProperty('lastName', '山田');
+      expect(response.body.user).toHaveProperty('firstName', '太郎');
+      expect(response.body.user).toHaveProperty('email', email);
+      expect(response.body.user).toHaveProperty('role', 'USER');
+      expect(response.body.user).not.toHaveProperty('password'); // パスワードはレスポンスに含めない
+      expect(response.body.user).not.toHaveProperty('isResigned'); // isResignedはレスポンスに含めない
+
+      // JWTトークンがクッキーに設定されていることを確認
+      expect(response.headers['set-cookie']).toBeDefined();
+      const cookies = response.headers['set-cookie'];
+      expect(cookies).toEqual(
+        expect.arrayContaining([expect.stringContaining('token=')]),
+      );
 
       // データベースに保存されていることを確認
       const createdUser = await prismaTest.users.findUnique({
