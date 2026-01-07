@@ -12,7 +12,7 @@ export class LocalDigitalItemStorageAdapter
   }
 
   /**
-   * zipをローカルに保存して「filePath（storageKey）」を返す
+   * zipをローカルに保存して「filePath」を返す
    * 例: digital/items/42/product.zip
    */
   async save(file: Buffer, filename: string, itemId: number): Promise<string> {
@@ -22,16 +22,16 @@ export class LocalDigitalItemStorageAdapter
       throw new Error('Digital item must be a zip file');
     }
 
-    // ② DBに保存する filePath（storageKey）を作る（uploadDirを含めない）
+    // DBに保存する filePath（storageKey）を作る（uploadDirを含めない）
     const filePath = path.join('digital', 'items', itemId.toString(), filename);
 
-    // ③ 実際の保存先（絶対パス）
+    // 実際の保存先（絶対パス）
     const fullPath = path.join(this.uploadDir, filePath);
 
-    // ④ ディレクトリ作成
+    //  ディレクトリ作成
     await fs.mkdir(path.dirname(fullPath), { recursive: true });
 
-    // ⑤ 書き込み
+    //  書き込み
     await fs.writeFile(fullPath, file);
 
     return filePath;
@@ -42,7 +42,6 @@ export class LocalDigitalItemStorageAdapter
    * filePath は save() で返した値をそのまま渡す想定
    */
   async delete(filePath: string, itemId: number): Promise<void> {
-    // 安全のため itemId と filePath が一致してるか軽く検証（任意）
     const normalized = filePath.replace(/\\/g, '/');
     if (!normalized.startsWith(`digital/items/${itemId}/`)) {
       throw new Error('Invalid filePath for the itemId');
