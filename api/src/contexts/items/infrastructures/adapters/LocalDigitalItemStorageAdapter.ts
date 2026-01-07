@@ -16,7 +16,7 @@ export class LocalDigitalItemStorageAdapter
    * 例: digital/items/42/product.zip
    */
   async save(file: Buffer, filename: string, itemId: number): Promise<string> {
-    // ① 拡張子チェック（zipのみ許可）
+    // 拡張子チェック（zipのみ許可）
     const ext = path.extname(filename).toLowerCase();
     if (ext !== '.zip') {
       throw new Error('Digital item must be a zip file');
