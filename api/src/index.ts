@@ -103,17 +103,22 @@ app.get('/', async (_req: Request, res: Response) => {
   res.send('Hello World!');
 });
 
-app.use('/auth', authRouter);
-app.use('/items', itemsRouter);
-app.use('/admin/items', adminItemsRouter);
+// ALBが /api/* をルーティングするため、/api プレフィックスを追加
+// ローカル開発環境では /api プレフィックスなしでも動作するように、
+// 環境変数で制御可能にする
+const apiPrefix = process.env.API_PREFIX ?? '/api';
 
-app.use('/users', usersRouter);
-app.use('/cart', cartRouter);
-app.use('/checkout', checkoutRouter);
-app.use('/orders', ordersRouter);
-app.use('/admin/orders', adminOrdersRouter);
-app.use('/reviews', reviewsRouter);
-app.use('/favorites', favoritesRouter);
+app.use(`${apiPrefix}/auth`, authRouter);
+app.use(`${apiPrefix}/items`, itemsRouter);
+app.use(`${apiPrefix}/admin/items`, adminItemsRouter);
+
+app.use(`${apiPrefix}/users`, usersRouter);
+app.use(`${apiPrefix}/cart`, cartRouter);
+app.use(`${apiPrefix}/checkout`, checkoutRouter);
+app.use(`${apiPrefix}/orders`, ordersRouter);
+app.use(`${apiPrefix}/admin/orders`, adminOrdersRouter);
+app.use(`${apiPrefix}/reviews`, reviewsRouter);
+app.use(`${apiPrefix}/favorites`, favoritesRouter);
 
 app.listen(8000, '0.0.0.0', () => {
   // eslint-disable-next-line no-console

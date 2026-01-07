@@ -18,6 +18,7 @@ export class GetMeInteractor implements IGetMeInteractor {
       firstName: user.firstName,
       email: user.email,
       password: user.password,
+      emailVerified: user.emailVerified,
       role: user.role,
       isResigned: user.isResigned,
       createdAt: user.createdAt,
