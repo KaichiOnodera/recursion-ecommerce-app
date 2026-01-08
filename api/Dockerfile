@@ -28,7 +28,13 @@ WORKDIR /app/api
 
 # APIのソースコードをコピー（現在のディレクトリに直接）
 COPY api/ ./
-RUN npx prisma generate
+
+# Prismaクライアントを生成（ビルド前に実行）
+WORKDIR /app
+RUN cd api && npx prisma generate
+
+# APIディレクトリに戻ってビルド
+WORKDIR /app/api
 RUN npm run build
 
 # 本番ステージ
