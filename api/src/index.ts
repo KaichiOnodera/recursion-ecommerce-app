@@ -107,6 +107,11 @@ app.get(`${apiPrefix}/`, async (_req: Request, res: Response) => {
   res.send('Hello World!');
 });
 
+// ALBが /api/* をルーティングするため、/api プレフィックスを追加
+// ローカル開発環境では /api プレフィックスなしでも動作するように、
+// 環境変数で制御可能にする
+const apiPrefix = process.env.API_PREFIX ?? '/api';
+
 app.use(`${apiPrefix}/auth`, authRouter);
 app.use(`${apiPrefix}/items`, itemsRouter);
 app.use(`${apiPrefix}/admin/items`, adminItemsRouter);
