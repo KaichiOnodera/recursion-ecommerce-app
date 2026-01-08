@@ -90,8 +90,12 @@ const stripeWebhookController = new StripeWebhookController(
   stripeAdapter,
 );
 
+// APIプレフィックスを環境変数から取得（デフォルトは空文字列 = ローカル環境用）
+// ステージング/本番環境では ALB が /api/* をルーティングするため、/api プレフィックスが必要
+const apiPrefix = process.env.API_PREFIX ?? '';
+
 app.post(
-  '/webhooks/stripe',
+  `${apiPrefix}/webhooks/stripe`,
   express.raw({ type: 'application/json' }),
   stripeWebhookController.execute.bind(stripeWebhookController),
 );
@@ -99,21 +103,21 @@ app.post(
 // その他のエンドポイントには express.json() を適用
 app.use(express.json());
 
-app.get('/', async (_req: Request, res: Response) => {
+app.get(`${apiPrefix}/`, async (_req: Request, res: Response) => {
   res.send('Hello World!');
 });
 
-app.use('/auth', authRouter);
-app.use('/items', itemsRouter);
-app.use('/admin/items', adminItemsRouter);
+app.use(`${apiPrefix}/auth`, authRouter);
+app.use(`${apiPrefix}/items`, itemsRouter);
+app.use(`${apiPrefix}/admin/items`, adminItemsRouter);
 
-app.use('/users', usersRouter);
-app.use('/cart', cartRouter);
-app.use('/checkout', checkoutRouter);
-app.use('/orders', ordersRouter);
-app.use('/admin/orders', adminOrdersRouter);
-app.use('/reviews', reviewsRouter);
-app.use('/favorites', favoritesRouter);
+app.use(`${apiPrefix}/users`, usersRouter);
+app.use(`${apiPrefix}/cart`, cartRouter);
+app.use(`${apiPrefix}/checkout`, checkoutRouter);
+app.use(`${apiPrefix}/orders`, ordersRouter);
+app.use(`${apiPrefix}/admin/orders`, adminOrdersRouter);
+app.use(`${apiPrefix}/reviews`, reviewsRouter);
+app.use(`${apiPrefix}/favorites`, favoritesRouter);
 
 app.listen(8000, '0.0.0.0', () => {
   // eslint-disable-next-line no-console
