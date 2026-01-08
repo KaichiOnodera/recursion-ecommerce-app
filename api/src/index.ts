@@ -90,8 +90,12 @@ const stripeWebhookController = new StripeWebhookController(
   stripeAdapter,
 );
 
+// APIプレフィックスを環境変数から取得（デフォルトは空文字列 = ローカル環境用）
+// ステージング/本番環境では ALB が /api/* をルーティングするため、/api プレフィックスが必要
+const apiPrefix = process.env.API_PREFIX ?? '';
+
 app.post(
-  '/webhooks/stripe',
+  `${apiPrefix}/webhooks/stripe`,
   express.raw({ type: 'application/json' }),
   stripeWebhookController.execute.bind(stripeWebhookController),
 );
@@ -99,14 +103,9 @@ app.post(
 // その他のエンドポイントには express.json() を適用
 app.use(express.json());
 
-app.get('/', async (_req: Request, res: Response) => {
+app.get(`${apiPrefix}/`, async (_req: Request, res: Response) => {
   res.send('Hello World!');
 });
-
-// ALBが /api/* をルーティングするため、/api プレフィックスを追加
-// ローカル開発環境では /api プレフィックスなしでも動作するように、
-// 環境変数で制御可能にする
-const apiPrefix = process.env.API_PREFIX ?? '/api';
 
 app.use(`${apiPrefix}/auth`, authRouter);
 app.use(`${apiPrefix}/items`, itemsRouter);
