@@ -172,12 +172,12 @@ model OrderItems {
 model OrderItemFiles{
     id      Int @id @default(autoincrement())
     orderId Int 
-    itemId  Int?
+    itemId  Int
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt()
 
     order Orders @relation(fields: [orderId], references: [id], onDelete: Cascade)
-    item  Items? @relation(fields: [itemId], references: [id], onDelete: SetNull)
+    item  Items @relation(fields: [itemId], references: [id], onDelete: Cascade)
 
     @@unique([orderId,itemId])
 
