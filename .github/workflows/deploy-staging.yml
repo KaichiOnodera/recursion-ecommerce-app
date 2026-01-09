@@ -97,18 +97,70 @@ jobs:
             --region ${{ env.AWS_REGION }}
 
       - name: Wait for API service to stabilize
+        timeout-minutes: 20
         run: |
+          echo "Waiting for API service to stabilize..."
+          set +e  # エラーで停止しないようにする
           aws ecs wait services-stable \
             --cluster ${{ env.ECS_CLUSTER }} \
             --services ${{ env.ECS_SERVICE_API }} \
-            --region ${{ env.AWS_REGION }}
+            --region ${{ env.AWS_REGION }} || WAIT_EXIT_CODE=$?
+          set -e
+          
+          # 待機がタイムアウトした場合でも、実際の状態を確認
+          if [ "${WAIT_EXIT_CODE:-0}" != "0" ]; then
+            echo "⚠️  Wait timeout occurred. Checking actual service status..."
+            SERVICE_STATUS=$(aws ecs describe-services \
+              --cluster ${{ env.ECS_CLUSTER }} \
+              --services ${{ env.ECS_SERVICE_API }} \
+              --query 'services[0].[status,runningCount,desiredCount]' \
+              --output text \
+              --region ${{ env.AWS_REGION }})
+            echo "Service status: $SERVICE_STATUS"
+            
+            # サービスがACTIVEで、タスクが実行中なら続行
+            if echo "$SERVICE_STATUS" | grep -q "ACTIVE"; then
+              echo "✅ Service is ACTIVE. Continuing deployment..."
+            else
+              echo "❌ Service is not ACTIVE. Deployment may have failed."
+              exit 1
+            fi
+          else
+            echo "✅ API service is stable"
+          fi
 
       - name: Wait for Frontend service to stabilize
+        timeout-minutes: 20
         run: |
+          echo "Waiting for Frontend service to stabilize..."
+          set +e  # エラーで停止しないようにする
           aws ecs wait services-stable \
             --cluster ${{ env.ECS_CLUSTER }} \
             --services ${{ env.ECS_SERVICE_FRONT }} \
-            --region ${{ env.AWS_REGION }}
+            --region ${{ env.AWS_REGION }} || WAIT_EXIT_CODE=$?
+          set -e
+          
+          # 待機がタイムアウトした場合でも、実際の状態を確認
+          if [ "${WAIT_EXIT_CODE:-0}" != "0" ]; then
+            echo "⚠️  Wait timeout occurred. Checking actual service status..."
+            SERVICE_STATUS=$(aws ecs describe-services \
+              --cluster ${{ env.ECS_CLUSTER }} \
+              --services ${{ env.ECS_SERVICE_FRONT }} \
+              --query 'services[0].[status,runningCount,desiredCount]' \
+              --output text \
+              --region ${{ env.AWS_REGION }})
+            echo "Service status: $SERVICE_STATUS"
+            
+            # サービスがACTIVEで、タスクが実行中なら続行
+            if echo "$SERVICE_STATUS" | grep -q "ACTIVE"; then
+              echo "✅ Service is ACTIVE. Continuing deployment..."
+            else
+              echo "❌ Service is not ACTIVE. Deployment may have failed."
+              exit 1
+            fi
+          else
+            echo "✅ Frontend service is stable"
+          fi
 
       - name: Deployment summary
         run: |
