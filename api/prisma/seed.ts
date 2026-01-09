@@ -73,6 +73,45 @@ export async function seedTestData(prismaClient?: PrismaClient) {
     },
   });
 
+  // 追加のテスト用管理者アカウント
+  const testAdmin2 = await client.users.upsert({
+    where: { email: 'test-admin2@example.com' },
+    update: {
+      password: hashedPassword,
+      lastName: 'テスト',
+      firstName: '管理者2',
+      role: UserRole.ADMIN,
+      isResigned: false,
+    },
+    create: {
+      email: 'test-admin2@example.com',
+      password: hashedPassword,
+      lastName: 'テスト',
+      firstName: '管理者2',
+      role: UserRole.ADMIN,
+      isResigned: false,
+    },
+  });
+
+  const testAdmin3 = await client.users.upsert({
+    where: { email: 'test-admin3@example.com' },
+    update: {
+      password: hashedPassword,
+      lastName: 'テスト',
+      firstName: '管理者3',
+      role: UserRole.ADMIN,
+      isResigned: false,
+    },
+    create: {
+      email: 'test-admin3@example.com',
+      password: hashedPassword,
+      lastName: 'テスト',
+      firstName: '管理者3',
+      role: UserRole.ADMIN,
+      isResigned: false,
+    },
+  });
+
   // Items 
   const itemData = [
     { name: 'リュックサック', description: '軽量で丈夫なナイロン製リュックサック。長時間のハイキングにも最適です。', price: 12000 },
@@ -241,7 +280,7 @@ export async function seedTestData(prismaClient?: PrismaClient) {
     orders.push(order);
   }
 
-  return { testUser, testAdmin, items, orders };
+  return { testUser, testAdmin, testAdmin2, testAdmin3, items, orders };
 }
 
 async function main() {
@@ -253,6 +292,8 @@ async function main() {
   console.log(`Created ${result.orders.length} orders`);
   console.log(`Created test user: ${result.testUser.email}`);
   console.log(`Created test admin: ${result.testAdmin.email}`);
+  console.log(`Created test admin 2: ${result.testAdmin2.email}`);
+  console.log(`Created test admin 3: ${result.testAdmin3.email}`);
 }
 
 // 直接実行された場合のみmain()を実行
