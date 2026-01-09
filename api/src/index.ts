@@ -54,11 +54,14 @@ app.use(
 
 app.use(cookieParser());
 
-// 静的ファイル配信: 画像ファイルを /images/items パスで配信
-app.use(
-  '/images/items',
-  express.static(path.join(process.cwd(), 'uploads', 'items')),
-);
+// 静的ファイル配信: 画像ファイルを /images/items パスで配信（ローカル環境のみ）
+const storageType = process.env.STORAGE_TYPE ?? 'local';
+if (storageType === 'local') {
+  app.use(
+    '/images/items',
+    express.static(path.join(process.cwd(), 'uploads', 'items')),
+  );
+}
 
 // Webhookエンドポイントは express.json() の適用前に配置する必要がある
 // Stripeの署名検証には生のリクエストボディが必要

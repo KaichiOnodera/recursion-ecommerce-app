@@ -16,7 +16,6 @@ export function createImageStorageAdapter(): IImageStorageAdapter {
     const bucketName = process.env.AWS_S3_BUCKET_NAME;
     const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
     const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
-    const cloudFrontDomain = process.env.AWS_CLOUDFRONT_DOMAIN;
 
     if (!region || !bucketName || !accessKeyId || !secretAccessKey) {
       throw new Error(
@@ -24,15 +23,22 @@ export function createImageStorageAdapter(): IImageStorageAdapter {
       );
     }
 
+    // eslint-disable-next-line no-console
+    console.log('Using S3ImageStorageAdapter:', {
+      region,
+      bucketName,
+    });
+
     return new S3ImageStorageAdapter(
       region,
       bucketName,
       accessKeyId,
       secretAccessKey,
-      cloudFrontDomain,
     );
   }
 
   const uploadDir = path.join(process.cwd(), 'uploads', 'items');
+  // eslint-disable-next-line no-console
+  console.log('Using LocalImageStorageAdapter:', { uploadDir });
   return new LocalImageStorageAdapter(uploadDir);
 }

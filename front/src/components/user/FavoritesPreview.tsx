@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { getFavorites } from '../../services/api/favorites';
 import { FavoriteItem } from '@shared/schemas/favorite';
-import { API_BASE_URL } from '../../services/api/config';
+import { getImageUrl } from '../../utils/imageUrl';
 
 const FAVORITES_PREVIEW_LIMIT = 3;
 
@@ -52,9 +52,7 @@ export const FavoritesPreview: React.FC = () => {
       <div className="grid grid-cols-3 gap-4 mb-4">
         {previewFavorites.map((favorite) => {
           const firstImage = favorite.item.images[0];
-          const imageUrl = firstImage
-            ? `${API_BASE_URL}${firstImage.src}`
-            : null;
+          const imageUrl = firstImage ? getImageUrl(firstImage.src) : null;
 
           return (
             <div
