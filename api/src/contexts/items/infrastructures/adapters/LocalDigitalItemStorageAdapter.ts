@@ -12,7 +12,7 @@ export class LocalDigitalItemStorageAdapter
   }
 
   /**
-   * zipをローカルに保存して「filePath」を返す
+   * zipをローカルに保存して「filePath（storageKey）」を返す
    * 例: digital/items/42/product.zip
    */
   async save(file: Buffer, filename: string, itemId: number): Promise<string> {
@@ -28,10 +28,10 @@ export class LocalDigitalItemStorageAdapter
     // 実際の保存先（絶対パス）
     const fullPath = path.join(this.uploadDir, filePath);
 
-    //  ディレクトリ作成
+    // ディレクトリ作成
     await fs.mkdir(path.dirname(fullPath), { recursive: true });
 
-    //  書き込み
+    // 書き込み
     await fs.writeFile(fullPath, file);
 
     return filePath;
