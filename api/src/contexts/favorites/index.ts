@@ -8,16 +8,14 @@ import { GetFavoritesInteractor } from './interactors/GetFavoritesInteractor';
 import { FavoriteRepository } from './infrastructures/repositories/FavoriteRepository';
 import { ItemRepository } from '../items/infrastructures/repositories/ItemRepository';
 import { ItemImageRepository } from '../items/infrastructures/repositories/ItemImageRepository';
-import { LocalImageStorageAdapter } from '../items/infrastructures/adapters/LocalImageStorageAdapter';
+import { createImageStorageAdapter } from '../items/infrastructures/adapters/createImageStorageAdapter';
 import { prisma } from '../../libs/prisma';
 import { verifyAccessToken } from '../../middlewares';
-import * as path from 'path';
 
 const favoritesRouter = express.Router();
 
 const itemImageRepository = new ItemImageRepository(prisma);
-const uploadDir = path.join(process.cwd(), 'uploads', 'items');
-const imageStorageAdapter = new LocalImageStorageAdapter(uploadDir);
+const imageStorageAdapter = createImageStorageAdapter();
 const favoriteRepository = new FavoriteRepository(
   prisma,
   itemImageRepository,
