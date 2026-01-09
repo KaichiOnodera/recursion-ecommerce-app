@@ -1,30 +1,20 @@
-name: Deploy to Staging
+name: Deploy to Production
 
 on:
-  push:
-    branches:
-      - staging
-    paths:
-      - "api/**"
-      - "front/**"
-      - "shared/**"
-      - "api/Dockerfile"
-      - "front/Dockerfile"
-      - ".github/workflows/deploy-staging.yml"
-  workflow_dispatch: # 手動実行を有効化
+  workflow_dispatch: # 手動実行のみ
 
 env:
   AWS_REGION: ap-northeast-1
   ECR_REGISTRY: 547361935989.dkr.ecr.ap-northeast-1.amazonaws.com
-  ECR_REPOSITORY_API: ecommerce-stg-api
-  ECR_REPOSITORY_FRONT: ecommerce-stg-front
-  ECS_CLUSTER: ecommerce-stg-cluster
-  ECS_SERVICE_API: ecommerce-stg-api-service
-  ECS_SERVICE_FRONT: ecommerce-stg-front-service
+  ECR_REPOSITORY_API: ecommerce-prd-api
+  ECR_REPOSITORY_FRONT: ecommerce-prd-front
+  ECS_CLUSTER: ecommerce-prd-cluster
+  ECS_SERVICE_API: ecommerce-prd-api-service
+  ECS_SERVICE_FRONT: ecommerce-prd-front-service
 
 jobs:
   build-and-deploy:
-    name: Build and Deploy to Staging
+    name: Build and Deploy to Production
     runs-on: ubuntu-latest
 
     steps:
@@ -164,9 +154,8 @@ jobs:
 
       - name: Deployment summary
         run: |
-          echo "✅ Deployment completed successfully!"
+          echo "✅ Production deployment completed successfully!"
           echo "API Image: ${{ steps.build-api.outputs.image }}"
           echo "Frontend Image: ${{ steps.build-front.outputs.image }}"
           echo "Cluster: ${{ env.ECS_CLUSTER }}"
           echo "Services updated: ${{ env.ECS_SERVICE_API }}, ${{ env.ECS_SERVICE_FRONT }}"
-
