@@ -12,7 +12,7 @@ import { ErrorState } from '../components/product/ErrorState';
 import { QuantitySelector } from '../components/product/QuantitySelector';
 import { ActionButtons } from '../components/product/ActionButtons';
 import { ReviewSection } from '../components/product/ReviewSection';
-import { API_BASE_URL } from '../services/api/config';
+import { getImageUrl } from '../utils/imageUrl';
 
 const MIN_QUANTITY = 1;
 
@@ -175,9 +175,7 @@ export const ProductDetail: React.FC = () => {
 
   const images = useMemo(() => state.item?.images || [], [state.item?.images]);
   const currentImage = images[selectedImageIndex] || null;
-  const currentImageUrl = currentImage
-    ? `${API_BASE_URL}${currentImage.src}`
-    : null;
+  const currentImageUrl = currentImage ? getImageUrl(currentImage.src) : null;
 
   const handleImageSelect = useCallback((index: number): void => {
     setSelectedImageIndex(index);
@@ -247,7 +245,7 @@ export const ProductDetail: React.FC = () => {
                     }`}
                   >
                     <img
-                      src={`${API_BASE_URL}${image.src}`}
+                      src={getImageUrl(image.src) || ''}
                       alt={`${state.item?.name || '商品'} ${index + 1}`}
                       className="w-full h-full object-cover"
                     />

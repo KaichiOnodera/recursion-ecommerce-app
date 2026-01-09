@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { FavoriteItem } from '@shared/schemas/favorite';
 import { removeFavorite } from '../../services/api/favorites';
-import { API_BASE_URL } from '../../services/api/config';
+import { getImageUrl } from '../../utils/imageUrl';
 import { TrashIcon } from '@heroicons/react/24/outline';
 
 interface FavoriteItemCardProps {
@@ -45,7 +45,7 @@ export const FavoriteItemCard: React.FC<FavoriteItemCardProps> = ({
   };
 
   const firstImage = favorite.item.images[0];
-  const imageUrl = firstImage ? `${API_BASE_URL}${firstImage.src}` : null;
+  const imageUrl = firstImage ? getImageUrl(firstImage.src) : null;
 
   return (
     <div

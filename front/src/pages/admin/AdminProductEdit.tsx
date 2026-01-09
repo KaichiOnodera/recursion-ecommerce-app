@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { getAdminItem, updateItem } from '../../services/api/items';
 import { ItemImage } from '@shared/schemas/item';
-import { API_BASE_URL } from '../../services/api/config';
+import { getImageUrl } from '../../utils/imageUrl';
 import { useImageUpload } from '../../hooks/useImageUpload';
 
 export const AdminProductEdit: React.FC = () => {
@@ -195,7 +195,7 @@ export const AdminProductEdit: React.FC = () => {
                   {existingImages.map((image, index) => (
                     <div key={image.id} className="relative">
                       <img
-                        src={`${API_BASE_URL}${image.src}`}
+                        src={getImageUrl(image.src) || ''}
                         alt={`既存画像 ${index + 1}`}
                         className="w-full h-32 object-cover rounded border"
                       />

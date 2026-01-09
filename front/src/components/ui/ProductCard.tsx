@@ -4,7 +4,7 @@ import { Item, AdminItem } from '@shared/schemas/item';
 import { InventoryStatus } from '../../services/api/items';
 import { addToCart } from '../../services/api/cart';
 import { useCart } from '../../contexts/CartContext';
-import { API_BASE_URL } from '../../services/api/config';
+import { getImageUrl } from '../../utils/imageUrl';
 
 interface ProductCardProps {
   item: Item | AdminItem;
@@ -33,9 +33,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ item, isAdmin = false }) => {
   // 最初の画像をサムネイルとして使用
   const images = 'images' in item ? item.images : [];
   const thumbnailImage = images && images.length > 0 ? images[0] : null;
-  const imageUrl = thumbnailImage
-    ? `${API_BASE_URL}${thumbnailImage.src}`
-    : null;
+  const imageUrl = thumbnailImage ? getImageUrl(thumbnailImage.src) : null;
 
   return (
     <div
