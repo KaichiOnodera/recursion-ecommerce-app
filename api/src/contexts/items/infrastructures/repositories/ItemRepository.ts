@@ -264,6 +264,20 @@ export class ItemRepository implements IItemRepository {
       return false;
     }
 
+    // 商品削除前に画像一覧を取得
+    const images = await this.itemImageRepository.findByItemId(id);
+
+    // 各画像ファイルを削除
+    for (const image of images) {
+      try {
+        await this.imageStorageAdapter.delete(image.src, id);
+      } catch {
+        // ファイル削除に失敗してもエラーにしない（ログ出力などは必要に応じて追加）
+        // S3の場合、既に削除されている可能性があるため
+      }
+    }
+
+    // DBの商品レコードを削除（CASCADEで画像レコードも削除される）
     await this.prisma.items.delete({
       where: { id },
     });
