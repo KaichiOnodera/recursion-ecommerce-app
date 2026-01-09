@@ -41,4 +41,9 @@ authRouter.delete(
   resignController.execute.bind(resignController),
 );
 
+authRouter.post(
+  '/verify-email',
+  verifyUserInteractor.execute.bind(verifyUserInteractor),
+);
+
 export { authRouter, verifyUserInteractor };

@@ -1,6 +1,12 @@
 import { PrismaClient, UserRole, OrderStatus, Items, Orders } from '@prisma/client';
-import { hashPassword } from '../src/contexts/utils/hashPassword';
+import bcrypt from 'bcrypt';
 import { config } from 'dotenv';
+
+// hashPassword関数をシードスクリプト内で定義（ビルド後のイメージでも動作するように）
+async function hashPassword(password: string): Promise<string> {
+  const saltRounds = 10;
+  return await bcrypt.hash(password, saltRounds);
+}
 
 if (require.main === module) {
   if (!process.env.DATABASE_URL) {
@@ -239,7 +245,14 @@ export async function seedTestData(prismaClient?: PrismaClient) {
 }
 
 async function main() {
-  await seedTestData();
+  // AWS上で実行したときに失敗したかわかりづらいため、ログの追加
+  console.log('Starting seed data insertion...');
+  const result = await seedTestData();
+  console.log('Seed data insertion completed successfully!');
+  console.log(`Created ${result.items.length} items`);
+  console.log(`Created ${result.orders.length} orders`);
+  console.log(`Created test user: ${result.testUser.email}`);
+  console.log(`Created test admin: ${result.testAdmin.email}`);
 }
 
 // 直接実行された場合のみmain()を実行

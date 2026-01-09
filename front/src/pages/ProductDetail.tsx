@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { useParams } from 'react-router';
+import { useParams, useNavigate } from 'react-router';
 import { Item } from '@shared/schemas/item';
 import { getItem, InventoryStatus } from '../services/api/items';
 import { addToCart } from '../services/api/cart';
+import { addFavorite, removeFavorite } from '../services/api/favorites';
 import { useCart } from '../contexts/CartContext';
+import { useUser } from '../contexts/UserContext';
 import { BackLink } from '../components/product/BackLink';
 import { LoadingState } from '../components/product/LoadingState';
 import { ErrorState } from '../components/product/ErrorState';
@@ -22,7 +24,9 @@ type ProductDetailState = {
 
 export const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const { refreshCart } = useCart();
+  const { isLoggedIn } = useUser();
   const [state, setState] = useState<ProductDetailState>({
     item: null,
     isLoading: true,
@@ -30,6 +34,7 @@ export const ProductDetail: React.FC = () => {
   });
   const [quantity, setQuantity] = useState(MIN_QUANTITY);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [isTogglingFavorite, setIsTogglingFavorite] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   const itemId = useMemo(() => {
@@ -117,10 +122,51 @@ export const ProductDetail: React.FC = () => {
     }
   }, [state.item, quantity, refreshCart]);
 
-  const handleAddToWishlist = useCallback((): void => {
-    // TODO: ウィッシュリスト機能の実装
-    console.log('Add to wishlist:', state.item?.id);
-  }, [state.item?.id]);
+  const handleToggleFavorite = useCallback(async (): Promise<void> => {
+    if (!state.item) return;
+
+    if (isTogglingFavorite) return;
+
+    // ログインしていない場合はログインページにリダイレクト
+    if (!isLoggedIn() || state.item.isFavorite === null) {
+      navigate('/auth/login');
+      return;
+    }
+
+    setIsTogglingFavorite(true);
+    try {
+      if (state.item.isFavorite) {
+        await removeFavorite(state.item.id);
+        setState((prev) => {
+          if (!prev.item) return prev;
+          return {
+            ...prev,
+            item: {
+              ...prev.item,
+              isFavorite: false,
+            },
+          };
+        });
+      } else {
+        await addFavorite(state.item.id);
+        setState((prev) => {
+          if (!prev.item) return prev;
+          return {
+            ...prev,
+            item: {
+              ...prev.item,
+              isFavorite: true,
+            },
+          };
+        });
+      }
+    } catch (err) {
+      console.error('Failed to toggle favorite:', err);
+      alert('お気に入りの操作に失敗しました');
+    } finally {
+      setIsTogglingFavorite(false);
+    }
+  }, [state.item, isLoggedIn, navigate]);
 
   const isOutOfStock = useMemo(
     () => state.item?.inventoryStatus === InventoryStatus.OUT_OF_STOCK,
@@ -254,7 +300,9 @@ export const ProductDetail: React.FC = () => {
             isOutOfStock={isOutOfStock}
             isAddingToCart={isAddingToCart}
             onAddToCart={handleAddToCart}
-            onAddToWishlist={handleAddToWishlist}
+            onToggleFavorite={handleToggleFavorite}
+            isFavorite={state.item.isFavorite ?? false}
+            isTogglingFavorite={isTogglingFavorite}
           />
 
           {/* 説明文 */}

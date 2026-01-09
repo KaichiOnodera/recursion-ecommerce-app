@@ -2,6 +2,23 @@ import express, { Request, Response } from 'express';
 import { config } from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import * as path from 'path';
+import * as fs from 'fs';
+
+// 本番環境（Docker）でのみ module-alias を使用
+// ローカル開発環境では tsx が TypeScript の paths 設定を理解するため不要
+// shared/dist が存在する場合（ビルド後）のみ module-alias を設定
+const sharedDistPath = path.join(process.cwd(), '../shared/dist');
+if (fs.existsSync(sharedDistPath)) {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  require('module-alias/register');
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const moduleAlias = require('module-alias');
+
+  // パスエイリアスの設定（@sharedをshared/distにマッピング）
+  // 実行時の作業ディレクトリは /app/api なので、../shared/dist で /app/shared/dist を指す
+  moduleAlias.addAlias('@shared', sharedDistPath);
+}
 
 // Load environment variables from .env file
 config();
@@ -27,14 +44,24 @@ import { CartItemRepository } from './contexts/cart/infrastructures/repositories
 
 const app = express();
 
+const corsOrigin = process.env.CORS_ORIGIN ?? 'http://localhost:3000';
 app.use(
   cors({
-    origin: 'http://localhost:3000',
+    origin: corsOrigin,
     credentials: true,
   }),
 );
 
 app.use(cookieParser());
+
+// 静的ファイル配信: 画像ファイルを /images/items パスで配信（ローカル環境のみ）
+const storageType = process.env.STORAGE_TYPE ?? 'local';
+if (storageType === 'local') {
+  app.use(
+    '/images/items',
+    express.static(path.join(process.cwd(), 'uploads', 'items')),
+  );
+}
 
 // Webhookエンドポイントは express.json() の適用前に配置する必要がある
 // Stripeの署名検証には生のリクエストボディが必要
@@ -66,8 +93,12 @@ const stripeWebhookController = new StripeWebhookController(
   stripeAdapter,
 );
 
+// APIプレフィックスを環境変数から取得（デフォルトは空文字列 = ローカル環境用）
+// ステージング/本番環境では ALB が /api/* をルーティングするため、/api プレフィックスが必要
+const apiPrefix = process.env.API_PREFIX ?? '';
+
 app.post(
-  '/webhooks/stripe',
+  `${apiPrefix}/webhooks/stripe`,
   express.raw({ type: 'application/json' }),
   stripeWebhookController.execute.bind(stripeWebhookController),
 );
@@ -75,21 +106,21 @@ app.post(
 // その他のエンドポイントには express.json() を適用
 app.use(express.json());
 
-app.get('/', async (_req: Request, res: Response) => {
+app.get(`${apiPrefix}/`, async (_req: Request, res: Response) => {
   res.send('Hello World!');
 });
 
-app.use('/auth', authRouter);
-app.use('/items', itemsRouter);
-app.use('/admin/items', adminItemsRouter);
+app.use(`${apiPrefix}/auth`, authRouter);
+app.use(`${apiPrefix}/items`, itemsRouter);
+app.use(`${apiPrefix}/admin/items`, adminItemsRouter);
 
-app.use('/users', usersRouter);
-app.use('/cart', cartRouter);
-app.use('/checkout', checkoutRouter);
-app.use('/orders', ordersRouter);
-app.use('/admin/orders', adminOrdersRouter);
-app.use('/reviews', reviewsRouter);
-app.use('/favorites', favoritesRouter);
+app.use(`${apiPrefix}/users`, usersRouter);
+app.use(`${apiPrefix}/cart`, cartRouter);
+app.use(`${apiPrefix}/checkout`, checkoutRouter);
+app.use(`${apiPrefix}/orders`, ordersRouter);
+app.use(`${apiPrefix}/admin/orders`, adminOrdersRouter);
+app.use(`${apiPrefix}/reviews`, reviewsRouter);
+app.use(`${apiPrefix}/favorites`, favoritesRouter);
 
 app.listen(8000, '0.0.0.0', () => {
   // eslint-disable-next-line no-console

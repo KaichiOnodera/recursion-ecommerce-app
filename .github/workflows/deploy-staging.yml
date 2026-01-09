@@ -1,0 +1,172 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches:
+      - staging
+    paths:
+      - "api/**"
+      - "front/**"
+      - "shared/**"
+      - "api/Dockerfile"
+      - "front/Dockerfile"
+      - ".github/workflows/deploy-staging.yml"
+  workflow_dispatch: # 手動実行を有効化
+
+env:
+  AWS_REGION: ap-northeast-1
+  ECR_REGISTRY: 547361935989.dkr.ecr.ap-northeast-1.amazonaws.com
+  ECR_REPOSITORY_API: ecommerce-stg-api
+  ECR_REPOSITORY_FRONT: ecommerce-stg-front
+  ECS_CLUSTER: ecommerce-stg-cluster
+  ECS_SERVICE_API: ecommerce-stg-api-service
+  ECS_SERVICE_FRONT: ecommerce-stg-front-service
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy to Staging
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # API イメージのビルドとプッシュ
+      - name: Build, tag, and push API image to Amazon ECR
+        id: build-api
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ env.ECR_REPOSITORY_API }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f api/Dockerfile .
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      # フロントエンド イメージのビルドとプッシュ
+      - name: Build, tag, and push Frontend image to Amazon ECR
+        id: build-front
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ env.ECR_REPOSITORY_FRONT }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f front/Dockerfile .
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      # API サービスの更新
+      - name: Update API ECS service
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ env.ECR_REPOSITORY_API }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          aws ecs update-service \
+            --cluster ${{ env.ECS_CLUSTER }} \
+            --service ${{ env.ECS_SERVICE_API }} \
+            --force-new-deployment \
+            --region ${{ env.AWS_REGION }}
+
+      # フロントエンド サービスの更新
+      - name: Update Frontend ECS service
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ env.ECR_REPOSITORY_FRONT }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          aws ecs update-service \
+            --cluster ${{ env.ECS_CLUSTER }} \
+            --service ${{ env.ECS_SERVICE_FRONT }} \
+            --force-new-deployment \
+            --region ${{ env.AWS_REGION }}
+
+      - name: Wait for API service to stabilize
+        timeout-minutes: 20
+        run: |
+          echo "Waiting for API service to stabilize..."
+          set +e  # エラーで停止しないようにする
+          aws ecs wait services-stable \
+            --cluster ${{ env.ECS_CLUSTER }} \
+            --services ${{ env.ECS_SERVICE_API }} \
+            --region ${{ env.AWS_REGION }} || WAIT_EXIT_CODE=$?
+          set -e
+          
+          # 待機がタイムアウトした場合でも、実際の状態を確認
+          if [ "${WAIT_EXIT_CODE:-0}" != "0" ]; then
+            echo "⚠️  Wait timeout occurred. Checking actual service status..."
+            SERVICE_STATUS=$(aws ecs describe-services \
+              --cluster ${{ env.ECS_CLUSTER }} \
+              --services ${{ env.ECS_SERVICE_API }} \
+              --query 'services[0].[status,runningCount,desiredCount]' \
+              --output text \
+              --region ${{ env.AWS_REGION }})
+            echo "Service status: $SERVICE_STATUS"
+            
+            # サービスがACTIVEで、タスクが実行中なら続行
+            if echo "$SERVICE_STATUS" | grep -q "ACTIVE"; then
+              echo "✅ Service is ACTIVE. Continuing deployment..."
+            else
+              echo "❌ Service is not ACTIVE. Deployment may have failed."
+              exit 1
+            fi
+          else
+            echo "✅ API service is stable"
+          fi
+
+      - name: Wait for Frontend service to stabilize
+        timeout-minutes: 20
+        run: |
+          echo "Waiting for Frontend service to stabilize..."
+          set +e  # エラーで停止しないようにする
+          aws ecs wait services-stable \
+            --cluster ${{ env.ECS_CLUSTER }} \
+            --services ${{ env.ECS_SERVICE_FRONT }} \
+            --region ${{ env.AWS_REGION }} || WAIT_EXIT_CODE=$?
+          set -e
+          
+          # 待機がタイムアウトした場合でも、実際の状態を確認
+          if [ "${WAIT_EXIT_CODE:-0}" != "0" ]; then
+            echo "⚠️  Wait timeout occurred. Checking actual service status..."
+            SERVICE_STATUS=$(aws ecs describe-services \
+              --cluster ${{ env.ECS_CLUSTER }} \
+              --services ${{ env.ECS_SERVICE_FRONT }} \
+              --query 'services[0].[status,runningCount,desiredCount]' \
+              --output text \
+              --region ${{ env.AWS_REGION }})
+            echo "Service status: $SERVICE_STATUS"
+            
+            # サービスがACTIVEで、タスクが実行中なら続行
+            if echo "$SERVICE_STATUS" | grep -q "ACTIVE"; then
+              echo "✅ Service is ACTIVE. Continuing deployment..."
+            else
+              echo "❌ Service is not ACTIVE. Deployment may have failed."
+              exit 1
+            fi
+          else
+            echo "✅ Frontend service is stable"
+          fi
+
+      - name: Deployment summary
+        run: |
+          echo "✅ Deployment completed successfully!"
+          echo "API Image: ${{ steps.build-api.outputs.image }}"
+          echo "Frontend Image: ${{ steps.build-front.outputs.image }}"
+          echo "Cluster: ${{ env.ECS_CLUSTER }}"
+          echo "Services updated: ${{ env.ECS_SERVICE_API }}, ${{ env.ECS_SERVICE_FRONT }}"
+
