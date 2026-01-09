@@ -10,18 +10,16 @@ import { GetItemController } from './controllers/GetItemController';
 import { GetItemInteractor } from './interactors/GetItemInteractor';
 import { ItemRepository } from '../infrastructures/repositories/ItemRepository';
 import { ItemImageRepository } from '../infrastructures/repositories/ItemImageRepository';
-import { LocalImageStorageAdapter } from '../infrastructures/adapters/LocalImageStorageAdapter';
+import { createImageStorageAdapter } from '../infrastructures/adapters/createImageStorageAdapter';
 import { FavoriteRepository } from '../../favorites/infrastructures/repositories/FavoriteRepository';
 import { prisma } from '../../../libs/prisma';
 import express from 'express';
 import { verifyAccessToken, verifyAdmin } from '../../../middlewares';
-import * as path from 'path';
 
 const adminItemsRouter = express.Router();
 
 const itemImageRepository = new ItemImageRepository(prisma);
-const uploadDir = path.join(process.cwd(), 'uploads', 'items');
-const imageStorageAdapter = new LocalImageStorageAdapter(uploadDir);
+const imageStorageAdapter = createImageStorageAdapter();
 const favoriteRepository = new FavoriteRepository(
   prisma,
   itemImageRepository,

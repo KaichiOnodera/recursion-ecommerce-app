@@ -4,21 +4,19 @@ import { StripeAdapter } from './infrastructures/adapters/StripeAdapter';
 import { CartRepository } from '../cart/infrastructures/repositories/CartRepository';
 import { ItemRepository } from '../items/infrastructures/repositories/ItemRepository';
 import { ItemImageRepository } from '../items/infrastructures/repositories/ItemImageRepository';
-import { LocalImageStorageAdapter } from '../items/infrastructures/adapters/LocalImageStorageAdapter';
+import { createImageStorageAdapter } from '../items/infrastructures/adapters/createImageStorageAdapter';
 import { FavoriteRepository } from '../favorites/infrastructures/repositories/FavoriteRepository';
 import { UserRepository } from '../users/infrastructures/repositories/UserRepository';
 import { OrderRepository } from '../orders/infrastructures/repositories/OrderRepository';
 import { prisma } from '../../libs/prisma';
 import express from 'express';
 import { optionalVerifyAccessToken } from '../../middlewares';
-import * as path from 'path';
 
 const checkoutRouter = express.Router();
 
 const cartRepository = new CartRepository(prisma);
 const itemImageRepository = new ItemImageRepository(prisma);
-const uploadDir = path.join(process.cwd(), 'uploads', 'items');
-const imageStorageAdapter = new LocalImageStorageAdapter(uploadDir);
+const imageStorageAdapter = createImageStorageAdapter();
 const favoriteRepository = new FavoriteRepository(
   prisma,
   itemImageRepository,
