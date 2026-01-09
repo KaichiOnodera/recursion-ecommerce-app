@@ -9,6 +9,7 @@ import { getMimeTypeFromFilename } from '../../../../utils/imageUtils';
 export class S3ImageStorageAdapter implements IImageStorageAdapter {
   private readonly s3Client: S3Client;
   private readonly bucketName: string;
+  private readonly region: string;
   private readonly cloudFrontDomain?: string;
 
   constructor(
@@ -19,6 +20,7 @@ export class S3ImageStorageAdapter implements IImageStorageAdapter {
     cloudFrontDomain?: string,
   ) {
     this.bucketName = bucketName;
+    this.region = region;
     this.cloudFrontDomain = cloudFrontDomain;
 
     this.s3Client = new S3Client({
@@ -70,7 +72,7 @@ export class S3ImageStorageAdapter implements IImageStorageAdapter {
   /**
    * 画像の公開URLを取得
    * CloudFrontが設定されている場合はCloudFrontのURLを返す
-   * それ以外の場合はプロキシエンドポイント経由のURLを返す
+   * それ以外の場合はS3の直接URLを返す（バケットはpublicである必要がある）
    * @param filePath S3キー（例: items/1/filename.jpg）
    * @param _itemId 商品ID（未使用だがインターフェースの互換性のため）
    * @returns 画像の公開URL
@@ -81,10 +83,7 @@ export class S3ImageStorageAdapter implements IImageStorageAdapter {
       return `https://${this.cloudFrontDomain}/${filePath}`;
     }
 
-    const pathParts = filePath.split('/');
-    const actualItemId = pathParts[1];
-    const filename = pathParts[pathParts.length - 1];
-    return `/images/items/${actualItemId}/${filename}`;
+    return `https://${this.bucketName}.s3.${this.region}.amazonaws.com/${filePath}`;
   }
 
   private getContentType(filename: string): string | null {
