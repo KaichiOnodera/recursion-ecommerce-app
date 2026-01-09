@@ -8,10 +8,15 @@ import { ItemRepository } from './infrastructures/repositories/ItemRepository';
 import { ItemImageRepository } from './infrastructures/repositories/ItemImageRepository';
 import { createImageStorageAdapter } from './infrastructures/adapters/createImageStorageAdapter';
 import { FavoriteRepository } from '../favorites/infrastructures/repositories/FavoriteRepository';
+import { OrderItemFileRepository } from '../orders/infrastructures/repositories/OrderItemFileRepository';
+import { ItemFileRepository } from './infrastructures/repositories/ItemFileRepository';
+import { DownloadDigitalItemController } from './controllers/DownloadDigitalItemController';
+import { DownloadDigitalItemInteractor } from './interactors/DownloadDigitalItemInteractor';
 import { DisplayStatus } from './domains/entities/Item';
 import { prisma } from '../../libs/prisma';
 import { optionalVerifyAccessToken } from '../../middlewares';
 import express from 'express';
+import { DownloadTokenRepository } from './infrastructures/repositories/DownloadTokenRepository';
 
 const itemsRouter = express.Router();
 
@@ -28,6 +33,11 @@ const itemRepository = new ItemRepository(
   imageStorageAdapter,
   favoriteRepository,
 );
+
+const orderItemFileRepository = new OrderItemFileRepository(prisma);
+const downloadTokenRepository = new DownloadTokenRepository(prisma);
+const itemFileRepository = new ItemFileRepository(prisma);
+
 // 一般ユーザー向け: PUBLICな商品のみ取得
 const getItemsInteractor = new GetItemsInteractor(
   itemRepository,
@@ -38,6 +48,15 @@ const getItemInteractor = new GetItemInteractor(itemRepository);
 const getItemController = new GetItemController(getItemInteractor);
 const searchItemsInteractor = new SearchItemsInteractor(itemRepository);
 const searchItemsController = new SearchItemsController(searchItemsInteractor);
+
+const downloadDigitalItemInteractor = new DownloadDigitalItemInteractor(
+  orderItemFileRepository,
+  downloadTokenRepository,
+  itemFileRepository,
+);
+const downloadDigitalItemController = new DownloadDigitalItemController(
+  downloadDigitalItemInteractor,
+);
 
 itemsRouter.get(
   '/',
@@ -53,6 +72,12 @@ itemsRouter.get(
   '/:id',
   optionalVerifyAccessToken,
   getItemController.execute.bind(getItemController),
+);
+
+itemsRouter.get(
+  '/download/:token',
+  optionalVerifyAccessToken,
+  downloadDigitalItemController.execute.bind(downloadDigitalItemController),
 );
 
 export { itemsRouter };
