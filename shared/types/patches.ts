@@ -9,6 +9,7 @@ export type PatchReq = {
     price?: number;
     inventoryAmount?: number;
     displayStatus?: 'public' | 'private';
+    imageIds?: number[];
   };
   '/users/profile': {
     lastName: string;
