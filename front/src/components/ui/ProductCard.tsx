@@ -37,16 +37,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ item, isAdmin = false }) => {
 
   return (
     <div
-      className={`overflow-hidden ${!isAdmin ? 'cursor-pointer' : ''}`}
+      className={`flex flex-col h-full bg-white border border-gray-200 rounded-sm transition-all duration-200 ${
+        !isAdmin ? 'cursor-pointer hover:shadow-md hover:border-gray-300' : ''
+      }`}
       onClick={handleCardClick}
     >
       {/* 商品画像 */}
-      <div className="bg-gray-100 h-64 flex items-center justify-center overflow-hidden">
+      <div className="bg-gray-50 h-80 flex items-center justify-center overflow-hidden flex-shrink-0 rounded-t-sm">
         {imageUrl ? (
           <img
             src={imageUrl}
             alt={item.name}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
             onError={(e) => {
               // 画像読み込みエラー時のフォールバック
               const target = e.target as HTMLImageElement;
@@ -63,8 +65,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ item, isAdmin = false }) => {
       </div>
 
       {/* 商品情報 */}
-      <div className="p-4">
-        <h2>
+      <div className="flex flex-col flex-grow pt-5 pb-6 px-4">
+        {/* 商品タイトル */}
+        <h2 className="text-base font-semibold text-gray-900 mb-2 line-clamp-2 leading-tight">
           {item.name}
           {'displayStatus' in item && item.displayStatus === 'private' && (
             <span className="text-xs text-red-600 font-normal ml-2">
@@ -72,33 +75,50 @@ const ProductCard: React.FC<ProductCardProps> = ({ item, isAdmin = false }) => {
             </span>
           )}
         </h2>
-        <p> {item.description} </p>
-        <p> {item.price} </p>
 
-        {/* 管理者用の編集ボタン */}
-        {isAdmin ? (
-          <div className="mt-4">
+        {/* 商品説明 */}
+        {item.description && (
+          <p className="text-xs text-gray-500 mb-4 line-clamp-2 leading-relaxed">
+            {item.description}
+          </p>
+        )}
+
+        {/* 価格とボタンエリア */}
+        <div className="mt-auto pt-4 border-t border-gray-200">
+          {/* 価格 */}
+          <p className="text-lg font-bold text-gray-900 mb-4">
+            ¥
+            {typeof item.price === 'number'
+              ? item.price.toLocaleString()
+              : item.price}
+          </p>
+
+          {/* 管理者用の編集ボタン */}
+          {isAdmin ? (
             <button
-              onClick={() => navigate(`/admin/products/${item.id}/edit`)}
-              className="w-full border border-gray-300 text-gray-700 px-3 py-2 rounded hover:bg-gray-50 text-sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/admin/products/${item.id}/edit`);
+              }}
+              className="w-full border border-gray-300 text-gray-700 px-4 py-2.5 text-sm font-medium hover:bg-gray-50 transition-colors"
             >
               編集
             </button>
-          </div>
-        ) : (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleAddToCart();
-            }}
-            disabled={item.inventoryStatus === InventoryStatus.OUT_OF_STOCK}
-            className="w-full border border-gray-300 text-gray-700 px-3 py-2 rounded hover:bg-gray-50 text-sm disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed disabled:hover:bg-gray-100"
-          >
-            {item.inventoryStatus === InventoryStatus.OUT_OF_STOCK
-              ? '在庫なし'
-              : 'カートに追加'}
-          </button>
-        )}
+          ) : (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleAddToCart();
+              }}
+              disabled={item.inventoryStatus === InventoryStatus.OUT_OF_STOCK}
+              className="w-full border-b-2 border-gray-900 text-gray-900 px-4 py-2.5 text-sm font-medium hover:bg-gray-50 transition-all disabled:border-gray-300 disabled:text-gray-400 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+            >
+              {item.inventoryStatus === InventoryStatus.OUT_OF_STOCK
+                ? '在庫なし'
+                : 'カートに追加'}
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
