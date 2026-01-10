@@ -93,13 +93,13 @@ export const ResignationModal: React.FC<ResignationModalProps> = ({
 
           {/* 確認チェックボックス */}
           <div className="mb-6">
-            <label className="flex items-start space-x-3 cursor-pointer">
+            <label className="flex items-center space-x-3 cursor-pointer">
               <input
                 type="checkbox"
                 checked={isConfirmed}
                 onChange={(e) => setIsConfirmed(e.target.checked)}
                 disabled={isLoading}
-                className="mt-1 w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500 disabled:opacity-50"
+                className="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500 disabled:opacity-50 flex-shrink-0"
               />
               <span className="text-gray-700 text-sm">
                 上記の内容を理解しました
