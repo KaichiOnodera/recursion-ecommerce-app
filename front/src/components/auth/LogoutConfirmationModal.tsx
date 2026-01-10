@@ -1,29 +1,24 @@
 import React, { useState } from 'react';
 import {
   XMarkIcon,
-  ExclamationTriangleIcon,
+  ArrowRightOnRectangleIcon,
 } from '@heroicons/react/24/outline';
 
-interface ResignationModalProps {
+interface LogoutConfirmationModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => Promise<void>;
 }
 
-export const ResignationModal: React.FC<ResignationModalProps> = ({
-  isOpen,
-  onClose,
-  onConfirm,
-}) => {
-  const [isConfirmed, setIsConfirmed] = useState(false);
+export const LogoutConfirmationModal: React.FC<
+  LogoutConfirmationModalProps
+> = ({ isOpen, onClose, onConfirm }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
   const handleConfirm = async () => {
-    if (!isConfirmed) return;
-
     setIsLoading(true);
     setError(null);
 
@@ -32,7 +27,7 @@ export const ResignationModal: React.FC<ResignationModalProps> = ({
     } catch (err: any) {
       setError(
         err.message ||
-          '退会できませんでした。しばらく時間をおいて再度お試しください。',
+          'ログアウトできませんでした。しばらく時間をおいて再度お試しください。',
       );
       setIsLoading(false);
     }
@@ -40,7 +35,6 @@ export const ResignationModal: React.FC<ResignationModalProps> = ({
 
   const handleClose = () => {
     if (isLoading) return;
-    setIsConfirmed(false);
     setError(null);
     onClose();
   };
@@ -68,43 +62,21 @@ export const ResignationModal: React.FC<ResignationModalProps> = ({
           {/* アイコンとタイトル */}
           <div className="flex items-center space-x-3 mb-4">
             <div className="flex-shrink-0">
-              <ExclamationTriangleIcon className="w-8 h-8 text-red-600" />
+              <ArrowRightOnRectangleIcon className="w-8 h-8 text-gray-600" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900">退会しますか？</h2>
+            <h2 className="text-2xl font-bold text-gray-900">
+              ログアウトしますか？
+            </h2>
           </div>
 
-          {/* 警告メッセージ */}
+          {/* メッセージ */}
           <div className="mb-6">
             <p className="text-gray-700 mb-4">
-              退会すると、以下の情報はすべて削除され、元に戻すことはできません：
+              ログアウトすると、ゲストに切り替わります。
             </p>
-            <ul className="list-disc list-inside space-y-2 text-gray-600 mb-4 ml-4">
-              <li>あなたのアカウント情報</li>
-              <li>これまでの購入履歴</li>
-              <li>お気に入り商品</li>
-              <li>カートに入れた商品</li>
-            </ul>
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-              <p className="text-red-800 font-medium text-sm">
-                この操作は取り消せません。本当に退会してよろしいですか？
-              </p>
-            </div>
-          </div>
-
-          {/* 確認チェックボックス */}
-          <div className="mb-6">
-            <label className="flex items-start space-x-3 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={isConfirmed}
-                onChange={(e) => setIsConfirmed(e.target.checked)}
-                disabled={isLoading}
-                className="mt-1 w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500 disabled:opacity-50"
-              />
-              <span className="text-gray-700 text-sm">
-                上記の内容を理解しました
-              </span>
-            </label>
+            <p className="text-gray-600 text-sm">
+              再度ご利用になる場合は、ログイン画面からメールアドレスとパスワードを入力してください。
+            </p>
           </div>
 
           {/* エラーメッセージ */}
@@ -125,10 +97,10 @@ export const ResignationModal: React.FC<ResignationModalProps> = ({
             </button>
             <button
               onClick={handleConfirm}
-              disabled={!isConfirmed || isLoading}
-              className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+              disabled={isLoading}
+              className="flex-1 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
             >
-              {isLoading ? '退会しています...' : '退会する'}
+              {isLoading ? 'ログアウトしています...' : 'ログアウト'}
             </button>
           </div>
         </div>
