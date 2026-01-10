@@ -37,13 +37,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ item, isAdmin = false }) => {
 
   return (
     <div
-      className={`bg-white border duration-200 rounded-lg overflow-hidden ${
-        !isAdmin ? 'cursor-pointer hover:shadow-lg' : ''
-      }`}
+      className={`overflow-hidden ${!isAdmin ? 'cursor-pointer' : ''}`}
       onClick={handleCardClick}
     >
       {/* 商品画像 */}
-      <div className="bg-gray-100 h-48 flex items-center justify-center overflow-hidden">
+      <div className="bg-gray-100 h-64 flex items-center justify-center overflow-hidden">
         {imageUrl ? (
           <img
             src={imageUrl}
@@ -82,7 +80,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ item, isAdmin = false }) => {
           <div className="mt-4">
             <button
               onClick={() => navigate(`/admin/products/${item.id}/edit`)}
-              className="w-full bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600 text-sm"
+              className="w-full border border-gray-300 text-gray-700 px-3 py-2 rounded hover:bg-gray-50 text-sm"
             >
               編集
             </button>
@@ -94,7 +92,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ item, isAdmin = false }) => {
               handleAddToCart();
             }}
             disabled={item.inventoryStatus === InventoryStatus.OUT_OF_STOCK}
-            className="w-full bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600 text-sm disabled:bg-gray-400 disabled:cursor-not-allowed disabled:hover:bg-gray-400"
+            className="w-full border border-gray-300 text-gray-700 px-3 py-2 rounded hover:bg-gray-50 text-sm disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed disabled:hover:bg-gray-100"
           >
             {item.inventoryStatus === InventoryStatus.OUT_OF_STOCK
               ? '在庫なし'
