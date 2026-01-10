@@ -1,5 +1,7 @@
+// 環境変数を最初に読み込む（他のモジュールより先に実行される必要がある）
+import './config/env';
+
 import express, { Request, Response } from 'express';
-import { config } from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import * as path from 'path';
@@ -19,9 +21,6 @@ if (fs.existsSync(sharedDistPath)) {
   // 実行時の作業ディレクトリは /app/api なので、../shared/dist で /app/shared/dist を指す
   moduleAlias.addAlias('@shared', sharedDistPath);
 }
-
-// Load environment variables from .env file
-config();
 
 import { itemsRouter } from './contexts/items';
 import { adminItemsRouter } from './contexts/items/admin';
