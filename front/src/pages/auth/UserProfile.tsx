@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { UserProfileForm } from '../../components/auth/UserProfileForm';
 import { useUser } from '../../contexts/UserContext';
 import type { PatchReq } from '@shared/types/patches';
@@ -7,6 +7,7 @@ import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 
 export const User: React.FC = () => {
   const { user } = useUser();
+  const navigate = useNavigate();
 
   const initialProfile: PatchReq['/users/profile'] = useMemo(
     () => ({
@@ -17,7 +18,7 @@ export const User: React.FC = () => {
   );
 
   const handleSuccess = () => {
-    console.log('プロフィール更新成功');
+    navigate('/mypage');
   };
 
   return (
