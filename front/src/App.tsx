@@ -53,7 +53,7 @@ function App(): React.JSX.Element {
     <UserContextProvider>
       <CartContextProvider>
         <BrowserRouter>
-          <div className="bg-blue-100 min-h-screen">
+          <div className="min-h-screen">
             <Header ref={headerRef} />
             <div className="container mx-auto p-4">
               <Routes>
