@@ -10,7 +10,6 @@ export const User: React.FC = () => {
     () => ({
       lastName: user?.lastName ?? '',
       firstName: user?.firstName ?? '',
-      email: user?.email ?? '',
     }),
     [user],
   );

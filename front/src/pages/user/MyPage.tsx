@@ -159,16 +159,13 @@ export const MyPage: React.FC = () => {
       <div className="bg-white rounded-lg shadow-md p-6">
         <h2 className="text-xl font-bold text-gray-900 mb-6">アカウント設定</h2>
         <div className="flex flex-col space-y-3 mb-6">
-          <button
-            onClick={() => {
-              // ハリボテ実装: 将来的にプロフィール編集モーダルを表示
-              alert('プロフィール編集機能は準備中です');
-            }}
+          <Link
+            to="/user/profile"
             className="self-start flex items-center space-x-2 py-2 text-gray-700 hover:text-gray-900 transition-colors text-sm font-medium"
           >
             <UserIcon className="w-5 h-5 text-gray-500" />
             <span>プロフィールを編集</span>
-          </button>
+          </Link>
           <button
             onClick={() => {
               // ハリボテ実装: 将来的にメールアドレス変更モーダルを表示
