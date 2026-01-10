@@ -33,9 +33,9 @@ export const ProductList: React.FC = () => {
   }, [searchQuery]);
 
   return (
-    <div className="container mx-auto py-8">
-      <h1 className="text-3xl font-bold mb-4">
-        {searchQuery ? `「${searchQuery}」の検索結果` : '商品一覧'}
+    <div className="w-full max-w-[1600px] mx-auto py-8 px-4 sm:px-6 md:px-8 lg:px-12">
+      <h1 className="text-3xl font-bold mb-6">
+        {searchQuery ? `「${searchQuery}」の検索結果` : '全ての商品'}
       </h1>
       {isLoading ? (
         <div className="text-center py-8">読み込み中...</div>
@@ -44,7 +44,7 @@ export const ProductList: React.FC = () => {
           {searchQuery ? '検索結果が見つかりませんでした' : '商品がありません'}
         </div>
       ) : (
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 auto-rows-fr">
           {items.map((item) => (
             <ProductCard key={item.id} item={item} />
           ))}

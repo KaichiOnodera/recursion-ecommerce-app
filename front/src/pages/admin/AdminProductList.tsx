@@ -30,7 +30,7 @@ export const AdminProductList: React.FC = () => {
       </div>
       <div className="grid grid-cols-4 gap-4">
         {items.map((item) => (
-          <div key={item.id}>
+          <div key={item.id} className="flex flex-col">
             <ProductCard item={item} isAdmin={true} />
             <button
               onClick={() => navigate(`/admin/products/${item.id}/delete`)}

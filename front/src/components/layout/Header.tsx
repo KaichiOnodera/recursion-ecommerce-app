@@ -16,7 +16,7 @@ const Header = React.forwardRef<HTMLElement, HeaderProps>(
     {
       logo = 'ECサイト',
       navigationItems = [
-        { label: '商品', href: '/products' },
+        { label: '全ての商品', href: '/products' },
         { label: 'ログイン', href: '/auth/user/login' },
         { label: '新規登録', href: '/auth/user/signup' },
       ],
