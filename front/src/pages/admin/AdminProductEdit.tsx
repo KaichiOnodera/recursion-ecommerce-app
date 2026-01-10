@@ -5,6 +5,7 @@ import { getAdminItem, updateItem } from '../../services/api/items';
 import { ItemImage } from '@shared/schemas/item';
 import { getImageUrl } from '../../utils/imageUrl';
 import { useImageUpload } from '../../hooks/useImageUpload';
+import { XMarkIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 
 export const AdminProductEdit: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -17,6 +18,7 @@ export const AdminProductEdit: React.FC = () => {
     'private',
   );
   const [existingImages, setExistingImages] = useState<ItemImage[]>([]);
+  const [orderedImageIds, setOrderedImageIds] = useState<number[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
@@ -49,12 +51,31 @@ export const AdminProductEdit: React.FC = () => {
       setType(item.type);
       setPrice(item.price);
       setDisplayStatus(item.displayStatus);
-      setExistingImages(item.images || []);
+      const images = item.images || [];
+      setExistingImages(images);
+      setOrderedImageIds(images.map((img) => img.id));
       setInventoryAmount(response.item.inventoryAmount);
     };
 
     fetchItem();
   }, [id, navigate]);
+
+  const handleDeleteExistingImage = (imageId: number) => {
+    setOrderedImageIds((prev) => prev.filter((id) => id !== imageId));
+  };
+
+  const handleRestoreImage = (imageId: number) => {
+    const image = existingImages.find((img) => img.id === imageId);
+    if (!image) return;
+
+    setOrderedImageIds((prev) => {
+      const restored = [...prev, imageId];
+      return existingImages
+        .filter((img) => restored.includes(img.id))
+        .sort((a, b) => a.order - b.order)
+        .map((img) => img.id);
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,6 +98,7 @@ export const AdminProductEdit: React.FC = () => {
           displayStatus,
         },
         selectedImages.length > 0 ? selectedImages : undefined,
+        orderedImageIds.length > 0 ? orderedImageIds : undefined,
       );
 
       navigate('/admin/products');
@@ -192,18 +214,50 @@ export const AdminProductEdit: React.FC = () => {
               <div className="mb-4">
                 <p className="text-sm text-gray-600 mb-2">既存の画像</p>
                 <div className="grid grid-cols-4 gap-4">
-                  {existingImages.map((image, index) => (
-                    <div key={image.id} className="relative">
-                      <img
-                        src={getImageUrl(image.src) || ''}
-                        alt={`既存画像 ${index + 1}`}
-                        className="w-full h-32 object-cover rounded border"
-                      />
-                      <div className="absolute bottom-1 left-1 bg-black bg-opacity-50 text-white text-xs px-1 rounded">
-                        {image.order}
+                  {existingImages.map((image, index) => {
+                    const isDeleted = !orderedImageIds.includes(image.id);
+                    return (
+                      <div key={image.id} className="relative">
+                        <img
+                          src={getImageUrl(image.src) || ''}
+                          alt={`既存画像 ${index + 1}`}
+                          className={`w-full h-32 object-cover rounded border ${
+                            isDeleted ? 'opacity-50 grayscale' : ''
+                          }`}
+                        />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            isDeleted
+                              ? handleRestoreImage(image.id)
+                              : handleDeleteExistingImage(image.id)
+                          }
+                          className={`absolute top-1 right-1 z-10 rounded-full w-6 h-6 flex items-center justify-center text-xs transition-colors ${
+                            isDeleted
+                              ? 'bg-green-500 text-white hover:bg-green-600'
+                              : 'bg-red-500 text-white hover:bg-red-600'
+                          }`}
+                          aria-label={isDeleted ? '画像を復元' : '画像を削除'}
+                        >
+                          {isDeleted ? (
+                            <ArrowPathIcon className="w-4 h-4" />
+                          ) : (
+                            <XMarkIcon className="w-4 h-4" />
+                          )}
+                        </button>
+                        <div className="absolute bottom-1 left-1 bg-black bg-opacity-50 text-white text-xs px-1 rounded">
+                          {image.order}
+                        </div>
+                        {isDeleted && (
+                          <div className="absolute inset-0 z-0 flex items-center justify-center bg-black bg-opacity-30 rounded">
+                            <span className="text-white text-sm font-bold">
+                              削除予定
+                            </span>
+                          </div>
+                        )}
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             )}
