@@ -35,7 +35,7 @@ export const ProductList: React.FC = () => {
   return (
     <div className="w-full max-w-[1600px] mx-auto py-8 px-4 sm:px-6 md:px-8 lg:px-12">
       <h1 className="text-3xl font-bold mb-6">
-        {searchQuery ? `「${searchQuery}」の検索結果` : '商品一覧'}
+        {searchQuery ? `「${searchQuery}」の検索結果` : '全ての商品'}
       </h1>
       {isLoading ? (
         <div className="text-center py-8">読み込み中...</div>
