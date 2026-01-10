@@ -29,6 +29,7 @@ export class UpdateItemInteractor implements IUpdateItemInteractor {
     inventoryAmount?: number,
     files?: Express.Multer.File[],
     displayStatus?: DisplayStatus,
+    imageIds?: number[],
   ): Promise<{ item: Item; images: ItemImage[] } | null> {
     // 商品の存在確認（管理者向けなのでお気に入り情報は不要）
     const item = await this.itemRepository.findById(id, undefined, undefined);
@@ -49,6 +50,39 @@ export class UpdateItemInteractor implements IUpdateItemInteractor {
 
     if (!updatedItem) {
       return null;
+    }
+
+    if (imageIds !== undefined) {
+      const existingImages = await this.itemImageRepository.findByItemId(id);
+      const imageIdSet = new Set(imageIds);
+      const imagesToDelete = existingImages.filter(
+        (image) => !imageIdSet.has(image.id),
+      );
+
+      for (const imageToDelete of imagesToDelete) {
+        try {
+          await this.imageStorageAdapter.delete(imageToDelete.src, id);
+        } catch {
+          // ストレージ削除に失敗してもエラーにしない（S3の場合、既に削除されている可能性があるため）
+        }
+        await this.itemImageRepository.delete(imageToDelete.id);
+      }
+
+      for (let i = 0; i < imageIds.length; i++) {
+        const imageId = imageIds[i];
+        const newOrder = i + 1;
+
+        const image = existingImages.find((img) => img.id === imageId);
+        if (!image) {
+          throw new Error(
+            `Image with ID ${imageId} not found or does not belong to this item`,
+          );
+        }
+
+        if (image.order !== newOrder) {
+          await this.itemImageRepository.updateOrder(imageId, newOrder);
+        }
+      }
     }
 
     const uploadedImages: ItemImage[] = [];
