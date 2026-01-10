@@ -68,6 +68,7 @@ export async function updateItem(
   id: number,
   data: PatchReq['/admin/items/:id'],
   images?: File[],
+  imageIds?: number[],
 ): Promise<PatchRes['/admin/items/:id']> {
   const formData = new FormData();
 
@@ -89,6 +90,10 @@ export async function updateItem(
   }
   if (data.displayStatus !== undefined) {
     formData.append('displayStatus', data.displayStatus);
+  }
+
+  if (imageIds !== undefined) {
+    formData.append('imageIds', JSON.stringify(imageIds));
   }
 
   // 画像ファイルを追加
