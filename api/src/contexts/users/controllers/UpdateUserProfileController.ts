@@ -21,13 +21,12 @@ export class UpdateUserProfileController {
         return res.status(400).json({ message: 'User ID must be a number' });
       }
 
-      const { lastName, firstName, email } = req.body;
+      const { lastName, firstName } = req.body;
 
       const input: UpdateUserProfileInput = {
         id: userId,
         lastName: lastName,
         firstName: firstName,
-        email: email,
       };
 
       const user = await this.updateUserProfileInteractor.execute(input);

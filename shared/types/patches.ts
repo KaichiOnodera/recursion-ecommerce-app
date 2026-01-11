@@ -14,7 +14,6 @@ export type PatchReq = {
   '/users/profile': {
     lastName: string;
     firstName: string;
-    email: string;
   };
 };
 
