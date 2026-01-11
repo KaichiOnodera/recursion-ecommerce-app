@@ -39,10 +39,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ item, isAdmin = false }) => {
 
   return (
     <div
-      className={`group flex flex-col h-full bg-white border border-gray-200 rounded-lg transition-all duration-300 ${
-        !isAdmin
-          ? 'cursor-pointer hover:shadow-lg hover:-translate-y-1 hover:border-gray-300'
-          : ''
+      className={`group flex flex-col h-full bg-white border border-gray-200 rounded-lg transition-shadow duration-300 ${
+        !isAdmin ? 'cursor-pointer hover:shadow-md' : ''
       }`}
       onClick={handleCardClick}
     >
