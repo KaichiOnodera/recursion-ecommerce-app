@@ -248,8 +248,11 @@ export const AdminProductEdit: React.FC = () => {
               <p className="text-sm text-gray-700 mb-2">
                 画像にマウスを合わせると、左右の矢印ボタンで並び替え、×ボタンで削除ができます
               </p>
-              <p className="text-sm text-gray-700">
+              <p className="text-sm text-gray-700 mb-2">
                 新規追加する画像は、既存画像の一番最後に追加されます
+              </p>
+              <p className="text-sm text-blue-600 font-medium">
+                一番左に表示されている画像（1番目の画像）がサムネイルとして使用されます
               </p>
             </div>
 

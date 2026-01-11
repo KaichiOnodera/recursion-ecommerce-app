@@ -85,6 +85,11 @@ export const ExistingImageList: React.FC<ExistingImageListProps> = ({
                   >
                     <XMarkIcon className="w-4 h-4" />
                   </button>
+                  {activeIndex === 0 && (
+                    <div className="absolute top-1 left-1 bg-blue-500 backdrop-blur-sm text-white text-xs px-2 py-1 rounded font-semibold">
+                      サムネイル
+                    </div>
+                  )}
                   <div className="absolute bottom-1 left-1 bg-black/60 backdrop-blur-sm text-white text-xs px-1.5 py-0.5 rounded">
                     {activeIndex + 1}
                   </div>
