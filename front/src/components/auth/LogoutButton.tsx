@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { logout } from '../../services/api/auth';
 import { useUser } from '../../contexts/UserContext';
+import { LogoutConfirmationModal } from './LogoutConfirmationModal';
 
 interface LogoutButtonProps {
   className?: string;
@@ -14,6 +15,7 @@ export const LogoutButton: React.FC<LogoutButtonProps> = ({
 }) => {
   const navigate = useNavigate();
   const { clearUser } = useUser();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -27,12 +29,20 @@ export const LogoutButton: React.FC<LogoutButtonProps> = ({
       }
     } catch (error) {
       console.error('Logout failed:', error);
+      throw error;
     }
   };
 
   return (
-    <button onClick={handleLogout} className={className}>
-      ログアウト
-    </button>
+    <>
+      <button onClick={() => setIsModalOpen(true)} className={className}>
+        ログアウト
+      </button>
+      <LogoutConfirmationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={handleLogout}
+      />
+    </>
   );
 };

@@ -27,6 +27,7 @@ import { MyPage } from './pages/user/MyPage';
 import { OrderHistory } from './pages/user/OrderHistory';
 import { FavoritesList } from './pages/user/FavoritesList';
 import { OrderComplete } from './pages/OrderComplete';
+import { User } from './pages/auth/UserProfile';
 
 function App(): React.JSX.Element {
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
@@ -53,7 +54,7 @@ function App(): React.JSX.Element {
     <UserContextProvider>
       <CartContextProvider>
         <BrowserRouter>
-          <div className="bg-blue-100 min-h-screen">
+          <div className="min-h-screen">
             <Header ref={headerRef} />
             <div className="container mx-auto p-4">
               <Routes>
@@ -64,6 +65,7 @@ function App(): React.JSX.Element {
                 <Route path="/auth/user/signup" element={<UserSignup />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/mypage" element={<MyPage />} />
+                <Route path="/user/profile" element={<User />} />
                 <Route path="/orders" element={<OrderHistory />} />
                 <Route path="/favorites" element={<FavoritesList />} />
                 <Route path="/auth/admin/login" element={<AdminLogin />} />

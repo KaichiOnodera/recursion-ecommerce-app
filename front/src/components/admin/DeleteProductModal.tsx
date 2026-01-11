@@ -4,16 +4,18 @@ import {
   ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline';
 
-interface ResignationModalProps {
+interface DeleteProductModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => Promise<void>;
+  productName: string;
 }
 
-export const ResignationModal: React.FC<ResignationModalProps> = ({
+export const DeleteProductModal: React.FC<DeleteProductModalProps> = ({
   isOpen,
   onClose,
   onConfirm,
+  productName,
 }) => {
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -32,7 +34,7 @@ export const ResignationModal: React.FC<ResignationModalProps> = ({
     } catch (err: any) {
       setError(
         err.message ||
-          '退会できませんでした。しばらく時間をおいて再度お試しください。',
+          '商品の削除に失敗しました。しばらく時間をおいて再度お試しください。',
       );
       setIsLoading(false);
     }
@@ -70,23 +72,30 @@ export const ResignationModal: React.FC<ResignationModalProps> = ({
             <div className="flex-shrink-0">
               <ExclamationTriangleIcon className="w-8 h-8 text-red-600" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900">退会しますか？</h2>
+            <h2 className="text-2xl font-bold text-gray-900">
+              商品を削除しますか？
+            </h2>
           </div>
 
           {/* 警告メッセージ */}
           <div className="mb-6">
             <p className="text-gray-700 mb-4">
-              退会すると、以下の情報はすべて削除され、元に戻すことはできません：
+              以下の商品を削除すると、以下の情報はすべて削除され、元に戻すことはできません：
             </p>
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
+              <p className="text-gray-900 font-semibold text-sm">
+                「{productName}」
+              </p>
+            </div>
             <ul className="list-disc list-inside space-y-2 text-gray-600 mb-4 ml-4">
-              <li>あなたのアカウント情報</li>
-              <li>これまでの購入履歴</li>
-              <li>お気に入り商品</li>
-              <li>カートに入れた商品</li>
+              <li>商品情報</li>
+              <li>商品画像</li>
+              <li>在庫情報</li>
+              <li>レビュー情報</li>
             </ul>
             <div className="bg-red-50 border border-red-200 rounded-lg p-4">
               <p className="text-red-800 font-medium text-sm">
-                この操作は取り消せません。本当に退会してよろしいですか？
+                この操作は取り消せません。本当に削除してよろしいですか？
               </p>
             </div>
           </div>
@@ -128,7 +137,7 @@ export const ResignationModal: React.FC<ResignationModalProps> = ({
               disabled={!isConfirmed || isLoading}
               className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
             >
-              {isLoading ? '退会しています...' : '退会する'}
+              {isLoading ? '削除しています...' : '削除する'}
             </button>
           </div>
         </div>

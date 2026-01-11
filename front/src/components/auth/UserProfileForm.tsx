@@ -28,10 +28,6 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
     setProfileForm((prev) => ({ ...prev, firstName: value }));
   };
 
-  const updateEmail = (value: string): void => {
-    setProfileForm((prev) => ({ ...prev, email: value }));
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -80,19 +76,6 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
             name="firstName"
             value={profileform.firstName}
             onChange={(e) => updateFirstName(e.target.value)}
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            メールアドレス
-          </label>
-          <input
-            name="email"
-            type="email"
-            value={profileform.email}
-            onChange={(e) => updateEmail(e.target.value)}
             className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
           />
         </div>

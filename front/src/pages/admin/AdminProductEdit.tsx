@@ -3,8 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { getAdminItem, updateItem } from '../../services/api/items';
 import { ItemImage } from '@shared/schemas/item';
-import { getImageUrl } from '../../utils/imageUrl';
 import { useImageUpload } from '../../hooks/useImageUpload';
+import { ExistingImageList } from '../../components/admin/ExistingImageList';
+import { NewImageUpload } from '../../components/admin/NewImageUpload';
 
 export const AdminProductEdit: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -17,6 +18,9 @@ export const AdminProductEdit: React.FC = () => {
     'private',
   );
   const [existingImages, setExistingImages] = useState<ItemImage[]>([]);
+  const [orderedImageIds, setOrderedImageIds] = useState<
+    Array<{ imageId: number; isDeleted: boolean }>
+  >([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
@@ -49,12 +53,61 @@ export const AdminProductEdit: React.FC = () => {
       setType(item.type);
       setPrice(item.price);
       setDisplayStatus(item.displayStatus);
-      setExistingImages(item.images || []);
+      const images = item.images || [];
+      setExistingImages(images);
+      setOrderedImageIds(
+        images.map((img) => ({ imageId: img.id, isDeleted: false })),
+      );
       setInventoryAmount(response.item.inventoryAmount);
     };
 
     fetchItem();
   }, [id, navigate]);
+
+  const handleDeleteExistingImage = (imageId: number) => {
+    setOrderedImageIds((prev) =>
+      prev.map((item) =>
+        item.imageId === imageId ? { ...item, isDeleted: true } : item,
+      ),
+    );
+  };
+
+  const handleRestoreImage = (imageId: number) => {
+    setOrderedImageIds((prev) =>
+      prev.map((item) =>
+        item.imageId === imageId ? { ...item, isDeleted: false } : item,
+      ),
+    );
+  };
+
+  const handleMoveImage = (imageId: number, direction: 'up' | 'down') => {
+    setOrderedImageIds((prev) => {
+      const currentIndex = prev.findIndex(
+        (item) => item.imageId === imageId && !item.isDeleted,
+      );
+      if (currentIndex === -1) return prev;
+
+      const step = direction === 'up' ? -1 : 1;
+      let targetIndex = currentIndex + step;
+
+      while (
+        targetIndex >= 0 &&
+        targetIndex < prev.length &&
+        prev[targetIndex].isDeleted
+      ) {
+        targetIndex += step;
+      }
+
+      if (targetIndex < 0 || targetIndex >= prev.length) return prev;
+
+      const newOrder = [...prev];
+      [newOrder[currentIndex], newOrder[targetIndex]] = [
+        newOrder[targetIndex],
+        newOrder[currentIndex],
+      ];
+      return newOrder;
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,6 +119,10 @@ export const AdminProductEdit: React.FC = () => {
     setIsSubmitting(true);
 
     try {
+      const activeImageIds = orderedImageIds
+        .filter((item) => !item.isDeleted)
+        .map((item) => item.imageId);
+
       await updateItem(
         parseInt(id),
         {
@@ -77,6 +134,7 @@ export const AdminProductEdit: React.FC = () => {
           displayStatus,
         },
         selectedImages.length > 0 ? selectedImages : undefined,
+        activeImageIds.length > 0 ? activeImageIds : undefined,
       );
 
       navigate('/admin/products');
@@ -186,69 +244,33 @@ export const AdminProductEdit: React.FC = () => {
           {/* 商品画像 */}
           <div>
             <label className="block mb-2 font-medium">商品画像</label>
+            <div className="mb-4 p-3 bg-gray-50 border border-gray-200 rounded-md">
+              <p className="text-sm text-gray-700 mb-2">
+                画像にマウスを合わせると、左右の矢印ボタンで並び替え、×ボタンで削除ができます
+              </p>
+              <p className="text-sm text-gray-700 mb-2">
+                新規追加する画像は、既存画像の一番最後に追加されます
+              </p>
+              <p className="text-sm text-blue-600 font-medium">
+                一番左に表示されている画像（1番目の画像）がサムネイルとして使用されます
+              </p>
+            </div>
 
-            {/* 既存画像の表示 */}
-            {existingImages.length > 0 && (
-              <div className="mb-4">
-                <p className="text-sm text-gray-600 mb-2">既存の画像</p>
-                <div className="grid grid-cols-4 gap-4">
-                  {existingImages.map((image, index) => (
-                    <div key={image.id} className="relative">
-                      <img
-                        src={getImageUrl(image.src) || ''}
-                        alt={`既存画像 ${index + 1}`}
-                        className="w-full h-32 object-cover rounded border"
-                      />
-                      <div className="absolute bottom-1 left-1 bg-black bg-opacity-50 text-white text-xs px-1 rounded">
-                        {image.order}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* 新規画像のアップロード */}
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={handleImageSelect}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            <ExistingImageList
+              existingImages={existingImages}
+              orderedImageIds={orderedImageIds}
+              onMoveImage={handleMoveImage}
+              onDeleteImage={handleDeleteExistingImage}
+              onRestoreImage={handleRestoreImage}
             />
-            <p className="mt-1 text-sm text-gray-500">
-              画像は最大{MAX_IMAGES}枚まで選択できます（jpg, jpeg, png, gif,
-              webp, svg, avif）
-            </p>
 
-            {/* 新規画像のプレビュー */}
-            {imagePreviews.length > 0 && (
-              <div className="mt-4">
-                <p className="text-sm text-gray-600 mb-2">新規追加する画像</p>
-                <div className="grid grid-cols-4 gap-4">
-                  {imagePreviews.map((preview, index) => (
-                    <div key={index} className="relative">
-                      <img
-                        src={preview}
-                        alt={`プレビュー ${index + 1}`}
-                        className="w-full h-32 object-cover rounded border"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveImage(index)}
-                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
-                      >
-                        ×
-                      </button>
-                      <div className="absolute bottom-1 left-1 bg-blue-500 bg-opacity-50 text-white text-xs px-1 rounded">
-                        新規
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            <NewImageUpload
+              fileInputRef={fileInputRef}
+              onImageSelect={handleImageSelect}
+              imagePreviews={imagePreviews}
+              onRemoveImage={handleRemoveImage}
+              maxImages={MAX_IMAGES}
+            />
           </div>
 
           {/* ボタン */}

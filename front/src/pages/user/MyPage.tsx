@@ -5,9 +5,11 @@ import {
   CubeIcon,
   ClipboardDocumentListIcon,
   ChevronRightIcon,
-  ExclamationTriangleIcon,
   LockClosedIcon,
   ArrowRightIcon,
+  EnvelopeIcon,
+  UserIcon,
+  ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline';
 import { OrderHistoryPreview } from '../../components/user/OrderHistoryPreview';
 import { FavoritesPreview } from '../../components/user/FavoritesPreview';
@@ -153,25 +155,49 @@ export const MyPage: React.FC = () => {
         </div>
       )}
 
-      {/* 退会セクション */}
-      <div className="bg-white rounded-lg shadow-md p-6 border-t-2 border-red-100">
-        <div className="flex items-start space-x-3 mb-4">
-          <ExclamationTriangleIcon className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" />
-          <div className="flex-1">
-            <h2 className="text-xl font-bold text-gray-900 mb-2">
-              アカウント設定
-            </h2>
-            <p className="text-gray-600 text-sm mb-4">
+      {/* アカウント設定セクション */}
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h2 className="text-xl font-bold text-gray-900 mb-6">アカウント設定</h2>
+        <div className="flex flex-col space-y-3 mb-6">
+          <Link
+            to="/user/profile"
+            className="self-start flex items-center space-x-2 py-2 text-gray-700 hover:text-gray-900 transition-colors text-sm font-medium"
+          >
+            <UserIcon className="w-5 h-5 text-gray-500" />
+            <span>プロフィールを編集</span>
+          </Link>
+          <button
+            onClick={() => {
+              // ハリボテ実装: 将来的にメールアドレス変更モーダルを表示
+              alert('メールアドレス変更機能は準備中です');
+            }}
+            className="self-start flex items-center space-x-2 py-2 text-gray-700 hover:text-gray-900 transition-colors text-sm font-medium"
+          >
+            <EnvelopeIcon className="w-5 h-5 text-gray-500" />
+            <span>メールアドレスを変更</span>
+          </button>
+        </div>
+
+        {/* Danger Zone */}
+        <div className="border-t border-red-200 pt-6 mt-6">
+          <div className="mb-4">
+            <div className="flex items-center space-x-2 mb-2">
+              <ExclamationTriangleIcon className="w-5 h-5 text-red-600 flex-shrink-0" />
+              <h3 className="text-lg font-semibold text-red-600">
+                アカウントの削除
+              </h3>
+            </div>
+            <p className="text-gray-600 text-sm ml-7">
               アカウントを削除すると、すべてのデータが永久に削除され、復元できません。
             </p>
           </div>
+          <button
+            onClick={() => setIsResignationModalOpen(true)}
+            className="px-4 py-2 text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition-colors font-medium text-sm whitespace-nowrap"
+          >
+            退会する
+          </button>
         </div>
-        <button
-          onClick={() => setIsResignationModalOpen(true)}
-          className="px-4 py-2 text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition-colors font-medium text-sm"
-        >
-          アカウントを退会する
-        </button>
       </div>
 
       {/* 退会確認モーダル */}

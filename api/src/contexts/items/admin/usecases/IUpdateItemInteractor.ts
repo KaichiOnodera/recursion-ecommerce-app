@@ -12,5 +12,6 @@ export interface IUpdateItemInteractor {
     inventoryAmount?: number,
     files?: Express.Multer.File[],
     displayStatus?: DisplayStatus,
+    imageIds?: number[],
   ): Promise<{ item: Item; images: ItemImage[] } | null>;
 }
