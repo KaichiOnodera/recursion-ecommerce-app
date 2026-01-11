@@ -23,7 +23,11 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
     <button
       onClick={onAddToCart}
       disabled={isOutOfStock || isAddingToCart}
-      className="flex-1 bg-gray-900 text-white px-6 py-4 rounded-lg hover:bg-gray-800 text-base font-medium disabled:bg-gray-400 disabled:cursor-not-allowed disabled:hover:bg-gray-400 transition-colors"
+      className={`flex-1 px-4 py-2.5 text-sm font-medium transition-all duration-200 active:scale-95 ${
+        isOutOfStock || isAddingToCart
+          ? 'bg-gray-200 text-gray-500 cursor-not-allowed border-2 border-gray-300'
+          : 'border-2 border-gray-900 text-gray-900 hover:bg-gray-50 hover:border-orange-400'
+      }`}
     >
       {isAddingToCart
         ? '追加中...'
