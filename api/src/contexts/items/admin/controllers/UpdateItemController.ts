@@ -15,9 +15,11 @@ const upload = multer({
 });
 
 interface UpdateItemRequest extends AuthenticatedRequest<any, { id: string }> {
-  files?: {
-    images?: Express.Multer.File[];
-  };
+  files?:
+    | {
+        [fieldname: string]: Express.Multer.File[];
+      }
+    | Express.Multer.File[];
 }
 
 export class UpdateItemController {
@@ -33,7 +35,9 @@ export class UpdateItemController {
   async execute(
     req: UpdateItemRequest,
     res: express.Response<PatchRes['/admin/items/:id'] | { message: string }>,
-  ) {
+  ): Promise<
+    express.Response<PatchRes['/admin/items/:id'] | { message: string }>
+  > {
     try {
       const itemId = parseInt(req.params.id);
 
@@ -61,7 +65,12 @@ export class UpdateItemController {
         displayStatus === undefined &&
         imageIds === undefined
       ) {
-        const hasFiles = req.files?.images && req.files.images.length > 0;
+        const filesObj =
+          req.files && !Array.isArray(req.files) ? req.files : null;
+        const hasFiles =
+          filesObj?.images &&
+          Array.isArray(filesObj.images) &&
+          filesObj.images.length > 0;
 
         if (!hasFiles) {
           return res.status(400).json({
@@ -70,7 +79,9 @@ export class UpdateItemController {
         }
       }
 
-      const files = req.files?.images;
+      const filesObj =
+        req.files && !Array.isArray(req.files) ? req.files : null;
+      const files = filesObj?.images;
 
       const parsedImageIds = parseJsonToNumberArray(imageIds);
       if (parsedImageIds === null) {
