@@ -134,7 +134,7 @@ export const AdminProductEdit: React.FC = () => {
           displayStatus,
         },
         selectedImages.length > 0 ? selectedImages : undefined,
-        activeImageIds.length > 0 ? activeImageIds : undefined,
+        activeImageIds,
       );
 
       navigate('/admin/products');
