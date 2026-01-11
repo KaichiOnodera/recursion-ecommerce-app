@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router';
+import { TrashIcon } from '@heroicons/react/24/outline';
 import { Item, AdminItem } from '@shared/schemas/item';
 import { InventoryStatus } from '../../services/api/items';
 import { addToCart } from '../../services/api/cart';
@@ -9,9 +10,14 @@ import { getImageUrl } from '../../utils/imageUrl';
 interface ProductCardProps {
   item: Item | AdminItem;
   isAdmin?: boolean;
+  onDelete?: (itemId: number) => void;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ item, isAdmin = false }) => {
+const ProductCard: React.FC<ProductCardProps> = ({
+  item,
+  isAdmin = false,
+  onDelete,
+}) => {
   const navigate = useNavigate();
   const { refreshCart } = useCart();
 
@@ -111,17 +117,31 @@ const ProductCard: React.FC<ProductCardProps> = ({ item, isAdmin = false }) => {
               : item.price}
           </p>
 
-          {/* 管理者用の編集ボタン */}
+          {/* 管理者用のボタン */}
           {isAdmin ? (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                navigate(`/admin/products/${item.id}/edit`);
-              }}
-              className="w-full border border-gray-300 text-gray-700 px-4 py-2.5 text-sm font-medium hover:bg-gray-50 transition-colors active:scale-95"
-            >
-              編集
-            </button>
+            <div className="space-y-2">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate(`/admin/products/${item.id}/edit`);
+                }}
+                className="w-full border border-gray-300 text-gray-700 px-4 py-2.5 text-sm font-medium hover:bg-gray-50 transition-colors active:scale-95 rounded-md"
+              >
+                編集
+              </button>
+              {onDelete && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete(item.id);
+                  }}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-red-600 border border-red-300 rounded-md hover:bg-red-50 hover:border-red-400 transition-all duration-200 active:scale-95 group"
+                >
+                  <TrashIcon className="w-4 h-4 transition-transform group-hover:scale-110" />
+                  <span>削除</span>
+                </button>
+              )}
+            </div>
           ) : (
             <button
               onClick={(e) => {
