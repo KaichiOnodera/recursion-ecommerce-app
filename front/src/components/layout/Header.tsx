@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { HeaderProps } from '../../types';
-import { LogoutButton } from '../auth/LogoutButton';
+import { UserAccountMenu } from '../auth/UserAccountMenu';
 import { useCart } from '../../contexts/CartContext';
 import { useUser } from '../../contexts/UserContext';
 import {
@@ -108,20 +108,6 @@ const Header = React.forwardRef<HTMLElement, HeaderProps>(
                   </Link>
                 </React.Fragment>
               ))}
-              {/* ログイン状態の場合のみログアウトボタンを表示 */}
-              {loggedIn && (
-                <>
-                  {filteredNavigationItems.length > 0 && (
-                    <span
-                      className="h-4 w-px bg-gray-300 mx-3"
-                      aria-hidden="true"
-                    />
-                  )}
-                  <LogoutButton
-                    className={`${navLinkClassName} cursor-pointer`}
-                  />
-                </>
-              )}
             </nav>
 
             {/* アイコン */}
@@ -136,10 +122,15 @@ const Header = React.forwardRef<HTMLElement, HeaderProps>(
                   <HeartIcon className={iconClassName} />
                 </button>
               )}
-              {/* ユーザーアイコン */}
-              <Link to="/mypage" className={iconBaseStyles}>
-                <UserIcon className={iconClassName} />
-              </Link>
+              {/* ログイン状態の場合：ユーザーアカウントメニュー */}
+              {loggedIn ? (
+                <UserAccountMenu />
+              ) : (
+                /* ゲスト状態の場合：ユーザーアイコン */
+                <Link to="/mypage" className={iconBaseStyles}>
+                  <UserIcon className={iconClassName} />
+                </Link>
+              )}
               {/* カートアイコン */}
               <Link to="/cart" className={`relative ${iconBaseStyles}`}>
                 <ShoppingCartIcon className={iconClassName} />
