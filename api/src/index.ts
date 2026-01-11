@@ -124,8 +124,6 @@ app.use(`${apiPrefix}/favorites`, favoritesRouter);
 app.listen(8000, '0.0.0.0', () => {
   // eslint-disable-next-line no-console
   console.log('Server running on port 8000');
-  // eslint-disable-next-line no-console
-  console.log('Database URL:', process.env.DATABASE_URL);
 });
 
 // Graceful shutdown
