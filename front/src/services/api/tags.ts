@@ -49,3 +49,13 @@ export async function deleteTag(
 
   return response.data;
 }
+
+export async function getTagUsageCount(
+  id: number,
+): Promise<GetRes['/admin/tags/:id/usage-count']> {
+  const response = await apiClient.get<GetRes['/admin/tags/:id/usage-count']>(
+    `/admin/tags/${id}/usage-count`,
+  );
+
+  return response.data;
+}
