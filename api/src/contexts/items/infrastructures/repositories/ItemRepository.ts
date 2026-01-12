@@ -5,6 +5,7 @@ import { DisplayStatus, Item } from '../../domains/entities/Item';
 import { IItemImageRepository } from '../../domains/repositories/IItemImageRepository';
 import { IImageStorageAdapter } from '../../domains/adapters/IImageStorageAdapter';
 import { IFavoriteRepository } from '../../../favorites/domains/repositories/IFavoriteRepository';
+import { ITagRepository } from '../../../tags/domains/repositories/ITagRepository';
 
 export class ItemRepository implements IItemRepository {
   constructor(
@@ -12,6 +13,7 @@ export class ItemRepository implements IItemRepository {
     private readonly itemImageRepository: IItemImageRepository,
     private readonly imageStorageAdapter: IImageStorageAdapter,
     private readonly favoriteRepository?: IFavoriteRepository,
+    private readonly tagRepository?: ITagRepository,
   ) {}
 
   async findAll(
@@ -143,6 +145,69 @@ export class ItemRepository implements IItemRepository {
     }
 
     return prismaQuery;
+  }
+
+  async findByTagIds(tagIds: number[], userId?: number): Promise<Item[]> {
+    if (!this.tagRepository) {
+      throw new Error('TagRepository is not provided');
+    }
+
+    if (tagIds.length === 0) {
+      return [];
+    }
+
+    const items = await this.prisma.items.findMany({
+      where: {
+        AND: tagIds.map((tagId) => ({
+          ItemTags: {
+            some: {
+              tagId,
+            },
+          },
+        })),
+      },
+      include: {
+        Inventory: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return Promise.all(
+      items.map(async (item) => {
+        const images = await this.itemImageRepository.findByItemId(item.id);
+        const imagesWithUrl = images.map((image) => ({
+          ...image,
+          src: this.imageStorageAdapter.getUrl(image.src, item.id),
+        }));
+
+        let isFavorite: boolean | null = null;
+        if (userId && this.favoriteRepository) {
+          const favorite = await this.favoriteRepository.findByUserIdAndItemId(
+            userId,
+            item.id,
+          );
+          isFavorite = favorite !== null;
+        }
+
+        return {
+          id: item.id,
+          name: item.name,
+          description: item.description,
+          type: item.type,
+          price: item.price,
+          displayStatus: this.isDisplayStatus(item.displayStatus)
+            ? item.displayStatus
+            : DisplayStatus.PRIVATE,
+          inventory: {
+            amount: item.Inventory?.[0]?.amount ?? 0,
+          },
+          images: imagesWithUrl,
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
+          isFavorite,
+        };
+      }),
+    );
   }
 
   async create(name: string, description: string, type: number): Promise<Item> {

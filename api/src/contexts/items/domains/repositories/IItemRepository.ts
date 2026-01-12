@@ -9,6 +9,7 @@ export interface IItemRepository {
     displayStatus?: DisplayStatus,
     userId?: number,
   ): Promise<Item | null>;
+  findByTagIds?(tagIds: number[], userId?: number): Promise<Item[]>;
   create(name: string, description: string, type: number): Promise<Item>;
   update(
     id: number,
