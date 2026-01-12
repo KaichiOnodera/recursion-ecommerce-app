@@ -105,4 +105,7 @@ export type GetRes = {
   '/admin/tags': {
     tags: Tag[];
   };
+  '/admin/tags/:id/usage-count': {
+    count: number;
+  };
 };
