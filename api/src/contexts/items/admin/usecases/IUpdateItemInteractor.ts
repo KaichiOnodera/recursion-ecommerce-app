@@ -13,5 +13,6 @@ export interface IUpdateItemInteractor {
     files?: Express.Multer.File[],
     displayStatus?: DisplayStatus,
     imageIds?: number[],
+    tagIds?: number[],
   ): Promise<{ item: Item; images: ItemImage[] } | null>;
 }

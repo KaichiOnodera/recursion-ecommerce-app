@@ -3,6 +3,7 @@ import { PostRes } from '@shared/types/posts';
 import { ICreateItemInteractor } from '../usecases/ICreateItemInteractor';
 import { InventoryStatus } from '@shared/schemas/item';
 import multer from 'multer';
+import { parseJsonToNumberArray } from '../../../../utils/parseJson';
 
 // multerの設定（メモリストレージを使用）
 const upload = multer({
@@ -33,7 +34,8 @@ export class CreateItemController {
     res: express.Response<PostRes['/admin/items'] | { message: string }>,
   ) {
     try {
-      const { name, description, type, price, displayStatus } = req.body;
+      const { name, description, type, price, displayStatus, tagIds } =
+        req.body;
 
       if (!name || !description || type === undefined || price === undefined) {
         return res.status(400).json({
@@ -44,6 +46,13 @@ export class CreateItemController {
       const typedReq = req as CreateItemRequest;
       const files = typedReq.files?.images;
 
+      const parsedTagIds = parseJsonToNumberArray(tagIds);
+      if (parsedTagIds === null && tagIds !== undefined) {
+        return res.status(400).json({
+          message: 'tagIds must be an array of integers',
+        });
+      }
+
       const result = await this.createItemInteractor.execute(
         name,
         description,
@@ -51,6 +60,7 @@ export class CreateItemController {
         Number(price),
         files,
         displayStatus as 'public' | 'private' | undefined,
+        parsedTagIds ?? undefined,
       );
 
       const responseImages = result.images.map((image) => ({

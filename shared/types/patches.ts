@@ -11,6 +11,7 @@ export type PatchReq = {
     inventoryAmount?: number;
     displayStatus?: 'public' | 'private';
     imageIds?: number[];
+    tagIds?: number[];
   };
   '/users/profile': {
     lastName: string;
