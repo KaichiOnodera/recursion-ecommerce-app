@@ -12,6 +12,7 @@ import { ErrorState } from '../components/product/ErrorState';
 import { QuantitySelector } from '../components/product/QuantitySelector';
 import { ActionButtons } from '../components/product/ActionButtons';
 import { ReviewSection } from '../components/product/ReviewSection';
+import { TagBadgeList } from '../components/product/TagBadge';
 import { getImageUrl } from '../utils/imageUrl';
 
 const MIN_QUANTITY = 1;
@@ -264,6 +265,9 @@ export const ProductDetail: React.FC = () => {
               {state.item.name}
             </h1>
           </div>
+
+          {/* タグ */}
+          <TagBadgeList tags={state.item.tags} />
 
           {/* 金額と在庫有無（横並び） */}
           <div className="flex items-baseline gap-4">
