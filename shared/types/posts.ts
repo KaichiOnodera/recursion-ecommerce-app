@@ -3,6 +3,7 @@ import { AdminItem } from '../schemas/item';
 import { CartItem } from '../schemas/cart';
 import { Review } from '../schemas/review';
 import { Favorite } from '../schemas/favorite';
+import { Wishlist } from '../schemas/wishlist';
 import { Tag } from '../schemas/tag';
 
 export type PostReq = {
@@ -42,6 +43,10 @@ export type PostReq = {
   '/admin/tags': {
     name: string;
   };
+  '/wishlist': {
+    name?: string | null;
+    isPublic?: boolean;
+  };
 };
 
 export type PostRes = {
@@ -69,5 +74,8 @@ export type PostRes = {
   };
   '/admin/tags': {
     tag: Tag;
+  };
+  '/wishlist': {
+    wishlist: Wishlist;
   };
 };
