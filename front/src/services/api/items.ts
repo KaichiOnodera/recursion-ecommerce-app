@@ -101,6 +101,11 @@ export async function updateItem(
     formData.append('imageIds', JSON.stringify(imageIds));
   }
 
+  // tagIdsを追加
+  if (data.tagIds !== undefined) {
+    formData.append('tagIds', JSON.stringify(data.tagIds));
+  }
+
   // 画像ファイルを追加
   if (images && images.length > 0) {
     images.forEach((image) => {

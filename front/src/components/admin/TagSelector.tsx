@@ -8,6 +8,7 @@ interface TagSelectorProps {
   selectedTagIds: number[];
   onChange: (tagIds: number[]) => void;
   disabled?: boolean;
+  initialTags?: Tag[]; // 初期タグ情報（商品編集画面などで既に取得済みのタグ）
 }
 
 interface SuggestionTag extends Tag {
@@ -18,6 +19,7 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
   selectedTagIds,
   onChange,
   disabled = false,
+  initialTags = [],
 }) => {
   const [inputValue, setInputValue] = useState('');
   const [suggestions, setSuggestions] = useState<SuggestionTag[]>([]);
@@ -43,11 +45,28 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
     fetchTags();
   }, []);
 
+  // initialTagsが渡された場合、allTagsにマージ（重複を避ける）
+  useEffect(() => {
+    if (initialTags.length > 0 && allTags.length === 0) {
+      // allTagsがまだ空の場合、initialTagsを一時的に使用
+      setAllTags(initialTags);
+    } else if (initialTags.length > 0 && allTags.length > 0) {
+      // allTagsが既に取得済みの場合、initialTagsに含まれるタグをマージ（重複を避ける）
+      const existingIds = new Set(allTags.map((tag) => tag.id));
+      const newTags = initialTags.filter((tag) => !existingIds.has(tag.id));
+      if (newTags.length > 0) {
+        setAllTags([...allTags, ...newTags]);
+      }
+    }
+  }, [initialTags, allTags]);
+
   // selectedTagIdsから選択済みタグを取得
   useEffect(() => {
-    const tags = allTags.filter((tag) => selectedTagIds.includes(tag.id));
+    // allTagsが空でinitialTagsがある場合は、initialTagsから取得
+    const sourceTags = allTags.length > 0 ? allTags : initialTags;
+    const tags = sourceTags.filter((tag) => selectedTagIds.includes(tag.id));
     setSelectedTags(tags);
-  }, [selectedTagIds, allTags]);
+  }, [selectedTagIds, allTags, initialTags]);
 
   // 入力値に基づいてサジェストを更新
   useEffect(() => {

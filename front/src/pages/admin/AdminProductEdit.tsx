@@ -6,6 +6,7 @@ import { ItemImage } from '@shared/schemas/item';
 import { useImageUpload } from '../../hooks/useImageUpload';
 import { ExistingImageList } from '../../components/admin/ExistingImageList';
 import { NewImageUpload } from '../../components/admin/NewImageUpload';
+import { TagSelector } from '../../components/admin/TagSelector';
 
 export const AdminProductEdit: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -20,6 +21,10 @@ export const AdminProductEdit: React.FC = () => {
   const [existingImages, setExistingImages] = useState<ItemImage[]>([]);
   const [orderedImageIds, setOrderedImageIds] = useState<
     Array<{ imageId: number; isDeleted: boolean }>
+  >([]);
+  const [selectedTagIds, setSelectedTagIds] = useState<number[]>([]);
+  const [initialTags, setInitialTags] = useState<
+    Array<{ id: number; name: string; createdAt: Date; updatedAt: Date }>
   >([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
@@ -59,6 +64,12 @@ export const AdminProductEdit: React.FC = () => {
         images.map((img) => ({ imageId: img.id, isDeleted: false })),
       );
       setInventoryAmount(response.item.inventoryAmount);
+      if (item.tags) {
+        setSelectedTagIds(item.tags.map((tag) => tag.id));
+        setInitialTags(item.tags);
+      } else {
+        setInitialTags([]);
+      }
     };
 
     fetchItem();
@@ -132,6 +143,7 @@ export const AdminProductEdit: React.FC = () => {
           price,
           inventoryAmount,
           displayStatus,
+          tagIds: selectedTagIds.length > 0 ? selectedTagIds : undefined,
         },
         selectedImages.length > 0 ? selectedImages : undefined,
         activeImageIds,
@@ -240,6 +252,13 @@ export const AdminProductEdit: React.FC = () => {
               公開: 一般ユーザーに表示 / 非公開: 管理者のみ表示
             </p>
           </div>
+
+          {/* タグ */}
+          <TagSelector
+            selectedTagIds={selectedTagIds}
+            onChange={setSelectedTagIds}
+            initialTags={initialTags}
+          />
 
           {/* 商品画像 */}
           <div>
