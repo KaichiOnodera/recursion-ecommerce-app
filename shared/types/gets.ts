@@ -4,6 +4,7 @@ import { CartItem } from '../schemas/cart';
 import { Review } from '../schemas/review';
 import { FavoriteItem } from '../schemas/favorite';
 import { Tag } from '../schemas/tag';
+import { Wishlist } from '../schemas/wishlist';
 
 export type GetRes = {
   '/items': {
@@ -101,6 +102,9 @@ export type GetRes = {
   '/favorites': {
     favorites: FavoriteItem[];
     total: number;
+  };
+  '/wishlist': {
+    wishlists: Wishlist[];
   };
   '/admin/tags': {
     tags: Tag[];
