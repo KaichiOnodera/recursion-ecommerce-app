@@ -160,4 +160,11 @@ export class TagRepository implements ITagRepository {
       }
     });
   }
+
+  async getUsageCount(id: number): Promise<number> {
+    const count = await this.prisma.itemTags.count({
+      where: { tagId: id },
+    });
+    return count;
+  }
 }
