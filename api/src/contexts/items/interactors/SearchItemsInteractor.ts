@@ -13,7 +13,7 @@ export class SearchItemsInteractor implements ISearchItemsInteractor {
   }
 
   private buildQuery(params: SearchItemsParams): ItemQuery {
-    const { q, sort = 'newest', page = 1 } = params;
+    const { q, sort = 'newest', page = 1, tagIds } = params;
     const itemsPerPage = 20;
     const skip = (page - 1) * itemsPerPage;
 
@@ -28,6 +28,14 @@ export class SearchItemsInteractor implements ISearchItemsInteractor {
       query.where = {
         ...query.where,
         name: { contains: q },
+      };
+    }
+
+    // タグフィルタリング
+    if (tagIds && tagIds.length > 0) {
+      query.where = {
+        ...query.where,
+        tagIds,
       };
     }
 
