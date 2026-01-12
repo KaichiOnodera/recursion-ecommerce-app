@@ -6,6 +6,8 @@ import { UpdateTagController } from './controllers/UpdateTagController';
 import { UpdateTagInteractor } from './interactors/UpdateTagInteractor';
 import { DeleteTagController } from './controllers/DeleteTagController';
 import { DeleteTagInteractor } from './interactors/DeleteTagInteractor';
+import { GetTagUsageCountController } from './controllers/GetTagUsageCountController';
+import { GetTagUsageCountInteractor } from './interactors/GetTagUsageCountInteractor';
 import { TagRepository } from './infrastructures/repositories/TagRepository';
 import { prisma } from '../../libs/prisma';
 import express from 'express';
@@ -27,6 +29,13 @@ const updateTagController = new UpdateTagController(updateTagInteractor);
 const deleteTagInteractor = new DeleteTagInteractor(tagRepository);
 const deleteTagController = new DeleteTagController(deleteTagInteractor);
 
+const getTagUsageCountInteractor = new GetTagUsageCountInteractor(
+  tagRepository,
+);
+const getTagUsageCountController = new GetTagUsageCountController(
+  getTagUsageCountInteractor,
+);
+
 adminTagsRouter.use(verifyAccessToken);
 adminTagsRouter.use(verifyAdmin);
 
@@ -45,6 +54,11 @@ adminTagsRouter.patch(
 adminTagsRouter.delete(
   '/:id',
   deleteTagController.execute.bind(deleteTagController),
+);
+
+adminTagsRouter.get(
+  '/:id/usage-count',
+  getTagUsageCountController.execute.bind(getTagUsageCountController),
 );
 
 export { adminTagsRouter };
