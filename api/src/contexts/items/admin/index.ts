@@ -12,6 +12,7 @@ import { ItemRepository } from '../infrastructures/repositories/ItemRepository';
 import { ItemImageRepository } from '../infrastructures/repositories/ItemImageRepository';
 import { createImageStorageAdapter } from '../infrastructures/adapters/createImageStorageAdapter';
 import { FavoriteRepository } from '../../favorites/infrastructures/repositories/FavoriteRepository';
+import { TagRepository } from '../../tags/infrastructures/repositories/TagRepository';
 import { prisma } from '../../../libs/prisma';
 import express from 'express';
 import { verifyAccessToken, verifyAdmin } from '../../../middlewares';
@@ -25,6 +26,7 @@ const favoriteRepository = new FavoriteRepository(
   itemImageRepository,
   imageStorageAdapter,
 );
+const tagRepository = new TagRepository(prisma);
 const itemRepository = new ItemRepository(
   prisma,
   itemImageRepository,
@@ -40,6 +42,7 @@ const createItemInteractor = new CreateItemInteractor(
   itemRepository,
   itemImageRepository,
   imageStorageAdapter,
+  tagRepository,
 );
 const createItemController = new CreateItemController(createItemInteractor);
 
@@ -47,6 +50,7 @@ const updateItemInteractor = new UpdateItemInteractor(
   itemRepository,
   itemImageRepository,
   imageStorageAdapter,
+  tagRepository,
 );
 const updateItemController = new UpdateItemController(updateItemInteractor);
 
