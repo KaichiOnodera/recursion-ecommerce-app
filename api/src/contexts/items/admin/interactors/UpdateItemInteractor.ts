@@ -2,6 +2,7 @@ import { IUpdateItemInteractor } from '../usecases/IUpdateItemInteractor';
 import { IItemRepository } from '../../domains/repositories/IItemRepository';
 import { IItemImageRepository } from '../../domains/repositories/IItemImageRepository';
 import { IImageStorageAdapter } from '../../domains/adapters/IImageStorageAdapter';
+import { ITagRepository } from '../../../tags/domains/repositories/ITagRepository';
 import { Item, DisplayStatus } from '../../domains/entities/Item';
 import { ItemImage } from '../../domains/entities/ItemImage';
 import {
@@ -18,6 +19,7 @@ export class UpdateItemInteractor implements IUpdateItemInteractor {
     private readonly itemRepository: IItemRepository,
     private readonly itemImageRepository: IItemImageRepository,
     private readonly imageStorageAdapter: IImageStorageAdapter,
+    private readonly tagRepository?: ITagRepository,
   ) {}
 
   async execute(
@@ -30,6 +32,7 @@ export class UpdateItemInteractor implements IUpdateItemInteractor {
     files?: Express.Multer.File[],
     displayStatus?: DisplayStatus,
     imageIds?: number[],
+    tagIds?: number[],
   ): Promise<{ item: Item; images: ItemImage[] } | null> {
     // 商品の存在確認（管理者向けなのでお気に入り情報は不要）
     const item = await this.itemRepository.findById(id, undefined, undefined);
@@ -50,6 +53,10 @@ export class UpdateItemInteractor implements IUpdateItemInteractor {
 
     if (!updatedItem) {
       return null;
+    }
+
+    if (tagIds !== undefined && this.tagRepository) {
+      await this.tagRepository.replaceItemTags(id, tagIds);
     }
 
     if (imageIds !== undefined) {
