@@ -3,6 +3,7 @@ import { AdminItem } from '../schemas/item';
 import { CartItem } from '../schemas/cart';
 import { Review } from '../schemas/review';
 import { Favorite } from '../schemas/favorite';
+import { Tag } from '../schemas/tag';
 
 export type PostReq = {
   '/auth/login': {
@@ -37,6 +38,9 @@ export type PostReq = {
   '/favorites': {
     itemId: number;
   };
+  '/admin/tags': {
+    name: string;
+  };
 };
 
 export type PostRes = {
@@ -61,5 +65,8 @@ export type PostRes = {
   };
   '/favorites': {
     favorite: Favorite;
+  };
+  '/admin/tags': {
+    tag: Tag;
   };
 };
