@@ -16,6 +16,7 @@ export type PostReq = {
     type: number;
     price: number;
     displayStatus?: 'public' | 'private';
+    tagIds?: number[];
   };
   '/auth/signup': {
     lastName: string;
