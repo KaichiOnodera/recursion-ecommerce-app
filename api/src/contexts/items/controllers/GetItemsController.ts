@@ -26,6 +26,7 @@ export class GetItemsController {
           : InventoryStatus.OUT_OF_STOCK,
       images: item.images,
       isFavorite: item.isFavorite ?? null,
+      tags: item.tags,
     }));
 
     res.status(201).json({ items: responseItems });
