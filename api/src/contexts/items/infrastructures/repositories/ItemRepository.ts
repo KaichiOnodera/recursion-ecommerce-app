@@ -143,6 +143,21 @@ export class ItemRepository implements IItemRepository {
           not: query.where.displayStatus.not,
         };
       }
+      if (query.where.tagIds && query.where.tagIds.length > 0) {
+        const tagConditions = query.where.tagIds.map((tagId) => ({
+          ItemTags: {
+            some: {
+              tagId,
+            },
+          },
+        }));
+        const existingAnd = Array.isArray(prismaQuery.where.AND)
+          ? prismaQuery.where.AND
+          : prismaQuery.where.AND
+            ? [prismaQuery.where.AND]
+            : [];
+        prismaQuery.where.AND = [...existingAnd, ...tagConditions];
+      }
     }
 
     if (query?.orderBy) {

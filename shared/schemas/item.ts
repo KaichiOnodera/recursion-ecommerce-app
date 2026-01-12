@@ -13,6 +13,7 @@ export interface SearchItemsParams {
   q?: string;
   sort?: SearchSortType;
   page?: number;
+  tagIds?: number[];
 }
 
 import { Tag } from './tag';
