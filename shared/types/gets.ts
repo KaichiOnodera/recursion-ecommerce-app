@@ -3,6 +3,7 @@ import { User } from '../schemas/user';
 import { CartItem } from '../schemas/cart';
 import { Review } from '../schemas/review';
 import { FavoriteItem } from '../schemas/favorite';
+import { Tag } from '../schemas/tag';
 
 export type GetRes = {
   '/items': {
@@ -100,5 +101,8 @@ export type GetRes = {
   '/favorites': {
     favorites: FavoriteItem[];
     total: number;
+  };
+  '/admin/tags': {
+    tags: Tag[];
   };
 };
