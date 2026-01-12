@@ -193,7 +193,7 @@ export const AdminProductEdit: React.FC = () => {
             <select
               value={type}
               onChange={(e) => setType(Number(e.target.value))}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
               required
             >
               <option value={1}>物理商品</option>
@@ -242,7 +242,7 @@ export const AdminProductEdit: React.FC = () => {
               onChange={(e) =>
                 setDisplayStatus(e.target.value as 'public' | 'private')
               }
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
               required
             >
               <option value="public">公開</option>
