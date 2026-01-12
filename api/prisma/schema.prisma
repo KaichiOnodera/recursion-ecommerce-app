@@ -118,6 +118,7 @@ model Items {
   OrderItemFiles OrderItemFiles[]
   Reviews        Reviews[]
   Favorites      Favorites[]
+  WishlistItem   WishlistItem[]
   ItemTags       ItemTags[]
 }
 
@@ -241,6 +242,36 @@ model Favorites {
   @@index([itemId])
 }
 
+model Wishlist {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  name      String?
+  isPublic  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user  Users          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items WishlistItem[]
+
+  @@index([userId])
+  @@index([userId, isPublic])
+}
+
+model WishlistItem {
+  id         Int      @id @default(autoincrement())
+  wishlistId Int
+  itemId     Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  wishlist Wishlist @relation(fields: [wishlistId], references: [id], onDelete: Cascade)
+  item     Items    @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@unique([wishlistId, itemId])
+  @@index([wishlistId])
+  @@index([itemId])
+}
+
 model Users {
   id            Int      @id @default(autoincrement())
   lastName      String
@@ -259,6 +290,7 @@ model Users {
   orders                 Orders[]
   reviews                Reviews[]
   favorites              Favorites[]
+  wishlists              Wishlist[]
 }
 
 enum UserRole {
