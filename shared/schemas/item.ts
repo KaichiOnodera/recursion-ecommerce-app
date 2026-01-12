@@ -15,6 +15,8 @@ export interface SearchItemsParams {
   page?: number;
 }
 
+import { Tag } from './tag';
+
 export const InventoryStatus = {
   IN_STOCK: 'inStock',
   OUT_OF_STOCK: 'outOfStock',
@@ -31,6 +33,7 @@ export type Item = {
   inventoryStatus: InventoryStatus;
   images: ItemImage[];
   isFavorite: boolean | null;
+  tags?: Tag[];
 };
 
 export type ItemDetail = {
@@ -42,6 +45,7 @@ export type ItemDetail = {
   inventoryStatus: InventoryStatus;
   images: ItemImage[];
   isFavorite: boolean | null;
+  tags?: Tag[];
 };
 
 export const DisplayStatus = {
@@ -62,6 +66,7 @@ export type AdminItem = {
   images: ItemImage[];
   createdAt: Date;
   updatedAt: Date;
+  tags?: Tag[];
 };
 
 export type AdminItemDetail = {
@@ -76,6 +81,7 @@ export type AdminItemDetail = {
   images: ItemImage[];
   createdAt: Date;
   updatedAt: Date;
+  tags?: Tag[];
 };
 
 export type ItemImage = {
