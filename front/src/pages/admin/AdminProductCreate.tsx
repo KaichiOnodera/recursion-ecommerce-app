@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { createItem } from '../../services/api/items';
 import { useImageUpload } from '../../hooks/useImageUpload';
+import { TagSelector } from '../../components/admin/TagSelector';
 
 export const AdminProductCreate: React.FC = () => {
   const [name, setName] = useState('');
@@ -12,6 +13,7 @@ export const AdminProductCreate: React.FC = () => {
   const [displayStatus, setDisplayStatus] = useState<'public' | 'private'>(
     'private',
   );
+  const [selectedTagIds, setSelectedTagIds] = useState<number[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
@@ -36,6 +38,7 @@ export const AdminProductCreate: React.FC = () => {
           type,
           price,
           displayStatus,
+          tagIds: selectedTagIds.length > 0 ? selectedTagIds : undefined,
         },
         selectedImages.length > 0 ? selectedImages : undefined,
       );
@@ -129,6 +132,12 @@ export const AdminProductCreate: React.FC = () => {
               公開: 一般ユーザーに表示 / 非公開: 管理者のみ表示
             </p>
           </div>
+
+          {/* タグ */}
+          <TagSelector
+            selectedTagIds={selectedTagIds}
+            onChange={setSelectedTagIds}
+          />
 
           {/* 商品画像 */}
           <div>
