@@ -40,6 +40,7 @@ export class GetItemController {
         images: item.images,
         createdAt: item.createdAt,
         updatedAt: item.updatedAt,
+        tags: item.tags,
       },
     });
   }
