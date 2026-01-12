@@ -24,6 +24,7 @@ if (fs.existsSync(sharedDistPath)) {
 
 import { itemsRouter } from './contexts/items';
 import { adminItemsRouter } from './contexts/items/admin';
+import { adminTagsRouter } from './contexts/tags';
 import { authRouter } from './contexts/auth';
 import { prisma } from './libs/prisma';
 import { UsersRouter as usersRouter } from './contexts/users';
@@ -112,6 +113,7 @@ app.get(`${apiPrefix}/`, async (_req: Request, res: Response) => {
 app.use(`${apiPrefix}/auth`, authRouter);
 app.use(`${apiPrefix}/items`, itemsRouter);
 app.use(`${apiPrefix}/admin/items`, adminItemsRouter);
+app.use(`${apiPrefix}/admin/tags`, adminTagsRouter);
 
 app.use(`${apiPrefix}/users`, usersRouter);
 app.use(`${apiPrefix}/cart`, cartRouter);
