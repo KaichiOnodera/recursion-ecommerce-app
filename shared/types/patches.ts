@@ -1,5 +1,6 @@
 import { User } from '../schemas/user';
 import { AdminItem } from '../schemas/item';
+import { Tag } from '../schemas/tag';
 
 export type PatchReq = {
   '/admin/items/:id': {
@@ -15,6 +16,9 @@ export type PatchReq = {
     lastName: string;
     firstName: string;
   };
+  '/admin/tags/:id': {
+    name: string;
+  };
 };
 
 export type PatchRes = {
@@ -23,5 +27,8 @@ export type PatchRes = {
   };
   '/users/profile': {
     user: User;
+  };
+  '/admin/tags/:id': {
+    tag: Tag;
   };
 };
