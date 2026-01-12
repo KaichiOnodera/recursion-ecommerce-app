@@ -303,7 +303,11 @@ export const AdminProductEdit: React.FC = () => {
             </button>
             <button
               type="button"
-              onClick={() => navigate('/admin/products')}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                navigate('/admin/products');
+              }}
               className="bg-gray-300 rounded-md text-gray-700 py-3 px-6 hover:bg-gray-400"
             >
               キャンセル
