@@ -143,11 +143,24 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
     onChange(selectedTagIds.filter((id) => id !== tagId));
   };
 
+  // 入力値が既に選択済みのタグと完全に一致するかチェック
+  const isInputValueAlreadySelected = (): boolean => {
+    if (!inputValue.trim()) return false;
+    const lowerInput = inputValue.trim().toLowerCase();
+    return selectedTags.some((tag) => tag.name.toLowerCase() === lowerInput);
+  };
+
   // Enterキー処理：サジェスト表示中はフォーム送信を防ぎ、選択中の候補があれば選択
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (disabled) return;
 
     if (e.key === 'Enter') {
+      // 入力値が既に選択済みのタグと完全に一致する場合はフォーム送信を防ぐ
+      if (isInputValueAlreadySelected()) {
+        e.preventDefault();
+        return;
+      }
+
       // サジェストが表示されている場合
       if (showSuggestions && suggestions.length > 0) {
         e.preventDefault(); // フォーム送信を防ぐ
