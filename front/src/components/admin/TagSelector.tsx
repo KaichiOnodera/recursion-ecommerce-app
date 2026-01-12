@@ -1,5 +1,5 @@
 /* eslint-env browser */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { Tag } from '@shared/schemas/tag';
 import { getTags, createTag } from '../../services/api/tags';
@@ -8,6 +8,7 @@ interface TagSelectorProps {
   selectedTagIds: number[];
   onChange: (tagIds: number[]) => void;
   disabled?: boolean;
+  initialTags?: Tag[]; // 初期タグ情報（商品編集画面などで既に取得済みのタグ）
 }
 
 interface SuggestionTag extends Tag {
@@ -18,17 +19,18 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
   selectedTagIds,
   onChange,
   disabled = false,
+  initialTags = [],
 }) => {
   const [inputValue, setInputValue] = useState('');
   const [suggestions, setSuggestions] = useState<SuggestionTag[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [allTags, setAllTags] = useState<Tag[]>([]);
-  const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
   const [focusedIndex, setFocusedIndex] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const processedInitialTagIdsRef = useRef<string>('');
 
   // 全タグを取得（初回のみ）
   useEffect(() => {
@@ -43,11 +45,47 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
     fetchTags();
   }, []);
 
-  // selectedTagIdsから選択済みタグを取得
+  // initialTagsが渡された場合、allTagsにマージ（重複を避ける）
   useEffect(() => {
-    const tags = allTags.filter((tag) => selectedTagIds.includes(tag.id));
-    setSelectedTags(tags);
-  }, [selectedTagIds, allTags]);
+    if (initialTags.length === 0) {
+      processedInitialTagIdsRef.current = '';
+      return;
+    }
+
+    // IDリストを文字列化して比較（配列参照の変更を無視）
+    const currentTagIds = initialTags
+      .map((tag) => tag.id)
+      .sort()
+      .join(',');
+    if (processedInitialTagIdsRef.current === currentTagIds) {
+      return; // 既に処理済みの場合は何もしない
+    }
+
+    processedInitialTagIdsRef.current = currentTagIds;
+
+    setAllTags((prevTags) => {
+      // prevTagsがまだ空の場合、initialTagsを一時的に使用
+      if (prevTags.length === 0) {
+        return initialTags;
+      }
+
+      // prevTagsが既に取得済みの場合、initialTagsに含まれるタグをマージ（重複を避ける）
+      const existingIds = new Set(prevTags.map((tag) => tag.id));
+      const newTags = initialTags.filter((tag) => !existingIds.has(tag.id));
+      if (newTags.length > 0) {
+        return [...prevTags, ...newTags];
+      }
+
+      return prevTags;
+    });
+  }, [initialTags]);
+
+  // selectedTagIdsから選択済みタグを取得（useMemoで計算）
+  const selectedTags = useMemo(() => {
+    // allTagsが空でinitialTagsがある場合は、initialTagsから取得
+    const sourceTags = allTags.length > 0 ? allTags : initialTags;
+    return sourceTags.filter((tag) => selectedTagIds.includes(tag.id));
+  }, [selectedTagIds, allTags, initialTags]);
 
   // 入力値に基づいてサジェストを更新
   useEffect(() => {
@@ -124,11 +162,24 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
     onChange(selectedTagIds.filter((id) => id !== tagId));
   };
 
+  // 入力値が既に選択済みのタグと完全に一致するかチェック
+  const isInputValueAlreadySelected = (): boolean => {
+    if (!inputValue.trim()) return false;
+    const lowerInput = inputValue.trim().toLowerCase();
+    return selectedTags.some((tag) => tag.name.toLowerCase() === lowerInput);
+  };
+
   // Enterキー処理：サジェスト表示中はフォーム送信を防ぎ、選択中の候補があれば選択
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (disabled) return;
 
     if (e.key === 'Enter') {
+      // 入力値が既に選択済みのタグと完全に一致する場合はフォーム送信を防ぐ
+      if (isInputValueAlreadySelected()) {
+        e.preventDefault();
+        return;
+      }
+
       // サジェストが表示されている場合
       if (showSuggestions && suggestions.length > 0) {
         e.preventDefault(); // フォーム送信を防ぐ

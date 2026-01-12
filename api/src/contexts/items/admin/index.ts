@@ -32,6 +32,7 @@ const itemRepository = new ItemRepository(
   itemImageRepository,
   imageStorageAdapter,
   favoriteRepository,
+  tagRepository,
 );
 
 // 認証チェック

@@ -23,7 +23,7 @@ export const NewImageUpload: React.FC<NewImageUploadProps> = ({
         accept="image/*"
         multiple
         onChange={onImageSelect}
-        className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
       />
       <p className="mt-1 text-sm text-gray-500">
         画像は最大{maxImages}枚まで選択できます（jpg, jpeg, png, gif, webp, svg,
