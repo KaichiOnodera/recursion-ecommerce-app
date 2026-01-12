@@ -47,6 +47,11 @@ export class ItemRepository implements IItemRepository {
           isFavorite = favorite !== null;
         }
 
+        let tags = undefined;
+        if (this.tagRepository) {
+          tags = await this.tagRepository.findByItemId(item.id);
+        }
+
         return {
           id: item.id,
           name: item.name,
@@ -63,6 +68,7 @@ export class ItemRepository implements IItemRepository {
           createdAt: item.createdAt,
           updatedAt: item.updatedAt,
           isFavorite,
+          tags,
         };
       }),
     );
@@ -95,6 +101,11 @@ export class ItemRepository implements IItemRepository {
           isFavorite = favorite !== null;
         }
 
+        let tags = undefined;
+        if (this.tagRepository) {
+          tags = await this.tagRepository.findByItemId(item.id);
+        }
+
         return {
           id: item.id,
           name: item.name,
@@ -111,6 +122,7 @@ export class ItemRepository implements IItemRepository {
           createdAt: item.createdAt,
           updatedAt: item.updatedAt,
           isFavorite,
+          tags,
         };
       }),
     );
@@ -189,6 +201,11 @@ export class ItemRepository implements IItemRepository {
           isFavorite = favorite !== null;
         }
 
+        let tags = undefined;
+        if (this.tagRepository) {
+          tags = await this.tagRepository.findByItemId(item.id);
+        }
+
         return {
           id: item.id,
           name: item.name,
@@ -205,6 +222,7 @@ export class ItemRepository implements IItemRepository {
           createdAt: item.createdAt,
           updatedAt: item.updatedAt,
           isFavorite,
+          tags,
         };
       }),
     );
@@ -383,6 +401,11 @@ export class ItemRepository implements IItemRepository {
       isFavorite = favorite !== null;
     }
 
+    let tags = undefined;
+    if (this.tagRepository) {
+      tags = await this.tagRepository.findByItemId(item.id);
+    }
+
     return {
       id: item.id,
       name: item.name,
@@ -399,6 +422,7 @@ export class ItemRepository implements IItemRepository {
       createdAt: item.createdAt,
       updatedAt: item.updatedAt,
       isFavorite,
+      tags,
     };
   }
 

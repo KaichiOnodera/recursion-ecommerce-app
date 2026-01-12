@@ -43,6 +43,7 @@ export class SearchItemsController {
           : InventoryStatus.OUT_OF_STOCK,
       images: item.images,
       isFavorite: item.isFavorite ?? null,
+      tags: item.tags,
     }));
 
     res.status(200).json({ items: responseItems });

@@ -33,6 +33,7 @@ export class GetItemsController {
       })),
       createdAt: item.createdAt,
       updatedAt: item.updatedAt,
+      tags: item.tags,
     }));
 
     res.status(200).json({ items: responseItems });
