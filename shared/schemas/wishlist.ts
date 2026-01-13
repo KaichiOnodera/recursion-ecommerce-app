@@ -29,3 +29,11 @@ export type WishlistItem = {
   updatedAt: Date;
   item: WishlistItemDetail;
 };
+
+export type WishlistItemSimple = {
+  id: number;
+  wishlistId: number;
+  itemId: number;
+  createdAt: Date;
+  updatedAt: Date;
+};
