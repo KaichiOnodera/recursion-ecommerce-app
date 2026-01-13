@@ -5,12 +5,14 @@ import { GetWishlistItemsController } from './controllers/GetWishlistItemsContro
 import { AddWishlistItemController } from './controllers/AddWishlistItemController';
 import { RemoveWishlistItemController } from './controllers/RemoveWishlistItemController';
 import { UpdateWishlistController } from './controllers/UpdateWishlistController';
+import { DeleteWishlistController } from './controllers/DeleteWishlistController';
 import { CreateWishlistInteractor } from './interactors/CreateWishlistInteractor';
 import { GetWishlistsInteractor } from './interactors/GetWishlistsInteractor';
 import { GetWishlistItemsInteractor } from './interactors/GetWishlistItemsInteractor';
 import { AddWishlistItemInteractor } from './interactors/AddWishlistItemInteractor';
 import { RemoveWishlistItemInteractor } from './interactors/RemoveWishlistItemInteractor';
 import { UpdateWishlistInteractor } from './interactors/UpdateWishlistInteractor';
+import { DeleteWishlistInteractor } from './interactors/DeleteWishlistInteractor';
 import { WishlistRepository } from './infrastructures/repositories/WishlistRepository';
 import { ItemImageRepository } from '../items/infrastructures/repositories/ItemImageRepository';
 import { ItemRepository } from '../items/infrastructures/repositories/ItemRepository';
@@ -67,6 +69,12 @@ const updateWishlistInteractor = new UpdateWishlistInteractor(
 const updateWishlistController = new UpdateWishlistController(
   updateWishlistInteractor,
 );
+const deleteWishlistInteractor = new DeleteWishlistInteractor(
+  wishlistRepository,
+);
+const deleteWishlistController = new DeleteWishlistController(
+  deleteWishlistInteractor,
+);
 
 wishlistRouter.post(
   '/',
@@ -84,6 +92,12 @@ wishlistRouter.patch(
   '/:wishlistId',
   verifyAccessToken,
   updateWishlistController.execute.bind(updateWishlistController),
+);
+
+wishlistRouter.delete(
+  '/:wishlistId',
+  verifyAccessToken,
+  deleteWishlistController.execute.bind(deleteWishlistController),
 );
 
 wishlistRouter.get(
