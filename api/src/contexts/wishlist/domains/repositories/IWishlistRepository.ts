@@ -12,14 +12,14 @@ export interface IWishlistRepository {
     userId: number,
   ): Promise<Wishlist | null>;
 
-  // 公開ウィッシュリスト一覧を取得
-  findPublicWishlistsByUserId(userId: number): Promise<Wishlist[]>;
-
-  // 公開ウィッシュリストを取得（認証不要）
+  // 公開ウィッシュリストを取得（認証不要、所有者のIDが必要）
   findPublicWishlistById(
     wishlistId: number,
     userId: number,
   ): Promise<Wishlist | null>;
+
+  // 公開ウィッシュリストを取得（wishlistIdのみ、所有者のIDは不要）
+  findPublicWishlistByIdOnly(wishlistId: number): Promise<Wishlist | null>;
 
   // ウィッシュリストを作成
   createWishlist(
