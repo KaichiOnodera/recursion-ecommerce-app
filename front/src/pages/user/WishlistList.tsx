@@ -8,6 +8,7 @@ import {
 import { Wishlist } from '@shared/schemas/wishlist';
 import { WishlistCard } from '../../components/user/WishlistCard';
 import { WishlistFormModal } from '../../components/user/WishlistFormModal';
+import { DeleteWishlistModal } from '../../components/user/DeleteWishlistModal';
 import { PlusIcon } from '@heroicons/react/24/outline';
 
 export const WishlistList: React.FC = () => {
@@ -16,6 +17,10 @@ export const WishlistList: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingWishlist, setEditingWishlist] = useState<Wishlist | null>(null);
+  const [deletingWishlist, setDeletingWishlist] = useState<Wishlist | null>(
+    null,
+  );
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     fetchWishlists();
@@ -47,13 +52,23 @@ export const WishlistList: React.FC = () => {
     setEditingWishlist(null);
   };
 
-  const handleDelete = async (wishlistId: number) => {
+  const handleDeleteClick = (wishlist: Wishlist) => {
+    setDeletingWishlist(wishlist);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deletingWishlist) return;
+
+    setIsDeleting(true);
     try {
-      await deleteWishlist(wishlistId);
+      await deleteWishlist(deletingWishlist.id);
       await fetchWishlists();
+      setDeletingWishlist(null);
     } catch (err) {
       console.error('Failed to delete wishlist:', err);
       alert('ウィッシュリストの削除に失敗しました');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -103,13 +118,13 @@ export const WishlistList: React.FC = () => {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="space-y-4">
           {wishlists.map((wishlist) => (
             <WishlistCard
               key={wishlist.id}
               wishlist={wishlist}
               onEdit={handleEdit}
-              onDelete={handleDelete}
+              onDelete={handleDeleteClick}
             />
           ))}
         </div>
@@ -126,6 +141,14 @@ export const WishlistList: React.FC = () => {
         onClose={() => setEditingWishlist(null)}
         onSubmit={handleUpdate}
         wishlist={editingWishlist}
+      />
+
+      <DeleteWishlistModal
+        isOpen={deletingWishlist !== null}
+        wishlist={deletingWishlist}
+        isDeleting={isDeleting}
+        onClose={() => setDeletingWishlist(null)}
+        onConfirm={handleDeleteConfirm}
       />
     </div>
   );
