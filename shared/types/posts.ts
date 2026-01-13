@@ -3,7 +3,7 @@ import { AdminItem } from '../schemas/item';
 import { CartItem } from '../schemas/cart';
 import { Review } from '../schemas/review';
 import { Favorite } from '../schemas/favorite';
-import { Wishlist } from '../schemas/wishlist';
+import { Wishlist, WishlistItemSimple } from '../schemas/wishlist';
 import { Tag } from '../schemas/tag';
 
 export type PostReq = {
@@ -47,6 +47,9 @@ export type PostReq = {
     name?: string | null;
     isPublic?: boolean;
   };
+  '/wishlist/:wishlistId/items': {
+    itemId: number;
+  };
 };
 
 export type PostRes = {
@@ -77,5 +80,8 @@ export type PostRes = {
   };
   '/wishlist': {
     wishlist: Wishlist;
+  };
+  '/wishlist/:wishlistId/items': {
+    wishlistItem: WishlistItemSimple;
   };
 };
