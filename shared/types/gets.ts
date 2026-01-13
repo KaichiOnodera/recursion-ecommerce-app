@@ -4,7 +4,7 @@ import { CartItem } from '../schemas/cart';
 import { Review } from '../schemas/review';
 import { FavoriteItem } from '../schemas/favorite';
 import { Tag } from '../schemas/tag';
-import { Wishlist } from '../schemas/wishlist';
+import { Wishlist, WishlistItem } from '../schemas/wishlist';
 
 export type GetRes = {
   '/items': {
@@ -105,6 +105,9 @@ export type GetRes = {
   };
   '/wishlist': {
     wishlists: Wishlist[];
+  };
+  '/wishlist/:wishlistId/items': {
+    items: WishlistItem[];
   };
   '/admin/tags': {
     tags: Tag[];
