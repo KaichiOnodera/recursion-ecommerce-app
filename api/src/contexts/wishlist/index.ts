@@ -11,7 +11,6 @@ import { WishlistRepository } from './infrastructures/repositories/WishlistRepos
 import { ItemImageRepository } from '../items/infrastructures/repositories/ItemImageRepository';
 import { ItemRepository } from '../items/infrastructures/repositories/ItemRepository';
 import { createImageStorageAdapter } from '../items/infrastructures/adapters/createImageStorageAdapter';
-import { FavoriteRepository } from '../favorites/infrastructures/repositories/FavoriteRepository';
 import { prisma } from '../../libs/prisma';
 import { verifyAccessToken } from '../../middlewares';
 
@@ -19,16 +18,10 @@ const wishlistRouter = express.Router();
 
 const itemImageRepository = new ItemImageRepository(prisma);
 const imageStorageAdapter = createImageStorageAdapter();
-const favoriteRepository = new FavoriteRepository(
-  prisma,
-  itemImageRepository,
-  imageStorageAdapter,
-);
 const itemRepository = new ItemRepository(
   prisma,
   itemImageRepository,
   imageStorageAdapter,
-  favoriteRepository,
 );
 const wishlistRepository = new WishlistRepository(
   prisma,
