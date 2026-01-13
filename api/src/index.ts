@@ -34,6 +34,7 @@ import { ordersRouter } from './contexts/orders';
 import { adminOrdersRouter } from './contexts/orders/admin';
 import { reviewsRouter } from './contexts/reviews';
 import { favoritesRouter } from './contexts/favorites';
+import { wishlistRouter } from './contexts/wishlist';
 import { StripeWebhookController } from './contexts/checkout/controllers/StripeWebhookController';
 import { HandleStripeWebhookInteractor } from './contexts/checkout/interactors/HandleStripeWebhookInteractor';
 import { StripeAdapter } from './contexts/checkout/infrastructures/adapters/StripeAdapter';
@@ -122,6 +123,7 @@ app.use(`${apiPrefix}/orders`, ordersRouter);
 app.use(`${apiPrefix}/admin/orders`, adminOrdersRouter);
 app.use(`${apiPrefix}/reviews`, reviewsRouter);
 app.use(`${apiPrefix}/favorites`, favoritesRouter);
+app.use(`${apiPrefix}/wishlist`, wishlistRouter);
 
 app.listen(8000, '0.0.0.0', () => {
   // eslint-disable-next-line no-console
