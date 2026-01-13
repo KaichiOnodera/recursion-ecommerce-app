@@ -1,8 +1,10 @@
 import express from 'express';
 import { CreateWishlistController } from './controllers/CreateWishlistController';
 import { GetWishlistsController } from './controllers/GetWishlistsController';
+import { GetWishlistItemsController } from './controllers/GetWishlistItemsController';
 import { CreateWishlistInteractor } from './interactors/CreateWishlistInteractor';
 import { GetWishlistsInteractor } from './interactors/GetWishlistsInteractor';
+import { GetWishlistItemsInteractor } from './interactors/GetWishlistItemsInteractor';
 import { WishlistRepository } from './infrastructures/repositories/WishlistRepository';
 import { ItemImageRepository } from '../items/infrastructures/repositories/ItemImageRepository';
 import { createImageStorageAdapter } from '../items/infrastructures/adapters/createImageStorageAdapter';
@@ -28,6 +30,12 @@ const getWishlistsInteractor = new GetWishlistsInteractor(wishlistRepository);
 const getWishlistsController = new GetWishlistsController(
   getWishlistsInteractor,
 );
+const getWishlistItemsInteractor = new GetWishlistItemsInteractor(
+  wishlistRepository,
+);
+const getWishlistItemsController = new GetWishlistItemsController(
+  getWishlistItemsInteractor,
+);
 
 wishlistRouter.post(
   '/',
@@ -39,6 +47,12 @@ wishlistRouter.get(
   '/',
   verifyAccessToken,
   getWishlistsController.execute.bind(getWishlistsController),
+);
+
+wishlistRouter.get(
+  '/:wishlistId/items',
+  verifyAccessToken,
+  getWishlistItemsController.execute.bind(getWishlistItemsController),
 );
 
 export { wishlistRouter };

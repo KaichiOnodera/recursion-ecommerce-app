@@ -61,27 +61,6 @@ export class WishlistRepository implements IWishlistRepository {
     };
   }
 
-  async findPublicWishlistsByUserId(userId: number): Promise<Wishlist[]> {
-    const wishlists = await this.prisma.wishlist.findMany({
-      where: {
-        userId,
-        isPublic: true,
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
-
-    return wishlists.map((wishlist) => ({
-      id: wishlist.id,
-      userId: wishlist.userId,
-      name: wishlist.name,
-      isPublic: wishlist.isPublic,
-      createdAt: wishlist.createdAt,
-      updatedAt: wishlist.updatedAt,
-    }));
-  }
-
   async findPublicWishlistById(
     wishlistId: number,
     userId: number,
@@ -90,6 +69,30 @@ export class WishlistRepository implements IWishlistRepository {
       where: {
         id: wishlistId,
         userId,
+        isPublic: true,
+      },
+    });
+
+    if (!wishlist) {
+      return null;
+    }
+
+    return {
+      id: wishlist.id,
+      userId: wishlist.userId,
+      name: wishlist.name,
+      isPublic: wishlist.isPublic,
+      createdAt: wishlist.createdAt,
+      updatedAt: wishlist.updatedAt,
+    };
+  }
+
+  async findPublicWishlistByIdOnly(
+    wishlistId: number,
+  ): Promise<Wishlist | null> {
+    const wishlist = await this.prisma.wishlist.findFirst({
+      where: {
+        id: wishlistId,
         isPublic: true,
       },
     });
