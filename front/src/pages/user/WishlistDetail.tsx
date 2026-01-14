@@ -148,7 +148,6 @@ export const WishlistDetail: React.FC = () => {
   }
 
   const displayName = wishlist?.name || '公開ウィッシュリスト';
-  const isPublic = wishlist?.isPublic ?? true; // 認証されていない場合は公開とみなす
   const isOwner = wishlist && isLoggedIn() && wishlist.userId === user.id;
 
   return (
