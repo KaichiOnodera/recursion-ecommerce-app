@@ -63,3 +63,43 @@ export async function deleteWishlist(
   );
   return response.data;
 }
+
+/**
+ * ウィッシュリスト内の商品一覧を取得
+ */
+export async function getWishlistItems(
+  wishlistId: number,
+): Promise<GetRes['/wishlist/:wishlistId/items']> {
+  const response = await apiClient.get<GetRes['/wishlist/:wishlistId/items']>(
+    `/wishlist/${wishlistId}/items`,
+  );
+  return response.data;
+}
+
+/**
+ * ウィッシュリストに商品を追加
+ */
+export async function addWishlistItem(
+  wishlistId: number,
+  itemId: number,
+): Promise<PostRes['/wishlist/:wishlistId/items']> {
+  const data: PostReq['/wishlist/:wishlistId/items'] = { itemId };
+  const response = await apiClient.post<PostRes['/wishlist/:wishlistId/items']>(
+    `/wishlist/${wishlistId}/items`,
+    data,
+  );
+  return response.data;
+}
+
+/**
+ * ウィッシュリストから商品を削除
+ */
+export async function removeWishlistItem(
+  wishlistId: number,
+  itemId: number,
+): Promise<DeleteRes['/wishlist/:wishlistId/items/:itemId']> {
+  const response = await apiClient.delete<
+    DeleteRes['/wishlist/:wishlistId/items/:itemId']
+  >(`/wishlist/${wishlistId}/items/${itemId}`);
+  return response.data;
+}
