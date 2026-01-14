@@ -13,6 +13,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { OrderHistoryPreview } from '../../components/user/OrderHistoryPreview';
 import { FavoritesPreview } from '../../components/user/FavoritesPreview';
+import { WishlistPreview } from '../../components/user/WishlistPreview';
 import { ORDER_HISTORY_PREVIEW_LIMIT } from '../../constants/order';
 import { ResignationModal } from '../../components/user/ResignationModal';
 import { resign } from '../../services/api/users';
@@ -94,6 +95,14 @@ export const MyPage: React.FC = () => {
           <h2 className="text-xl font-bold">お気に入り</h2>
         </div>
         <FavoritesPreview />
+      </div>
+
+      {/* ウィッシュリストセクション */}
+      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold">ウィッシュリスト</h2>
+        </div>
+        <WishlistPreview />
       </div>
 
       {/* 購入履歴セクション */}
