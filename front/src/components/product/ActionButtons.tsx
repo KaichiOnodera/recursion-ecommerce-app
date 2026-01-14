@@ -1,6 +1,7 @@
 import React from 'react';
 import { HeartIcon } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid';
+import { BookmarkIcon } from '@heroicons/react/24/outline';
 
 export interface ActionButtonsProps {
   isOutOfStock: boolean;
@@ -9,6 +10,7 @@ export interface ActionButtonsProps {
   onToggleFavorite: () => void;
   isFavorite: boolean;
   isTogglingFavorite: boolean;
+  onAddToWishlist?: () => void;
 }
 
 export const ActionButtons: React.FC<ActionButtonsProps> = ({
@@ -18,6 +20,7 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
   onToggleFavorite,
   isFavorite,
   isTogglingFavorite,
+  onAddToWishlist,
 }) => (
   <div className="flex gap-3">
     <button
@@ -50,5 +53,14 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
         <HeartIcon className="w-5 h-5 text-gray-500" />
       )}
     </button>
+    {onAddToWishlist && (
+      <button
+        onClick={onAddToWishlist}
+        className="px-4 py-4 border border-gray-300 rounded-lg hover:border-gray-400 hover:bg-gray-50 transition-colors flex items-center justify-center cursor-pointer"
+        aria-label="ウィッシュリストに追加"
+      >
+        <BookmarkIcon className="w-5 h-5 text-gray-500" />
+      </button>
+    )}
   </div>
 );
