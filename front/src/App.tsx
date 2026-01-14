@@ -26,6 +26,7 @@ import { Cart } from './pages/user/Cart';
 import { MyPage } from './pages/user/MyPage';
 import { OrderHistory } from './pages/user/OrderHistory';
 import { FavoritesList } from './pages/user/FavoritesList';
+import { WishlistList } from './pages/user/WishlistList';
 import { OrderComplete } from './pages/OrderComplete';
 import { User } from './pages/auth/UserProfile';
 
@@ -81,6 +82,7 @@ function App(): React.JSX.Element {
                 <Route path="/user/profile" element={<User />} />
                 <Route path="/orders" element={<OrderHistory />} />
                 <Route path="/favorites" element={<FavoritesList />} />
+                <Route path="/wishlist" element={<WishlistList />} />
                 <Route path="/order/complete" element={<OrderComplete />} />
                 <Route path="/auth/admin/login" element={<AdminLogin />} />
                 <Route path="/auth/admin/signup" element={<AdminSignup />} />
