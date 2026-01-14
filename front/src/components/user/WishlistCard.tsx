@@ -1,10 +1,12 @@
 import React from 'react';
+import { useNavigate } from 'react-router';
 import { Wishlist } from '@shared/schemas/wishlist';
 import {
   PencilIcon,
   TrashIcon,
   LockClosedIcon,
   GlobeAltIcon,
+  EyeIcon,
 } from '@heroicons/react/24/outline';
 
 interface WishlistCardProps {
@@ -18,6 +20,12 @@ export const WishlistCard: React.FC<WishlistCardProps> = ({
   onEdit,
   onDelete,
 }) => {
+  const navigate = useNavigate();
+
+  const handleDetailClick = (): void => {
+    navigate(`/wishlist/${wishlist.id}`);
+  };
+
   const handleEditClick = (e: React.MouseEvent<HTMLButtonElement>): void => {
     e.stopPropagation();
     onEdit(wishlist);
@@ -56,6 +64,13 @@ export const WishlistCard: React.FC<WishlistCardProps> = ({
             </p>
           </div>
           <div className="flex items-center gap-2 ml-4">
+            <button
+              onClick={handleDetailClick}
+              className="p-2 text-gray-600 hover:bg-gray-100 rounded transition-colors"
+              title="詳細を見る"
+            >
+              <EyeIcon className="w-5 h-5" />
+            </button>
             <button
               onClick={handleEditClick}
               className="p-2 text-gray-600 hover:bg-gray-100 rounded transition-colors"
