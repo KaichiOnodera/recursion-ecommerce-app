@@ -65,7 +65,7 @@ export const WishlistItemCard: React.FC<WishlistItemCardProps> = ({
       </button>
 
       {/* 商品画像 */}
-      <div className="bg-gray-100 h-48 flex items-center justify-center overflow-hidden">
+      <div className="bg-gray-100 h-64 flex items-center justify-center overflow-hidden">
         {imageUrl ? (
           <img
             src={imageUrl}
