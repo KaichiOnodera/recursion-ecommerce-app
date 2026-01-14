@@ -27,6 +27,7 @@ import { MyPage } from './pages/user/MyPage';
 import { OrderHistory } from './pages/user/OrderHistory';
 import { FavoritesList } from './pages/user/FavoritesList';
 import { WishlistList } from './pages/user/WishlistList';
+import { WishlistDetail } from './pages/user/WishlistDetail';
 import { OrderComplete } from './pages/OrderComplete';
 import { User } from './pages/auth/UserProfile';
 
@@ -97,6 +98,10 @@ function App(): React.JSX.Element {
 
                 {/* ========== パラメータ付きパス ========== */}
                 <Route path="/products/:id" element={<ProductDetail />} />
+                <Route
+                  path="/wishlist/:wishlistId"
+                  element={<WishlistDetail />}
+                />
                 <Route
                   path="/admin/products/:id/edit"
                   element={<AdminProductEdit />}
