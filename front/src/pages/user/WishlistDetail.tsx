@@ -18,7 +18,7 @@ import { useUser } from '../../contexts/UserContext';
 export const WishlistDetail: React.FC = () => {
   const { wishlistId } = useParams<{ wishlistId: string }>();
   const navigate = useNavigate();
-  const { isLoggedIn } = useUser();
+  const { isLoggedIn, user } = useUser();
   const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
   const [wishlist, setWishlist] = useState<Wishlist | null>(null);
   const [loading, setLoading] = useState(true);
@@ -149,6 +149,7 @@ export const WishlistDetail: React.FC = () => {
 
   const displayName = wishlist?.name || '公開ウィッシュリスト';
   const isPublic = wishlist?.isPublic ?? true; // 認証されていない場合は公開とみなす
+  const isOwner = wishlist && isLoggedIn() && wishlist.userId === user.id;
 
   return (
     <div className="container mx-auto py-8 px-4">
@@ -213,6 +214,7 @@ export const WishlistDetail: React.FC = () => {
               wishlistItem={wishlistItem}
               wishlistId={parsedWishlistId}
               onRemove={handleRemove}
+              showDeleteButton={isOwner ?? false}
             />
           ))}
         </div>

@@ -9,12 +9,14 @@ interface WishlistItemCardProps {
   wishlistItem: WishlistItem;
   wishlistId: number;
   onRemove: (itemId: number) => void;
+  showDeleteButton?: boolean;
 }
 
 export const WishlistItemCard: React.FC<WishlistItemCardProps> = ({
   wishlistItem,
   wishlistId,
   onRemove,
+  showDeleteButton = true,
 }) => {
   const navigate = useNavigate();
   const [isRemoving, setIsRemoving] = useState(false);
@@ -54,15 +56,17 @@ export const WishlistItemCard: React.FC<WishlistItemCardProps> = ({
       className="bg-white border rounded-lg overflow-hidden cursor-pointer hover:shadow-lg transition-shadow relative"
       onClick={handleCardClick}
     >
-      {/* 削除ボタン */}
-      <button
-        onClick={handleRemoveClick}
-        disabled={isRemoving}
-        className="absolute top-2 right-2 z-10 p-2 bg-white rounded-full shadow-md hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        aria-label="ウィッシュリストから削除"
-      >
-        <TrashIcon className="w-5 h-5 text-gray-600" />
-      </button>
+      {/* 削除ボタン（所有者のみ表示） */}
+      {showDeleteButton && (
+        <button
+          onClick={handleRemoveClick}
+          disabled={isRemoving}
+          className="absolute top-2 right-2 z-10 p-2 bg-white rounded-full shadow-md hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          aria-label="ウィッシュリストから削除"
+        >
+          <TrashIcon className="w-5 h-5 text-gray-600" />
+        </button>
+      )}
 
       {/* 商品画像 */}
       <div className="bg-gray-100 h-64 flex items-center justify-center overflow-hidden">
