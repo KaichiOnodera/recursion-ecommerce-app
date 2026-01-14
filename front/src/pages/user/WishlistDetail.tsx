@@ -1,14 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router';
-import { ArrowLeftIcon } from '@heroicons/react/24/outline';
-import { getWishlistItems } from '../../services/api/wishlist';
-import { WishlistItem } from '@shared/schemas/wishlist';
+import {
+  ArrowLeftIcon,
+  GlobeAltIcon,
+  LockClosedIcon,
+} from '@heroicons/react/24/outline';
+import {
+  getWishlistItems,
+  getWishlists,
+  getPublicWishlistItems,
+} from '../../services/api/wishlist';
+import { WishlistItem, Wishlist } from '@shared/schemas/wishlist';
 import { WishlistItemCard } from '../../components/user/WishlistItemCard';
+import { ShareWishlistButton } from '../../components/user/ShareWishlistButton';
+import { useUser } from '../../contexts/UserContext';
 
 export const WishlistDetail: React.FC = () => {
   const { wishlistId } = useParams<{ wishlistId: string }>();
   const navigate = useNavigate();
+  const { isLoggedIn } = useUser();
   const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
+  const [wishlist, setWishlist] = useState<Wishlist | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -33,8 +45,38 @@ export const WishlistDetail: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await getWishlistItems(id);
+
+      // 認証されている場合は通常のAPI、認証されていない場合は公開APIを使用
+      const response = isLoggedIn()
+        ? await getWishlistItems(id)
+        : await getPublicWishlistItems(id);
       setWishlistItems(response.items);
+
+      // 認証されている場合、ウィッシュリスト情報を取得
+      if (isLoggedIn()) {
+        try {
+          const wishlistsResponse = await getWishlists();
+          const foundWishlist = wishlistsResponse.wishlists.find(
+            (w) => w.id === id,
+          );
+          if (foundWishlist) {
+            setWishlist(foundWishlist);
+          }
+        } catch (err) {
+          // ウィッシュリスト情報の取得に失敗しても、商品一覧は表示できる
+          console.warn('Failed to fetch wishlist info:', err);
+        }
+      } else {
+        // 認証されていない場合は公開ウィッシュリストとみなす
+        setWishlist({
+          id,
+          userId: 0,
+          name: null,
+          isPublic: true,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+      }
     } catch (err: any) {
       console.error('Failed to fetch wishlist items:', err);
       if (err.response?.status === 404) {
@@ -105,19 +147,50 @@ export const WishlistDetail: React.FC = () => {
     );
   }
 
+  const displayName = wishlist?.name || '公開ウィッシュリスト';
+  const isPublic = wishlist?.isPublic ?? true; // 認証されていない場合は公開とみなす
+
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="mb-6">
-        <Link
-          to="/wishlist"
-          className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors mb-4"
-        >
-          <ArrowLeftIcon className="w-5 h-5 mr-2" />
-          <span className="text-sm font-medium">
-            ウィッシュリスト一覧に戻る
-          </span>
-        </Link>
-        <h1 className="text-3xl font-bold">ウィッシュリスト詳細</h1>
+        {isLoggedIn() && (
+          <Link
+            to="/wishlist"
+            className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors mb-4"
+          >
+            <ArrowLeftIcon className="w-5 h-5 mr-2" />
+            <span className="text-sm font-medium">
+              ウィッシュリスト一覧に戻る
+            </span>
+          </Link>
+        )}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">{displayName}</h1>
+            {wishlist && (
+              <div className="flex items-center gap-2">
+                {wishlist.isPublic ? (
+                  <span className="flex items-center gap-1 px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
+                    <GlobeAltIcon className="w-3 h-3" />
+                    公開
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-1 px-3 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded-full">
+                    <LockClosedIcon className="w-3 h-3" />
+                    非公開
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+          {wishlist && (
+            <ShareWishlistButton
+              wishlistId={wishlist.id}
+              wishlistName={wishlist.name}
+              isPublic={wishlist.isPublic}
+            />
+          )}
+        </div>
       </div>
 
       {wishlistItems.length === 0 ? (
