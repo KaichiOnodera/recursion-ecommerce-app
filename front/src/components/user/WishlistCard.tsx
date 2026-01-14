@@ -8,6 +8,7 @@ import {
   GlobeAltIcon,
   EyeIcon,
 } from '@heroicons/react/24/outline';
+import { ShareWishlistButton } from './ShareWishlistButton';
 
 interface WishlistCardProps {
   wishlist: Wishlist;
@@ -64,6 +65,11 @@ export const WishlistCard: React.FC<WishlistCardProps> = ({
             </p>
           </div>
           <div className="flex items-center gap-2 ml-4">
+            <ShareWishlistButton
+              wishlistId={wishlist.id}
+              wishlistName={wishlist.name}
+              isPublic={wishlist.isPublic}
+            />
             <button
               onClick={handleDetailClick}
               className="p-2 text-gray-600 hover:bg-gray-100 rounded transition-colors"
