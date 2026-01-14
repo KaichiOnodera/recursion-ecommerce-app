@@ -27,6 +27,7 @@ export const AddToWishlistModal: React.FC<AddToWishlistModalProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState<number | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -51,13 +52,17 @@ export const AddToWishlistModal: React.FC<AddToWishlistModalProps> = ({
   const handleAddToWishlist = async (wishlistId: number) => {
     setIsAdding(wishlistId);
     setError(null);
+    setSuccessMessage(null);
 
     try {
       await addWishlistItem(wishlistId, itemId);
+      const wishlistName =
+        wishlists.find((w) => w.id === wishlistId)?.name ||
+        '無題のウィッシュリスト';
+      setSuccessMessage(`「${wishlistName}」に追加しました`);
       if (onSuccess) {
         onSuccess();
       }
-      onClose();
     } catch (err: any) {
       console.error('Failed to add to wishlist:', err);
       if (err.response?.status === 409) {
@@ -77,11 +82,12 @@ export const AddToWishlistModal: React.FC<AddToWishlistModalProps> = ({
     try {
       const response = await createWishlist(name, isPublic);
       await addWishlistItem(response.wishlist.id, itemId);
+      const wishlistName = name || '無題のウィッシュリスト';
+      setSuccessMessage(`「${wishlistName}」を作成して追加しました`);
       if (onSuccess) {
         onSuccess();
       }
       setIsCreateModalOpen(false);
-      onClose();
     } catch (err: any) {
       console.error('Failed to create wishlist or add item:', err);
       if (err.response?.status === 409) {
@@ -95,6 +101,7 @@ export const AddToWishlistModal: React.FC<AddToWishlistModalProps> = ({
   const handleClose = () => {
     if (isAdding !== null) return;
     setError(null);
+    setSuccessMessage(null);
     onClose();
   };
 
@@ -102,6 +109,12 @@ export const AddToWishlistModal: React.FC<AddToWishlistModalProps> = ({
     <Modal isOpen={isOpen} onClose={handleClose} title="ウィッシュリストに追加">
       {error && (
         <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">{error}</div>
+      )}
+
+      {successMessage && (
+        <div className="mb-4 p-3 bg-green-100 text-green-700 rounded">
+          {successMessage}
+        </div>
       )}
 
       {loading ? (
