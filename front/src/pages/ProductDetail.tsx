@@ -13,6 +13,7 @@ import { QuantitySelector } from '../components/product/QuantitySelector';
 import { ActionButtons } from '../components/product/ActionButtons';
 import { ReviewSection } from '../components/product/ReviewSection';
 import { TagBadgeList } from '../components/product/TagBadge';
+import { AddToWishlistModal } from '../components/user/AddToWishlistModal';
 import { getImageUrl } from '../utils/imageUrl';
 
 const MIN_QUANTITY = 1;
@@ -37,6 +38,7 @@ export const ProductDetail: React.FC = () => {
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [isTogglingFavorite, setIsTogglingFavorite] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [isWishlistModalOpen, setIsWishlistModalOpen] = useState(false);
 
   const itemId = useMemo(() => {
     if (!id) return null;
@@ -305,6 +307,9 @@ export const ProductDetail: React.FC = () => {
             onToggleFavorite={handleToggleFavorite}
             isFavorite={state.item.isFavorite ?? false}
             isTogglingFavorite={isTogglingFavorite}
+            onAddToWishlist={
+              isLoggedIn() ? () => setIsWishlistModalOpen(true) : undefined
+            }
           />
 
           {/* 説明文 */}
@@ -326,6 +331,15 @@ export const ProductDetail: React.FC = () => {
         <div className="mt-12">
           <ReviewSection itemId={itemId} />
         </div>
+      )}
+
+      {/* ウィッシュリスト追加モーダル */}
+      {itemId && (
+        <AddToWishlistModal
+          isOpen={isWishlistModalOpen}
+          onClose={() => setIsWishlistModalOpen(false)}
+          itemId={itemId}
+        />
       )}
     </div>
   );
