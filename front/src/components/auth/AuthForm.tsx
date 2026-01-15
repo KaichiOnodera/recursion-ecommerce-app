@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { login } from '../../services/api/auth';
 import { signup } from '../../services/api/users';
-import { useNavigate, Link } from 'react-router';
+import { Link } from 'react-router';
 import { useUser } from '../../contexts/UserContext';
+import { useRedirect } from '../../hooks/useRedirect';
+import { RedirectReason } from '../../constants/redirectReasons';
 import {
   LockClosedIcon,
   UserPlusIcon,
@@ -27,7 +29,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [error, setError] = useState('');
-  const navigate = useNavigate();
+  const redirect = useRedirect();
   const { setUser } = useUser();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -51,7 +53,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
         if (onSuccess) {
           onSuccess();
         } else {
-          navigate('/');
+          redirect(RedirectReason.LOGIN_SUCCESS);
         }
       } else if (mode === 'signup') {
         const response = await signup({
@@ -74,7 +76,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
         if (onSuccess) {
           onSuccess();
         } else {
-          navigate('/');
+          redirect(RedirectReason.SIGNUP_SUCCESS);
         }
       }
     } catch (err: any) {
