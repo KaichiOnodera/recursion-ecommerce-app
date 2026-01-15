@@ -5,10 +5,7 @@ import { IGetTagsInteractor } from '../usecases/IGetTagsInteractor';
 export class GetTagsController {
   constructor(private readonly getTagsInteractor: IGetTagsInteractor) {}
 
-  async execute(
-    req: express.Request,
-    res: express.Response<GetRes['/admin/tags']>,
-  ) {
+  async execute(req: express.Request, res: express.Response<GetRes['/tags']>) {
     try {
       const itemIdParam = req.query.itemId;
       const itemId =
