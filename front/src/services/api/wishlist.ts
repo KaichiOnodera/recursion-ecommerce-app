@@ -1,4 +1,5 @@
 import { apiClient } from './apiClient';
+import { API_BASE_URL } from './config';
 import { GetRes } from '@shared/types/gets';
 import { PostReq, PostRes } from '@shared/types/posts';
 import { PatchReq, PatchRes } from '@shared/types/patches';
@@ -65,13 +66,27 @@ export async function deleteWishlist(
 }
 
 /**
- * ウィッシュリスト内の商品一覧を取得
+ * ウィッシュリスト内の商品一覧を取得（認証あり）
  */
 export async function getWishlistItems(
   wishlistId: number,
 ): Promise<GetRes['/wishlist/:wishlistId/items']> {
   const response = await apiClient.get<GetRes['/wishlist/:wishlistId/items']>(
     `/wishlist/${wishlistId}/items`,
+  );
+  return response.data;
+}
+
+/**
+ * ウィッシュリスト内の商品一覧を取得（認証不要、公開ウィッシュリストのみ）
+ */
+export async function getPublicWishlistItems(
+  wishlistId: number,
+): Promise<GetRes['/wishlist/:wishlistId/items']> {
+  // 認証なしでAPIを呼び出すため、axiosを直接使用
+  const axios = (await import('axios')).default;
+  const response = await axios.get<GetRes['/wishlist/:wishlistId/items']>(
+    `${API_BASE_URL}/wishlist/${wishlistId}/items`,
   );
   return response.data;
 }

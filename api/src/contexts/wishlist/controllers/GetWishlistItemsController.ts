@@ -18,10 +18,6 @@ export class GetWishlistItemsController {
       GetRes['/wishlist/:wishlistId/items'] | { message: string }
     >,
   ) {
-    if (!req.user) {
-      return res.status(401).json({ message: 'Authentication required' });
-    }
-
     const wishlistId = parseInt(req.params.wishlistId);
 
     if (isNaN(wishlistId)) {
@@ -30,10 +26,13 @@ export class GetWishlistItemsController {
       });
     }
 
+    // 認証されていない場合はuserId: 0を渡す（公開ウィッシュリストのみアクセス可能）
+    const userId = req.user?.userId ?? 0;
+
     try {
       const wishlistItems = await this.getWishlistItemsInteractor.execute(
         wishlistId,
-        req.user.userId,
+        userId,
       );
 
       const responseWishlistItems = wishlistItems.map((wishlistItem) => ({

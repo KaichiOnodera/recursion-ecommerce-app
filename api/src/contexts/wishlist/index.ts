@@ -18,7 +18,10 @@ import { ItemImageRepository } from '../items/infrastructures/repositories/ItemI
 import { ItemRepository } from '../items/infrastructures/repositories/ItemRepository';
 import { createImageStorageAdapter } from '../items/infrastructures/adapters/createImageStorageAdapter';
 import { prisma } from '../../libs/prisma';
-import { verifyAccessToken } from '../../middlewares';
+import {
+  verifyAccessToken,
+  optionalVerifyAccessToken,
+} from '../../middlewares';
 
 const wishlistRouter = express.Router();
 
@@ -100,9 +103,10 @@ wishlistRouter.delete(
   deleteWishlistController.execute.bind(deleteWishlistController),
 );
 
+// 認証オプショナル: 公開ウィッシュリストは認証なしでアクセス可能
 wishlistRouter.get(
   '/:wishlistId/items',
-  verifyAccessToken,
+  optionalVerifyAccessToken,
   getWishlistItemsController.execute.bind(getWishlistItemsController),
 );
 
