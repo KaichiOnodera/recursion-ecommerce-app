@@ -78,6 +78,20 @@ export const ProductList: React.FC = () => {
     setSearchParams(newSearchParams);
   };
 
+  // タグクリック時の処理（商品カードや商品詳細から呼ばれる）
+  const handleTagClick = (tagId: number): void => {
+    // 既に選択されている場合は何もしない（またはトグル）
+    if (!selectedTagIds.includes(tagId)) {
+      const newSelectedTagIds = [...selectedTagIds, tagId];
+      setSelectedTagIds(newSelectedTagIds);
+
+      // URLパラメータを更新
+      const newSearchParams = new URLSearchParams(searchParams);
+      newSearchParams.set('tagIds', newSelectedTagIds.join(','));
+      setSearchParams(newSearchParams);
+    }
+  };
+
   const handleClearAll = (): void => {
     setSelectedTagIds([]);
     const newSearchParams = new URLSearchParams(searchParams);
@@ -123,7 +137,11 @@ export const ProductList: React.FC = () => {
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 auto-rows-fr">
                 {items.map((item) => (
-                  <ProductCard key={item.id} item={item} />
+                  <ProductCard
+                    key={item.id}
+                    item={item}
+                    onTagClick={handleTagClick}
+                  />
                 ))}
               </div>
             </>

@@ -184,6 +184,14 @@ export const ProductDetail: React.FC = () => {
     setSelectedImageIndex(index);
   }, []);
 
+  // タグクリック時の処理
+  const handleTagClick = useCallback(
+    (tagId: number): void => {
+      navigate(`/products?tagIds=${tagId}`);
+    },
+    [navigate],
+  );
+
   // 商品が変わったら画像インデックスをリセット
   useEffect(() => {
     setSelectedImageIndex(0);
@@ -269,7 +277,11 @@ export const ProductDetail: React.FC = () => {
           </div>
 
           {/* タグ */}
-          <TagBadgeList tags={state.item.tags} />
+          <TagBadgeList
+            tags={state.item.tags}
+            onTagClick={handleTagClick}
+            isClickable={true}
+          />
 
           {/* 金額と在庫有無（横並び） */}
           <div className="flex items-baseline gap-4">
