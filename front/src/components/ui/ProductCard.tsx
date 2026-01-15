@@ -12,12 +12,14 @@ interface ProductCardProps {
   item: Item | AdminItem;
   isAdmin?: boolean;
   onDelete?: (itemId: number) => void;
+  onTagClick?: (tagId: number) => void;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
   item,
   isAdmin = false,
   onDelete,
+  onTagClick,
 }) => {
   const navigate = useNavigate();
   const { refreshCart } = useCart();
@@ -102,7 +104,17 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </h2>
 
         {/* タグ */}
-        {'tags' in item && <TagBadgeList tags={item.tags} className="mb-2" />}
+        {'tags' in item && !isAdmin && (
+          <TagBadgeList
+            tags={item.tags}
+            className="mb-2"
+            onTagClick={onTagClick}
+            isClickable={!!onTagClick}
+          />
+        )}
+        {'tags' in item && isAdmin && (
+          <TagBadgeList tags={item.tags} className="mb-2" />
+        )}
 
         {/* 商品説明 */}
         {item.description && (
