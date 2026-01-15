@@ -115,35 +115,6 @@ export class TagRepository implements ITagRepository {
     }
   }
 
-  async attachTagsToItem(itemId: number, tagIds: number[]): Promise<void> {
-    if (tagIds.length === 0) {
-      return;
-    }
-
-    await this.prisma.itemTags.createMany({
-      data: tagIds.map((tagId) => ({
-        itemId,
-        tagId,
-      })),
-      skipDuplicates: true,
-    });
-  }
-
-  async detachTagsFromItem(itemId: number, tagIds: number[]): Promise<void> {
-    if (tagIds.length === 0) {
-      return;
-    }
-
-    await this.prisma.itemTags.deleteMany({
-      where: {
-        itemId,
-        tagId: {
-          in: tagIds,
-        },
-      },
-    });
-  }
-
   async replaceItemTags(itemId: number, tagIds: number[]): Promise<void> {
     await this.prisma.$transaction(async (tx) => {
       await tx.itemTags.deleteMany({
