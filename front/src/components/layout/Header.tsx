@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { HeaderProps } from '../../types';
 import { UserAccountMenu } from '../auth/UserAccountMenu';
@@ -29,6 +29,8 @@ const Header = React.forwardRef<HTMLElement, HeaderProps>(
     const { totalQuantity } = useCart();
     const { isLoggedIn } = useUser();
     const loggedIn = isLoggedIn();
+    const [isCartBadgeAnimating, setIsCartBadgeAnimating] = useState(false);
+    const prevQuantityRef = useRef(totalQuantity);
 
     // 「新着」タグのIDを取得
     useEffect(() => {
@@ -45,6 +47,21 @@ const Header = React.forwardRef<HTMLElement, HeaderProps>(
       };
       fetchNewTagId();
     }, []);
+
+    useEffect(() => {
+      if (
+        totalQuantity > 0 &&
+        prevQuantityRef.current < totalQuantity &&
+        prevQuantityRef.current !== 0
+      ) {
+        setIsCartBadgeAnimating(true);
+        const timer = setTimeout(() => {
+          setIsCartBadgeAnimating(false);
+        }, 600);
+        return () => clearTimeout(timer);
+      }
+      prevQuantityRef.current = totalQuantity;
+    }, [totalQuantity]);
 
     const handleSearch = (e: React.FormEvent) => {
       e.preventDefault();
@@ -179,7 +196,11 @@ const Header = React.forwardRef<HTMLElement, HeaderProps>(
                 <Link to="/cart" className={`relative ${iconBaseStyles}`}>
                   <ShoppingCartIcon className={iconClassName} />
                   {totalQuantity > 0 && (
-                    <span className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    <span
+                      className={`absolute top-0 right-0 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center ${
+                        isCartBadgeAnimating ? 'animate-bounce-in' : ''
+                      }`}
+                    >
                       {totalQuantity}
                     </span>
                   )}
