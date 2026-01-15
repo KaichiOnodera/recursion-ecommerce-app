@@ -4,7 +4,23 @@ import { PatchReq, PatchRes } from '@shared/types/patches';
 import { DeleteRes } from '@shared/types/delete';
 import { GetRes } from '@shared/types/gets';
 
-export async function getTags(itemId?: number): Promise<GetRes['/admin/tags']> {
+export async function getTags(itemId?: number): Promise<GetRes['/tags']> {
+  const queryParams = new URLSearchParams();
+  if (itemId !== undefined) {
+    queryParams.append('itemId', itemId.toString());
+  }
+
+  const queryString = queryParams.toString();
+  const url = `/tags${queryString ? `?${queryString}` : ''}`;
+  const response = await apiClient.get<GetRes['/tags']>(url);
+
+  return response.data;
+}
+
+// 管理者用（認証必須）
+export async function getAdminTags(
+  itemId?: number,
+): Promise<GetRes['/admin/tags']> {
   const queryParams = new URLSearchParams();
   if (itemId !== undefined) {
     queryParams.append('itemId', itemId.toString());

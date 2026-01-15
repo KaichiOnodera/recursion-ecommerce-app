@@ -9,7 +9,7 @@ import React, {
 import { XMarkIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { Tag } from '@shared/schemas/tag';
 import {
-  getTags,
+  getAdminTags,
   createTag,
   deleteTag,
   getTagUsageCount,
@@ -51,7 +51,7 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
   useEffect(() => {
     const fetchTags = async () => {
       try {
-        const response = await getTags();
+        const response = await getAdminTags();
         setAllTags(response.tags);
       } catch (error) {
         console.error('Failed to fetch tags:', error);
