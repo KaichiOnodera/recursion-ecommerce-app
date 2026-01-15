@@ -101,14 +101,16 @@ model ItemTags {
 }
 
 model Items {
-  id            Int      @id @default(autoincrement())
-  name          String
-  description   String
-  type          Int      @default(1)
-  displayStatus String   @default("private")
-  price         Int      @default(0)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id              Int      @id @default(autoincrement())
+  name            String
+  description     String
+  type            Int      @default(1)
+  displayStatus   String   @default("private")
+  price           Int      @default(0)
+  stripeProductId String?  @unique
+  stripePriceId   String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   ItemImages     ItemImages[]
   ItemFiles      ItemFiles[]
