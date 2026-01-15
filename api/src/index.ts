@@ -24,7 +24,7 @@ if (fs.existsSync(sharedDistPath)) {
 
 import { itemsRouter } from './contexts/items';
 import { adminItemsRouter } from './contexts/items/admin';
-import { adminTagsRouter } from './contexts/tags';
+import { adminTagsRouter } from './contexts/tags/admin';
 import { authRouter } from './contexts/auth';
 import { prisma } from './libs/prisma';
 import { UsersRouter as usersRouter } from './contexts/users';
