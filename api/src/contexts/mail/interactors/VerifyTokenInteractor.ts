@@ -4,6 +4,7 @@ import { IUserRepository } from '../../users/domains/repositories/IUserRepositor
 import { IEmailVerificationTokenRepository } from '../../auth/domains/repositories/IEmailVerificationTokenRepository';
 import { VERIFY_TOKEN_TEMPLATE } from './templates/VerifyTokenTemplate';
 import { generateverificationtoken } from '../../../utils/verificationtoken';
+import { EMAIL_VERIFICATION_PATH } from '../../../constants/routes';
 
 export class VerifyTokenInteractor implements IVerifyTokenInteractor {
   constructor(
@@ -27,7 +28,11 @@ export class VerifyTokenInteractor implements IVerifyTokenInteractor {
 
     const to = user.email;
 
-    const verificationUrl = `http://localhost:3000/auth/verify-email?token=${token}`;
+    const frontendBaseUrl = process.env.FRONTEND_BASE_URL;
+    if (!frontendBaseUrl) {
+      throw new Error('FRONTEND_BASE_URL is not set');
+    }
+    const verificationUrl = `${frontendBaseUrl}${EMAIL_VERIFICATION_PATH}?token=${token}`;
 
     const message = {
       to,
