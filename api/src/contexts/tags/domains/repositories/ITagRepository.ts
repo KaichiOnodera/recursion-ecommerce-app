@@ -8,8 +8,6 @@ export interface ITagRepository {
   create(name: string): Promise<Tag>;
   update(id: number, name: string): Promise<Tag | null>;
   delete(id: number): Promise<boolean>;
-  attachTagsToItem(itemId: number, tagIds: number[]): Promise<void>;
-  detachTagsFromItem(itemId: number, tagIds: number[]): Promise<void>;
   replaceItemTags(itemId: number, tagIds: number[]): Promise<void>;
   getUsageCount(id: number): Promise<number>;
 }
