@@ -162,6 +162,9 @@ export async function searchItems(
   if (params.page) {
     queryParams.append('page', params.page.toString());
   }
+  if (params.tagIds && params.tagIds.length > 0) {
+    queryParams.append('tagIds', JSON.stringify(params.tagIds));
+  }
 
   const queryString = queryParams.toString();
   const url = `/items/search${queryString ? `?${queryString}` : ''}`;
