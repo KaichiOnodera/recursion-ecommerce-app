@@ -14,4 +14,4 @@ export const RedirectReason = {
 } as const;
 
 export type RedirectReasonType =
-  typeof RedirectReason[keyof typeof RedirectReason];
+  (typeof RedirectReason)[keyof typeof RedirectReason];

@@ -2,7 +2,10 @@
  * リダイレクト設定の一元管理
  * コードから挙動を追えるように、すべてのリダイレクトルールをここに定義
  */
-import { RedirectReason, RedirectReasonType } from '../constants/redirectReasons';
+import {
+  RedirectReason,
+  RedirectReasonType,
+} from '../constants/redirectReasons';
 
 export interface RedirectRule {
   // リダイレクト先のパス（関数で動的に決定可能）
