@@ -36,16 +36,11 @@ export class StripeWebhookController {
 
       return res.status(200).json({ received: true });
     } catch (error) {
+      console.error('Webhook signature verification failed:', error);
       if (error instanceof Error) {
-        return res.status(400).json({
-          message: error.message,
-          eventType: (req.body as any)?.type,
-        });
+        return res.status(400).json({ message: error.message });
       }
-      return res.status(400).json({
-        message: 'Webhook processing failed',
-        eventType: (req.body as any)?.type,
-      });
+      return res.status(400).json({ message: 'Invalid signature' });
     }
   }
 }
