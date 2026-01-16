@@ -99,22 +99,4 @@ export class StripeAdapter implements IStripeAdapter {
       expand: ['customer'],
     });
   }
-
-  async deleteProduct(productId: string): Promise<void> {
-    await this.stripe.products.del(productId);
-  }
-
-  async retrieveProduct(productId: string): Promise<Stripe.Product> {
-    return await this.stripe.products.retrieve(productId);
-  }
-
-  async retrievePrice(priceId: string): Promise<Stripe.Price> {
-    return await this.stripe.prices.retrieve(priceId);
-  }
-
-  async listPrices(productId: string): Promise<Stripe.ApiList<Stripe.Price>> {
-    return await this.stripe.prices.list({
-      product: productId,
-    });
-  }
 }

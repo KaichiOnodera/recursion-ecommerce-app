@@ -6,7 +6,6 @@ import { IItemImageRepository } from '../../domains/repositories/IItemImageRepos
 import { IImageStorageAdapter } from '../../domains/adapters/IImageStorageAdapter';
 import { IFavoriteRepository } from '../../../favorites/domains/repositories/IFavoriteRepository';
 import { ITagRepository } from '../../../tags/domains/repositories/ITagRepository';
-import { IItemStripeMappingRepository } from '../../domains/repositories/IItemStripeMappingRepository';
 
 export class ItemRepository implements IItemRepository {
   constructor(
@@ -15,7 +14,6 @@ export class ItemRepository implements IItemRepository {
     private readonly imageStorageAdapter: IImageStorageAdapter,
     private readonly favoriteRepository?: IFavoriteRepository,
     private readonly tagRepository?: ITagRepository,
-    private readonly itemStripeMappingRepository?: IItemStripeMappingRepository,
   ) {}
 
   async findAll(
@@ -355,29 +353,6 @@ export class ItemRepository implements IItemRepository {
       createdAt: item.createdAt,
       updatedAt: item.updatedAt,
     };
-  }
-
-  async findByStripeProductId(
-    stripeProductId: string,
-    displayStatus?: DisplayStatus,
-    userId?: number,
-  ): Promise<Item | null> {
-    // ItemStripeMappingからitemIdを取得
-    if (!this.itemStripeMappingRepository) {
-      return null;
-    }
-
-    const mapping =
-      await this.itemStripeMappingRepository.findByStripeProductId(
-        stripeProductId,
-      );
-
-    if (!mapping) {
-      return null;
-    }
-
-    // itemIdでItemを取得
-    return this.findById(mapping.itemId, displayStatus, userId);
   }
 
   async delete(id: number): Promise<boolean> {

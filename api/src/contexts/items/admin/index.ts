@@ -10,7 +10,6 @@ import { GetItemController } from './controllers/GetItemController';
 import { GetItemInteractor } from './interactors/GetItemInteractor';
 import { ItemRepository } from '../infrastructures/repositories/ItemRepository';
 import { ItemImageRepository } from '../infrastructures/repositories/ItemImageRepository';
-import { ItemStripeMappingRepository } from '../infrastructures/repositories/ItemStripeMappingRepository';
 import { createImageStorageAdapter } from '../infrastructures/adapters/createImageStorageAdapter';
 import { FavoriteRepository } from '../../favorites/infrastructures/repositories/FavoriteRepository';
 import { TagRepository } from '../../tags/infrastructures/repositories/TagRepository';
@@ -28,14 +27,12 @@ const favoriteRepository = new FavoriteRepository(
   imageStorageAdapter,
 );
 const tagRepository = new TagRepository(prisma);
-const itemStripeMappingRepository = new ItemStripeMappingRepository(prisma);
 const itemRepository = new ItemRepository(
   prisma,
   itemImageRepository,
   imageStorageAdapter,
   favoriteRepository,
   tagRepository,
-  itemStripeMappingRepository,
 );
 
 // 認証チェック
