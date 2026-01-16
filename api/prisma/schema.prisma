@@ -110,16 +110,17 @@ model Items {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  ItemImages     ItemImages[]
-  ItemFiles      ItemFiles[]
-  Inventory      Inventory[]
-  CartItems      CartItems[]
-  OrderItems     OrderItems[]
-  OrderItemFiles OrderItemFiles[]
-  Reviews        Reviews[]
-  Favorites      Favorites[]
-  WishlistItem   WishlistItem[]
-  ItemTags       ItemTags[]
+  ItemImages       ItemImages[]
+  ItemFiles        ItemFiles[]
+  Inventory        Inventory[]
+  CartItems        CartItems[]
+  OrderItems       OrderItems[]
+  OrderItemFiles   OrderItemFiles[]
+  Reviews          Reviews[]
+  Favorites        Favorites[]
+  WishlistItem     WishlistItem[]
+  ItemTags         ItemTags[]
+  stripeMapping    ItemStripeMapping?
 }
 
 model Orders {
@@ -270,6 +271,20 @@ model WishlistItem {
   @@unique([wishlistId, itemId])
   @@index([wishlistId])
   @@index([itemId])
+}
+
+model ItemStripeMapping {
+  id              Int      @id @default(autoincrement())
+  itemId          Int      @unique
+  stripeProductId String   @unique
+  stripePriceId   String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  item Items @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@index([itemId])
+  @@index([stripeProductId])
 }
 
 model Users {
