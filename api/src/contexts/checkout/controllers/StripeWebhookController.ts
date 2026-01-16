@@ -36,11 +36,18 @@ export class StripeWebhookController {
 
       return res.status(200).json({ received: true });
     } catch (error) {
-      console.error('Webhook signature verification failed:', error);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const body = req.body as any;
       if (error instanceof Error) {
-        return res.status(400).json({ message: error.message });
+        return res.status(400).json({
+          message: error.message,
+          eventType: body?.type,
+        });
       }
-      return res.status(400).json({ message: 'Invalid signature' });
+      return res.status(400).json({
+        message: 'Webhook processing failed',
+        eventType: body?.type,
+      });
     }
   }
 }
