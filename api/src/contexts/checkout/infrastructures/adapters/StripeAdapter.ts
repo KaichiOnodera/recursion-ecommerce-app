@@ -117,4 +117,13 @@ export class StripeAdapter implements IStripeAdapter {
       product: productId,
     });
   }
+
+  async updatePrice(
+    priceId: string,
+    params: { active?: boolean },
+  ): Promise<Stripe.Price> {
+    return await this.stripe.prices.update(priceId, {
+      active: params.active,
+    });
+  }
 }

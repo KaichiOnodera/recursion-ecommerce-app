@@ -41,4 +41,8 @@ export interface IStripeAdapter {
   retrieveProduct(productId: string): Promise<Stripe.Product>;
   retrievePrice(priceId: string): Promise<Stripe.Price>;
   listPrices(productId: string): Promise<Stripe.ApiList<Stripe.Price>>;
+  updatePrice(
+    priceId: string,
+    params: { active?: boolean },
+  ): Promise<Stripe.Price>;
 }
