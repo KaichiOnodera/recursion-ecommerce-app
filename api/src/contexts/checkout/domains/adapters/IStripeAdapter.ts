@@ -35,4 +35,10 @@ export interface IStripeAdapter {
 
   // Checkout Sessionを取得
   retrieveCheckoutSession(sessionId: string): Promise<Stripe.Checkout.Session>;
+
+  // 製品管理メソッド
+  deleteProduct(productId: string): Promise<void>;
+  retrieveProduct(productId: string): Promise<Stripe.Product>;
+  retrievePrice(priceId: string): Promise<Stripe.Price>;
+  listPrices(productId: string): Promise<Stripe.ApiList<Stripe.Price>>;
 }
