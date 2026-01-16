@@ -41,15 +41,12 @@ export class StripeAdapter implements IStripeAdapter {
       mode: params.mode,
       line_items: params.lineItems.map((item) => ({
         price_data: {
-          // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-          currency: item.priceData?.currency || 'jpy',
+          currency: item.priceData?.currency ?? 'jpy',
           product_data: {
-            // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-            name: item.priceData?.productData.name || '',
+            name: item.priceData?.productData.name ?? '',
             description: item.priceData?.productData.description,
           },
-          // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-          unit_amount: item.priceData?.unitAmount || 0,
+          unit_amount: item.priceData?.unitAmount ?? 0,
         },
         quantity: item.quantity,
       })),
@@ -77,8 +74,7 @@ export class StripeAdapter implements IStripeAdapter {
 
     return {
       sessionId: session.id,
-      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-      checkoutUrl: session.url || '',
+      checkoutUrl: session.url ?? '',
     };
   }
 
