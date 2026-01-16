@@ -380,6 +380,36 @@ export class ItemRepository implements IItemRepository {
     return this.findById(mapping.itemId, displayStatus, userId);
   }
 
+  async updateStripeIds(
+    id: number,
+    stripeProductId: string,
+    stripePriceId?: string,
+  ): Promise<void> {
+    if (!this.itemStripeMappingRepository) {
+      throw new Error('ItemStripeMappingRepository is not available');
+    }
+
+    // 既存のマッピングを確認
+    const existingMapping =
+      await this.itemStripeMappingRepository.findByItemId(id);
+
+    if (existingMapping) {
+      // 既に存在する場合は更新
+      await this.itemStripeMappingRepository.update(
+        id,
+        stripeProductId,
+        stripePriceId,
+      );
+    } else {
+      // 存在しない場合は作成
+      await this.itemStripeMappingRepository.create(
+        id,
+        stripeProductId,
+        stripePriceId,
+      );
+    }
+  }
+
   async delete(id: number): Promise<boolean> {
     const existingItem = await this.findById(id);
 

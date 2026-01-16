@@ -15,6 +15,11 @@ export interface IItemRepository {
     displayStatus?: DisplayStatus,
     userId?: number,
   ): Promise<Item | null>;
+  updateStripeIds(
+    id: number,
+    stripeProductId: string,
+    stripePriceId?: string,
+  ): Promise<void>;
   create(name: string, description: string, type: number): Promise<Item>;
   update(
     id: number,
