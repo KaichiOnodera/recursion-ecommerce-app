@@ -94,10 +94,14 @@ export class CreateCheckoutSessionInteractor
     // Orderの作成
     // ゲストユーザーの場合、ユーザー情報はStripe Checkoutで入力してもらうため、一時的な値を設定
     const order = await this.orderRepository.create({
-      userId: params.userId ?? undefined,
-      lastName: user?.lastName ?? '',
-      firstName: user?.firstName ?? '',
-      email: user?.email ?? '',
+      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+      userId: params.userId || undefined,
+      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+      lastName: user?.lastName || '',
+      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+      firstName: user?.firstName || '',
+      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+      email: user?.email || '',
       address: '', // 後でWebhookで更新: checkoutページでアドレスを入力する
       totalPrice,
       orderStatus: OrderStatus.PENDING,
