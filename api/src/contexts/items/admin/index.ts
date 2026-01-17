@@ -14,6 +14,7 @@ import { ItemStripeMappingRepository } from '../infrastructures/repositories/Ite
 import { createImageStorageAdapter } from '../infrastructures/adapters/createImageStorageAdapter';
 import { FavoriteRepository } from '../../favorites/infrastructures/repositories/FavoriteRepository';
 import { TagRepository } from '../../tags/infrastructures/repositories/TagRepository';
+import { StripeAdapter } from '../../checkout/infrastructures/adapters/StripeAdapter';
 import { prisma } from '../../../libs/prisma';
 import express from 'express';
 import { verifyAccessToken, verifyAdmin } from '../../../middlewares';
@@ -58,7 +59,19 @@ const updateItemInteractor = new UpdateItemInteractor(
 );
 const updateItemController = new UpdateItemController(updateItemInteractor);
 
-const deleteItemInteractor = new DeleteItemInteractor(itemRepository);
+// StripeAdapterのインスタンスを作成
+const secretKey = process.env.STRIPE_SECRET_KEY;
+const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+if (!secretKey || !webhookSecret) {
+  throw new Error('STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET must be set');
+}
+const stripeAdapter = new StripeAdapter(secretKey, webhookSecret);
+
+const deleteItemInteractor = new DeleteItemInteractor(
+  itemRepository,
+  stripeAdapter,
+  itemStripeMappingRepository,
+);
 const deleteItemController = new DeleteItemController(deleteItemInteractor);
 
 // 管理者向け: displayStatusを指定しないことで全ての商品（private含む）を取得
