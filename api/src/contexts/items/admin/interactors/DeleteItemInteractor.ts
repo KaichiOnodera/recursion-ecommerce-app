@@ -23,42 +23,26 @@ export class DeleteItemInteractor implements IDeleteItemInteractor {
     // Stripe製品IDがある場合、Stripeからも削除を試行
     if (mapping?.stripeProductId) {
       try {
-        // まず製品を削除を試行
-        await this.stripeAdapter.deleteProduct(mapping.stripeProductId);
-      } catch (deleteError: unknown) {
-        // 削除に失敗した場合（価格が存在する場合など）、製品を非アクティブ化する
-        const errorMessage =
-          deleteError instanceof Error
-            ? deleteError.message
-            : String(deleteError);
-        if (
-          errorMessage.includes(
-            'cannot be deleted because it has one or more user-created prices',
-          )
-        ) {
-          // 価格が存在するため削除できない場合、製品を非アクティブ化（アーカイブ）
-          try {
-            await this.stripeAdapter.updateProduct(mapping.stripeProductId, {
-              active: false,
-            });
-            console.log(
-              `Stripe product ${mapping.stripeProductId} archived (cannot be deleted due to existing prices)`,
-            );
-          } catch (archiveError) {
-            // 非アクティブ化にも失敗した場合
-            console.error(
-              `Failed to archive Stripe product ${mapping.stripeProductId}:`,
-              archiveError,
-            );
-          }
+        // 製品に関連する価格が存在するかチェック
+        const prices = await this.stripeAdapter.listPrices(
+          mapping.stripeProductId,
+        );
+
+        if (prices.data.length > 0) {
+          // 価格が存在する場合、製品を非アクティブ化（アーカイブ）
+          await this.stripeAdapter.updateProduct(mapping.stripeProductId, {
+            active: false,
+          });
         } else {
-          // その他のエラーの場合
-          console.error(
-            `Failed to delete Stripe product ${mapping.stripeProductId}:`,
-            deleteError,
-          );
+          // 価格が存在しない場合、製品を削除
+          await this.stripeAdapter.deleteProduct(mapping.stripeProductId);
         }
+      } catch (error) {
         // Stripe削除/非アクティブ化に失敗しても、DB削除は続行（楽観的アプローチ）
+        console.error(
+          `Failed to delete/archive Stripe product ${mapping.stripeProductId}:`,
+          error,
+        );
       }
     }
 
