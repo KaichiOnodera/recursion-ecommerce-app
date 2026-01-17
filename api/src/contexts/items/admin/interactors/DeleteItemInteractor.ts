@@ -20,33 +20,45 @@ export class DeleteItemInteractor implements IDeleteItemInteractor {
     // ItemStripeMappingからstripeProductIdを取得
     const mapping = await this.itemStripeMappingRepository.findByItemId(id);
 
-    // Stripe製品IDがある場合、Stripeからも削除
+    // Stripe製品IDがある場合、Stripeからも削除を試行
     if (mapping?.stripeProductId) {
       try {
-        // 製品に関連するすべての価格を取得
-        const prices = await this.stripeAdapter.listPrices(
-          mapping.stripeProductId,
-        );
-
-        // 各価格を非アクティブにする（Stripe製品を削除するには、価格を非アクティブにする必要がある）
-        for (const price of prices.data) {
-          try {
-            await this.stripeAdapter.updatePrice(price.id, { active: false });
-          } catch (priceError) {
-            // 価格の非アクティブ化に失敗しても続行
-            console.warn(`Failed to deactivate price ${price.id}:`, priceError);
-          }
-        }
-
-        // 価格を非アクティブにした後、製品を削除
+        // まず製品を削除を試行
         await this.stripeAdapter.deleteProduct(mapping.stripeProductId);
-      } catch (error) {
-        // Stripe削除に失敗しても、DB削除は続行
-        console.error(
-          `Failed to delete Stripe product ${mapping.stripeProductId}:`,
-          error,
-        );
-        // エラーログを記録するが、処理は続行
+      } catch (deleteError: unknown) {
+        // 削除に失敗した場合（価格が存在する場合など）、製品を非アクティブ化する
+        const errorMessage =
+          deleteError instanceof Error
+            ? deleteError.message
+            : String(deleteError);
+        if (
+          errorMessage.includes(
+            'cannot be deleted because it has one or more user-created prices',
+          )
+        ) {
+          // 価格が存在するため削除できない場合、製品を非アクティブ化（アーカイブ）
+          try {
+            await this.stripeAdapter.updateProduct(mapping.stripeProductId, {
+              active: false,
+            });
+            console.log(
+              `Stripe product ${mapping.stripeProductId} archived (cannot be deleted due to existing prices)`,
+            );
+          } catch (archiveError) {
+            // 非アクティブ化にも失敗した場合
+            console.error(
+              `Failed to archive Stripe product ${mapping.stripeProductId}:`,
+              archiveError,
+            );
+          }
+        } else {
+          // その他のエラーの場合
+          console.error(
+            `Failed to delete Stripe product ${mapping.stripeProductId}:`,
+            deleteError,
+          );
+        }
+        // Stripe削除/非アクティブ化に失敗しても、DB削除は続行（楽観的アプローチ）
       }
     }
 

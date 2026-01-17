@@ -38,11 +38,11 @@ export interface IStripeAdapter {
 
   // 製品管理メソッド
   deleteProduct(productId: string): Promise<void>;
+  updateProduct(
+    productId: string,
+    params: { active?: boolean },
+  ): Promise<Stripe.Product>;
   retrieveProduct(productId: string): Promise<Stripe.Product>;
   retrievePrice(priceId: string): Promise<Stripe.Price>;
   listPrices(productId: string): Promise<Stripe.ApiList<Stripe.Price>>;
-  updatePrice(
-    priceId: string,
-    params: { active?: boolean },
-  ): Promise<Stripe.Price>;
 }

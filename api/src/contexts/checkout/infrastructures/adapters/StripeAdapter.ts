@@ -104,6 +104,15 @@ export class StripeAdapter implements IStripeAdapter {
     await this.stripe.products.del(productId);
   }
 
+  async updateProduct(
+    productId: string,
+    params: { active?: boolean },
+  ): Promise<Stripe.Product> {
+    return await this.stripe.products.update(productId, {
+      active: params.active,
+    });
+  }
+
   async retrieveProduct(productId: string): Promise<Stripe.Product> {
     return await this.stripe.products.retrieve(productId);
   }
@@ -115,15 +124,6 @@ export class StripeAdapter implements IStripeAdapter {
   async listPrices(productId: string): Promise<Stripe.ApiList<Stripe.Price>> {
     return await this.stripe.prices.list({
       product: productId,
-    });
-  }
-
-  async updatePrice(
-    priceId: string,
-    params: { active?: boolean },
-  ): Promise<Stripe.Price> {
-    return await this.stripe.prices.update(priceId, {
-      active: params.active,
     });
   }
 }
