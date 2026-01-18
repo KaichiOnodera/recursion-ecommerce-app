@@ -23,6 +23,7 @@ export class MeController {
         firstName: user.firstName,
         email: user.email,
         role: user.role,
+        emailVerified: user.emailVerified,
       },
     });
   }

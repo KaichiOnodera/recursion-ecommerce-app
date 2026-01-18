@@ -15,6 +15,7 @@ import { verifyAccessToken } from '../../middlewares';
 import { EmailAdapter } from '../mail/infrastructures/adapters/EmailAdapter';
 import { EmailVerificationRepository } from './infrastructures/repositories/EmailVerificationRepository';
 import { VerifyTokenInteractor } from '../mail/interactors/VerifyTokenInteractor';
+import { VerifyTokenController } from '../mail/controllers/VerifyTokenController';
 
 const authRouter = express.Router();
 
@@ -40,6 +41,7 @@ const getMeInteractor = new GetMeInteractor(userRepository);
 const meController = new MeController(getMeInteractor);
 const signupController = new SignupController(signupInteractor);
 const resignController = new ResignController(resignInteractor);
+const verifyTokenController = new VerifyTokenController(verifyTokenInteractor);
 
 authRouter.post('/signup', signupController.execute.bind(signupController));
 authRouter.post('/login', loginController.execute.bind(loginController));
@@ -58,6 +60,13 @@ authRouter.delete(
 authRouter.post(
   '/verify-email',
   verifyUserInteractor.execute.bind(verifyUserInteractor),
+);
+
+// 認証メール再送信エンドポイント
+authRouter.post(
+  '/resend-verification-email',
+  verifyAccessToken,
+  verifyTokenController.execute.bind(verifyTokenController),
 );
 
 export { authRouter, verifyUserInteractor };
