@@ -12,13 +12,27 @@ import { UserRepository } from './infrastructures/repositories/UserRepository';
 import { prisma } from '../../libs/prisma';
 import express from 'express';
 import { verifyAccessToken } from '../../middlewares';
+import { EmailAdapter } from '../mail/infrastructures/adapters/EmailAdapter';
+import { EmailVerificationRepository } from './infrastructures/repositories/EmailVerificationRepository';
+import { VerifyTokenInteractor } from '../mail/interactors/VerifyTokenInteractor';
 
 const authRouter = express.Router();
 
 const userRepository = new UserRepository(prisma);
+const emailAdapter = new EmailAdapter();
+const emailVerificationRepository = new EmailVerificationRepository(prisma);
+const verifyTokenInteractor = new VerifyTokenInteractor(
+  emailAdapter,
+  userRepository,
+  emailVerificationRepository,
+);
+
 const loginInteractor = new LoginInteractor(userRepository);
 const verifyUserInteractor = new VerifyUserInteractor(userRepository);
-const signupInteractor = new SignupInteractor(userRepository);
+const signupInteractor = new SignupInteractor(
+  userRepository,
+  verifyTokenInteractor,
+);
 const resignInteractor = new ResignInteractor(userRepository);
 const loginController = new LoginController(loginInteractor);
 const logoutController = new LogoutController();
