@@ -5,9 +5,13 @@ import {
   ISignupRequest,
   ISignupInteractor,
 } from '../usecases/ISignupInteractor';
+import { IVerifyTokenInteractor } from '../../mail/usecases/IVerifyTokenInteractor';
 
 export class SignupInteractor implements ISignupInteractor {
-  constructor(private readonly userRepository: IUserRepository) {}
+  constructor(
+    private readonly userRepository: IUserRepository,
+    private readonly verifyTokenInteractor: IVerifyTokenInteractor,
+  ) {}
 
   async execute(input: ISignupRequest): Promise<User> {
     const { lastName, firstName, email, password } = input;
@@ -31,6 +35,17 @@ export class SignupInteractor implements ISignupInteractor {
       emailVerified: false,
       role: 'USER',
     });
+
+    // メール認証メールを送信（エラーが発生してもユーザー登録は成功させる）
+    try {
+      await this.verifyTokenInteractor.VerifyToken(createdUser.id);
+    } catch (error) {
+      console.error(
+        `[SignupInteractor] Failed to send verification email for user ${createdUser.id}:`,
+        error,
+      );
+      // メール送信に失敗してもユーザー登録は成功させる
+    }
 
     return createdUser;
   }
