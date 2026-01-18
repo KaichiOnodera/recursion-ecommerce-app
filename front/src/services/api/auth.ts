@@ -21,3 +21,13 @@ export async function getMe(): Promise<GetRes['/auth/me']> {
   const response = await apiClient.get<GetRes['/auth/me']>('/auth/me');
   return response.data;
 }
+
+export async function resendVerificationEmail(): Promise<{
+  message: string;
+}> {
+  const response = await apiClient.post<{ message: string }>(
+    '/auth/resend-verification-email',
+    {},
+  );
+  return response.data;
+}
