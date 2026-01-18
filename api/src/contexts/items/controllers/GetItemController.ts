@@ -39,6 +39,7 @@ export class GetItemController {
         inventoryStatus,
         images: item.images,
         isFavorite: item.isFavorite ?? null,
+        tags: item.tags,
       },
     });
   }

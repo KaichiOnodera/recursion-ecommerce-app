@@ -6,8 +6,10 @@ import { SearchItemsController } from './controllers/SearchItemsController';
 import { SearchItemsInteractor } from './interactors/SearchItemsInteractor';
 import { ItemRepository } from './infrastructures/repositories/ItemRepository';
 import { ItemImageRepository } from './infrastructures/repositories/ItemImageRepository';
+import { ItemStripeMappingRepository } from './infrastructures/repositories/ItemStripeMappingRepository';
 import { createImageStorageAdapter } from './infrastructures/adapters/createImageStorageAdapter';
 import { FavoriteRepository } from '../favorites/infrastructures/repositories/FavoriteRepository';
+import { TagRepository } from '../tags/infrastructures/repositories/TagRepository';
 import { DisplayStatus } from './domains/entities/Item';
 import { prisma } from '../../libs/prisma';
 import { optionalVerifyAccessToken } from '../../middlewares';
@@ -22,11 +24,15 @@ const favoriteRepository = new FavoriteRepository(
   itemImageRepository,
   imageStorageAdapter,
 );
+const tagRepository = new TagRepository(prisma);
+const itemStripeMappingRepository = new ItemStripeMappingRepository(prisma);
 const itemRepository = new ItemRepository(
   prisma,
   itemImageRepository,
   imageStorageAdapter,
   favoriteRepository,
+  tagRepository,
+  itemStripeMappingRepository,
 );
 // 一般ユーザー向け: PUBLICな商品のみ取得
 const getItemsInteractor = new GetItemsInteractor(

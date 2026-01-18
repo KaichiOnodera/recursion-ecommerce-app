@@ -13,7 +13,10 @@ export interface SearchItemsParams {
   q?: string;
   sort?: SearchSortType;
   page?: number;
+  tagIds?: number[];
 }
+
+import { Tag } from './tag';
 
 export const InventoryStatus = {
   IN_STOCK: 'inStock',
@@ -31,6 +34,7 @@ export type Item = {
   inventoryStatus: InventoryStatus;
   images: ItemImage[];
   isFavorite: boolean | null;
+  tags?: Tag[];
 };
 
 export type ItemDetail = {
@@ -42,6 +46,7 @@ export type ItemDetail = {
   inventoryStatus: InventoryStatus;
   images: ItemImage[];
   isFavorite: boolean | null;
+  tags?: Tag[];
 };
 
 export const DisplayStatus = {
@@ -62,6 +67,7 @@ export type AdminItem = {
   images: ItemImage[];
   createdAt: Date;
   updatedAt: Date;
+  tags?: Tag[];
 };
 
 export type AdminItemDetail = {
@@ -76,6 +82,7 @@ export type AdminItemDetail = {
   images: ItemImage[];
   createdAt: Date;
   updatedAt: Date;
+  tags?: Tag[];
 };
 
 export type ItemImage = {

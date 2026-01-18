@@ -2,6 +2,7 @@ import { ICreateItemInteractor } from '../usecases/ICreateItemInteractor';
 import { IItemRepository } from '../../domains/repositories/IItemRepository';
 import { IItemImageRepository } from '../../domains/repositories/IItemImageRepository';
 import { IImageStorageAdapter } from '../../domains/adapters/IImageStorageAdapter';
+import { ITagRepository } from '../../../tags/domains/repositories/ITagRepository';
 import { Item, DisplayStatus } from '../../domains/entities/Item';
 import { ItemImage } from '../../domains/entities/ItemImage';
 import {
@@ -18,6 +19,7 @@ export class CreateItemInteractor implements ICreateItemInteractor {
     private readonly itemRepository: IItemRepository,
     private readonly itemImageRepository: IItemImageRepository,
     private readonly imageStorageAdapter: IImageStorageAdapter,
+    private readonly tagRepository?: ITagRepository,
   ) {}
 
   async execute(
@@ -27,6 +29,7 @@ export class CreateItemInteractor implements ICreateItemInteractor {
     price: number,
     files?: Express.Multer.File[],
     displayStatus?: DisplayStatus,
+    tagIds?: number[],
   ): Promise<{ item: Item; images: ItemImage[] }> {
     // 商品を作成
     const item = await this.itemRepository.create(name, description, type);
@@ -54,6 +57,10 @@ export class CreateItemInteractor implements ICreateItemInteractor {
       if (updatedItem) {
         Object.assign(item, updatedItem);
       }
+    }
+
+    if (tagIds && tagIds.length > 0 && this.tagRepository) {
+      await this.tagRepository.replaceItemTags(item.id, tagIds);
     }
 
     const images: ItemImage[] = [];

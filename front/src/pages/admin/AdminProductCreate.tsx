@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { createItem } from '../../services/api/items';
 import { useImageUpload } from '../../hooks/useImageUpload';
+import { TagSelector } from '../../components/admin/TagSelector';
 
 export const AdminProductCreate: React.FC = () => {
   const [name, setName] = useState('');
@@ -12,6 +13,7 @@ export const AdminProductCreate: React.FC = () => {
   const [displayStatus, setDisplayStatus] = useState<'public' | 'private'>(
     'private',
   );
+  const [selectedTagIds, setSelectedTagIds] = useState<number[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
@@ -36,6 +38,7 @@ export const AdminProductCreate: React.FC = () => {
           type,
           price,
           displayStatus,
+          tagIds: selectedTagIds.length > 0 ? selectedTagIds : undefined,
         },
         selectedImages.length > 0 ? selectedImages : undefined,
       );
@@ -84,7 +87,7 @@ export const AdminProductCreate: React.FC = () => {
             <select
               value={type}
               onChange={(e) => setType(Number(e.target.value))}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
               required
             >
               <option value={1}>物理商品</option>
@@ -119,7 +122,7 @@ export const AdminProductCreate: React.FC = () => {
               onChange={(e) =>
                 setDisplayStatus(e.target.value as 'public' | 'private')
               }
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
               required
             >
               <option value="public">公開</option>
@@ -130,6 +133,12 @@ export const AdminProductCreate: React.FC = () => {
             </p>
           </div>
 
+          {/* タグ */}
+          <TagSelector
+            selectedTagIds={selectedTagIds}
+            onChange={setSelectedTagIds}
+          />
+
           {/* 商品画像 */}
           <div>
             <label className="block mb-2 font-medium">商品画像</label>
@@ -139,7 +148,7 @@ export const AdminProductCreate: React.FC = () => {
               accept="image/*"
               multiple
               onChange={handleImageSelect}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
             />
             <p className="mt-1 text-sm text-gray-500">
               画像は最大{MAX_IMAGES}枚まで選択できます（jpg, jpeg, png, gif,

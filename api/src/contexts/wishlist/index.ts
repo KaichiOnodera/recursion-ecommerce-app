@@ -1,0 +1,125 @@
+import express from 'express';
+import { CreateWishlistController } from './controllers/CreateWishlistController';
+import { GetWishlistsController } from './controllers/GetWishlistsController';
+import { GetWishlistItemsController } from './controllers/GetWishlistItemsController';
+import { AddWishlistItemController } from './controllers/AddWishlistItemController';
+import { RemoveWishlistItemController } from './controllers/RemoveWishlistItemController';
+import { UpdateWishlistController } from './controllers/UpdateWishlistController';
+import { DeleteWishlistController } from './controllers/DeleteWishlistController';
+import { CreateWishlistInteractor } from './interactors/CreateWishlistInteractor';
+import { GetWishlistsInteractor } from './interactors/GetWishlistsInteractor';
+import { GetWishlistItemsInteractor } from './interactors/GetWishlistItemsInteractor';
+import { AddWishlistItemInteractor } from './interactors/AddWishlistItemInteractor';
+import { RemoveWishlistItemInteractor } from './interactors/RemoveWishlistItemInteractor';
+import { UpdateWishlistInteractor } from './interactors/UpdateWishlistInteractor';
+import { DeleteWishlistInteractor } from './interactors/DeleteWishlistInteractor';
+import { WishlistRepository } from './infrastructures/repositories/WishlistRepository';
+import { ItemImageRepository } from '../items/infrastructures/repositories/ItemImageRepository';
+import { ItemRepository } from '../items/infrastructures/repositories/ItemRepository';
+import { createImageStorageAdapter } from '../items/infrastructures/adapters/createImageStorageAdapter';
+import { prisma } from '../../libs/prisma';
+import {
+  verifyAccessToken,
+  optionalVerifyAccessToken,
+} from '../../middlewares';
+
+const wishlistRouter = express.Router();
+
+const itemImageRepository = new ItemImageRepository(prisma);
+const imageStorageAdapter = createImageStorageAdapter();
+const itemRepository = new ItemRepository(
+  prisma,
+  itemImageRepository,
+  imageStorageAdapter,
+);
+const wishlistRepository = new WishlistRepository(
+  prisma,
+  itemImageRepository,
+  imageStorageAdapter,
+);
+const createWishlistInteractor = new CreateWishlistInteractor(
+  wishlistRepository,
+);
+const createWishlistController = new CreateWishlistController(
+  createWishlistInteractor,
+);
+const getWishlistsInteractor = new GetWishlistsInteractor(wishlistRepository);
+const getWishlistsController = new GetWishlistsController(
+  getWishlistsInteractor,
+);
+const getWishlistItemsInteractor = new GetWishlistItemsInteractor(
+  wishlistRepository,
+);
+const getWishlistItemsController = new GetWishlistItemsController(
+  getWishlistItemsInteractor,
+);
+const addWishlistItemInteractor = new AddWishlistItemInteractor(
+  wishlistRepository,
+  itemRepository,
+);
+const addWishlistItemController = new AddWishlistItemController(
+  addWishlistItemInteractor,
+);
+const removeWishlistItemInteractor = new RemoveWishlistItemInteractor(
+  wishlistRepository,
+);
+const removeWishlistItemController = new RemoveWishlistItemController(
+  removeWishlistItemInteractor,
+);
+const updateWishlistInteractor = new UpdateWishlistInteractor(
+  wishlistRepository,
+);
+const updateWishlistController = new UpdateWishlistController(
+  updateWishlistInteractor,
+);
+const deleteWishlistInteractor = new DeleteWishlistInteractor(
+  wishlistRepository,
+);
+const deleteWishlistController = new DeleteWishlistController(
+  deleteWishlistInteractor,
+);
+
+wishlistRouter.post(
+  '/',
+  verifyAccessToken,
+  createWishlistController.execute.bind(createWishlistController),
+);
+
+wishlistRouter.get(
+  '/',
+  verifyAccessToken,
+  getWishlistsController.execute.bind(getWishlistsController),
+);
+
+wishlistRouter.patch(
+  '/:wishlistId',
+  verifyAccessToken,
+  updateWishlistController.execute.bind(updateWishlistController),
+);
+
+wishlistRouter.delete(
+  '/:wishlistId',
+  verifyAccessToken,
+  deleteWishlistController.execute.bind(deleteWishlistController),
+);
+
+// 認証オプショナル: 公開ウィッシュリストは認証なしでアクセス可能
+wishlistRouter.get(
+  '/:wishlistId/items',
+  optionalVerifyAccessToken,
+  getWishlistItemsController.execute.bind(getWishlistItemsController),
+);
+
+wishlistRouter.post(
+  '/:wishlistId/items',
+  verifyAccessToken,
+  addWishlistItemController.execute.bind(addWishlistItemController),
+);
+
+wishlistRouter.delete(
+  '/:wishlistId/items/:itemId',
+  verifyAccessToken,
+  removeWishlistItemController.execute.bind(removeWishlistItemController),
+);
+
+export { wishlistRouter };

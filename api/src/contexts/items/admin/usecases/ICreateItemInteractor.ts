@@ -10,5 +10,6 @@ export interface ICreateItemInteractor {
     price: number,
     files?: Express.Multer.File[],
     displayStatus?: DisplayStatus,
+    tagIds?: number[],
   ): Promise<{ item: Item; images: ItemImage[] }>;
 }

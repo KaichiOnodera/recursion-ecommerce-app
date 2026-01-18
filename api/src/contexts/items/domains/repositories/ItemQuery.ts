@@ -2,6 +2,7 @@ export interface ItemQuery {
   where?: {
     name?: { contains?: string };
     displayStatus?: { not?: string };
+    tagIds?: number[];
   };
   orderBy?: {
     createdAt?: 'asc' | 'desc';

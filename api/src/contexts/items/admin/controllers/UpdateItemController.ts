@@ -53,6 +53,7 @@ export class UpdateItemController {
         inventoryAmount,
         displayStatus,
         imageIds,
+        tagIds,
       } = req.body;
 
       // 少なくとも1つのフィールドが更新されるか確認する
@@ -63,7 +64,8 @@ export class UpdateItemController {
         price === undefined &&
         inventoryAmount === undefined &&
         displayStatus === undefined &&
-        imageIds === undefined
+        imageIds === undefined &&
+        tagIds === undefined
       ) {
         const filesObj =
           req.files && !Array.isArray(req.files) ? req.files : null;
@@ -90,6 +92,13 @@ export class UpdateItemController {
         });
       }
 
+      const parsedTagIds = parseJsonToNumberArray(tagIds);
+      if (parsedTagIds === null && tagIds !== undefined) {
+        return res.status(400).json({
+          message: 'tagIds must be an array of integers',
+        });
+      }
+
       const result = await this.updateItemInteractor.execute(
         itemId,
         name,
@@ -100,6 +109,7 @@ export class UpdateItemController {
         files,
         displayStatus as 'public' | 'private' | undefined,
         parsedImageIds,
+        parsedTagIds ?? undefined,
       );
 
       if (!result) {

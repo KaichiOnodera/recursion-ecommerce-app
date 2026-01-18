@@ -6,6 +6,7 @@ import { ItemImage } from '@shared/schemas/item';
 import { useImageUpload } from '../../hooks/useImageUpload';
 import { ExistingImageList } from '../../components/admin/ExistingImageList';
 import { NewImageUpload } from '../../components/admin/NewImageUpload';
+import { TagSelector } from '../../components/admin/TagSelector';
 
 export const AdminProductEdit: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -20,6 +21,10 @@ export const AdminProductEdit: React.FC = () => {
   const [existingImages, setExistingImages] = useState<ItemImage[]>([]);
   const [orderedImageIds, setOrderedImageIds] = useState<
     Array<{ imageId: number; isDeleted: boolean }>
+  >([]);
+  const [selectedTagIds, setSelectedTagIds] = useState<number[]>([]);
+  const [initialTags, setInitialTags] = useState<
+    Array<{ id: number; name: string; createdAt: Date; updatedAt: Date }>
   >([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
@@ -59,6 +64,12 @@ export const AdminProductEdit: React.FC = () => {
         images.map((img) => ({ imageId: img.id, isDeleted: false })),
       );
       setInventoryAmount(response.item.inventoryAmount);
+      if (item.tags) {
+        setSelectedTagIds(item.tags.map((tag) => tag.id));
+        setInitialTags(item.tags);
+      } else {
+        setInitialTags([]);
+      }
     };
 
     fetchItem();
@@ -132,9 +143,10 @@ export const AdminProductEdit: React.FC = () => {
           price,
           inventoryAmount,
           displayStatus,
+          tagIds: selectedTagIds.length > 0 ? selectedTagIds : undefined,
         },
         selectedImages.length > 0 ? selectedImages : undefined,
-        activeImageIds.length > 0 ? activeImageIds : undefined,
+        activeImageIds,
       );
 
       navigate('/admin/products');
@@ -181,7 +193,7 @@ export const AdminProductEdit: React.FC = () => {
             <select
               value={type}
               onChange={(e) => setType(Number(e.target.value))}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
               required
             >
               <option value={1}>物理商品</option>
@@ -230,7 +242,7 @@ export const AdminProductEdit: React.FC = () => {
               onChange={(e) =>
                 setDisplayStatus(e.target.value as 'public' | 'private')
               }
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
               required
             >
               <option value="public">公開</option>
@@ -240,6 +252,13 @@ export const AdminProductEdit: React.FC = () => {
               公開: 一般ユーザーに表示 / 非公開: 管理者のみ表示
             </p>
           </div>
+
+          {/* タグ */}
+          <TagSelector
+            selectedTagIds={selectedTagIds}
+            onChange={setSelectedTagIds}
+            initialTags={initialTags}
+          />
 
           {/* 商品画像 */}
           <div>
@@ -284,7 +303,11 @@ export const AdminProductEdit: React.FC = () => {
             </button>
             <button
               type="button"
-              onClick={() => navigate('/admin/products')}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                navigate('/admin/products');
+              }}
               className="bg-gray-300 rounded-md text-gray-700 py-3 px-6 hover:bg-gray-400"
             >
               キャンセル

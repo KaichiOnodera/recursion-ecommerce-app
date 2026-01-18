@@ -44,6 +44,11 @@ export async function createItem(
     formData.append('displayStatus', data.displayStatus);
   }
 
+  // tagIdsを追加
+  if (data.tagIds && data.tagIds.length > 0) {
+    formData.append('tagIds', JSON.stringify(data.tagIds));
+  }
+
   // 画像ファイルを追加
   if (images && images.length > 0) {
     images.forEach((image) => {
@@ -94,6 +99,11 @@ export async function updateItem(
 
   if (imageIds !== undefined) {
     formData.append('imageIds', JSON.stringify(imageIds));
+  }
+
+  // tagIdsを追加
+  if (data.tagIds !== undefined) {
+    formData.append('tagIds', JSON.stringify(data.tagIds));
   }
 
   // 画像ファイルを追加
@@ -151,6 +161,9 @@ export async function searchItems(
   }
   if (params.page) {
     queryParams.append('page', params.page.toString());
+  }
+  if (params.tagIds && params.tagIds.length > 0) {
+    queryParams.append('tagIds', JSON.stringify(params.tagIds));
   }
 
   const queryString = queryParams.toString();
