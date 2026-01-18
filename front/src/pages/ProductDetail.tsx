@@ -6,6 +6,7 @@ import { addToCart } from '../services/api/cart';
 import { addFavorite, removeFavorite } from '../services/api/favorites';
 import { useCart } from '../contexts/CartContext';
 import { useUser } from '../contexts/UserContext';
+import { useToast } from '../contexts/ToastContext';
 import { BackLink } from '../components/product/BackLink';
 import { LoadingState } from '../components/product/LoadingState';
 import { ErrorState } from '../components/product/ErrorState';
@@ -29,6 +30,7 @@ export const ProductDetail: React.FC = () => {
   const navigate = useNavigate();
   const { refreshCart } = useCart();
   const { isLoggedIn } = useUser();
+  const { showSuccess, showError } = useToast();
   const [state, setState] = useState<ProductDetailState>({
     item: null,
     isLoading: true,
@@ -36,6 +38,7 @@ export const ProductDetail: React.FC = () => {
   });
   const [quantity, setQuantity] = useState(MIN_QUANTITY);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [isAddedToCart, setIsAddedToCart] = useState(false);
   const [isTogglingFavorite, setIsTogglingFavorite] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isWishlistModalOpen, setIsWishlistModalOpen] = useState(false);
@@ -113,17 +116,24 @@ export const ProductDetail: React.FC = () => {
     if (!state.item) return;
 
     setIsAddingToCart(true);
+    setIsAddedToCart(false);
     try {
       await addToCart(state.item.id, quantity);
       await refreshCart();
-      alert('カートに追加しました');
+      setIsAddedToCart(true);
+      showSuccess(
+        `${state.item.name}をカートに追加しました（数量: ${quantity}）`,
+      );
+      setTimeout(() => {
+        setIsAddedToCart(false);
+      }, 2000);
     } catch (err) {
       console.error('Failed to add to cart:', err);
-      alert('カートへの追加に失敗しました');
+      showError('カートへの追加に失敗しました。もう一度お試しください。');
     } finally {
       setIsAddingToCart(false);
     }
-  }, [state.item, quantity, refreshCart]);
+  }, [state.item, quantity, refreshCart, showSuccess, showError]);
 
   const handleToggleFavorite = useCallback(async (): Promise<void> => {
     if (!state.item) return;
@@ -315,6 +325,7 @@ export const ProductDetail: React.FC = () => {
           <ActionButtons
             isOutOfStock={isOutOfStock}
             isAddingToCart={isAddingToCart}
+            isAddedToCart={isAddedToCart}
             onAddToCart={handleAddToCart}
             onToggleFavorite={handleToggleFavorite}
             isFavorite={state.item.isFavorite ?? false}

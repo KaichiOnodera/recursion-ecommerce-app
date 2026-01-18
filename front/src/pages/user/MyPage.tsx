@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router';
+import { Link } from 'react-router';
 import { useUser } from '../../contexts/UserContext';
+import { useRedirect } from '../../hooks/useRedirect';
+import { RedirectReason } from '../../constants/redirectReasons';
 import {
   CubeIcon,
   ClipboardDocumentListIcon,
@@ -31,7 +33,7 @@ export const MyPage: React.FC = () => {
   const [resendEmailMessage, setResendEmailMessage] = useState<string | null>(
     null,
   );
-  const navigate = useNavigate();
+  const redirect = useRedirect();
 
   if (!isLoggedIn()) {
     return (
@@ -287,7 +289,7 @@ export const MyPage: React.FC = () => {
             console.warn('Logout failed after resignation:', error);
           }
           clearUser();
-          navigate('/products');
+          redirect(RedirectReason.RESIGNATION_SUCCESS);
         }}
       />
     </div>

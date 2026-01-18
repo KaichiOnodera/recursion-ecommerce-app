@@ -4,6 +4,7 @@ import './App.css';
 
 import { UserContextProvider } from './contexts/UserContext';
 import { CartContextProvider } from './contexts/CartContext';
+import { ToastProvider } from './contexts/ToastContext';
 
 // レイアウト関係
 import Header from './components/layout/Header';
@@ -55,12 +56,13 @@ function App(): React.JSX.Element {
   return (
     <UserContextProvider>
       <CartContextProvider>
-        <BrowserRouter>
-          <div className="min-h-screen">
-            <Header ref={headerRef} />
-            <div className="container mx-auto p-4">
-              <Routes>
-                {/* 
+        <ToastProvider>
+          <BrowserRouter>
+            <div className="min-h-screen">
+              <Header ref={headerRef} />
+              <div className="container mx-auto p-4">
+                <Routes>
+                  {/* 
                   Note: ルートの順序について
                   React Routerは上から順にマッチングを行うため、より具体的なルートを先に定義する必要がある。
                   
@@ -71,54 +73,64 @@ function App(): React.JSX.Element {
                   
                   順序を間違えると、意図しないルートにマッチしてしまい、"No routes matched location"の警告が発生します。
                 */}
-                {/* 特殊ルート */}
-                <Route path="/" element={<Navigate to="/products" replace />} />
+                  {/* 特殊ルート */}
+                  <Route
+                    path="/"
+                    element={<Navigate to="/products" replace />}
+                  />
 
-                {/* ========== 固定パス ========== */}
-                <Route path="/products" element={<ProductList />} />
-                <Route path="/auth/user/login" element={<UserLogin />} />
-                <Route path="/auth/user/signup" element={<UserSignup />} />
-                <Route path="/cart" element={<Cart />} />
-                <Route path="/mypage" element={<MyPage />} />
-                <Route path="/user/profile" element={<User />} />
-                <Route path="/orders" element={<OrderHistory />} />
-                <Route path="/favorites" element={<FavoritesList />} />
-                <Route path="/wishlist" element={<WishlistList />} />
-                <Route path="/order/complete" element={<OrderComplete />} />
-                <Route path="/auth/admin/login" element={<AdminLogin />} />
-                <Route path="/auth/admin/signup" element={<AdminSignup />} />
-                <Route
-                  path="/admin/products/new"
-                  element={<AdminProductCreate />}
-                />
-                <Route
-                  path="/admin/orders/shipping"
-                  element={<AdminOrderList />}
-                />
+                  {/* ========== 固定パス ========== */}
+                  <Route path="/products" element={<ProductList />} />
+                  <Route path="/auth/user/login" element={<UserLogin />} />
+                  <Route path="/auth/user/signup" element={<UserSignup />} />
+                  <Route path="/cart" element={<Cart />} />
+                  <Route path="/mypage" element={<MyPage />} />
+                  <Route path="/user/profile" element={<User />} />
+                  <Route path="/orders" element={<OrderHistory />} />
+                  <Route path="/favorites" element={<FavoritesList />} />
+                  <Route path="/wishlist" element={<WishlistList />} />
+                  <Route path="/order/complete" element={<OrderComplete />} />
+                  <Route path="/auth/admin/login" element={<AdminLogin />} />
+                  <Route path="/auth/admin/signup" element={<AdminSignup />} />
+                  <Route
+                    path="/admin/products/new"
+                    element={<AdminProductCreate />}
+                  />
+                  <Route
+                    path="/admin/orders/shipping"
+                    element={<AdminOrderList />}
+                  />
 
-                {/* ========== パラメータ付きパス ========== */}
-                <Route path="/products/:id" element={<ProductDetail />} />
-                <Route
-                  path="/wishlist/:wishlistId"
-                  element={<WishlistDetail />}
-                />
-                <Route
-                  path="/admin/products/:id/edit"
-                  element={<AdminProductEdit />}
-                />
-                <Route
-                  path="/admin/products/:id/delete"
-                  element={<AdminProductDelete />}
-                />
+                  {/* ========== パラメータ付きパス ========== */}
+                  <Route path="/products/:id" element={<ProductDetail />} />
+                  <Route
+                    path="/wishlist/:wishlistId"
+                    element={<WishlistDetail />}
+                  />
+                  <Route
+                    path="/admin/products/:id/edit"
+                    element={<AdminProductEdit />}
+                  />
+                  <Route
+                    path="/admin/products/:id/delete"
+                    element={<AdminProductDelete />}
+                  />
 
-                {/* ========== 汎用パス ========== */}
-                <Route path="/admin/products" element={<AdminProductList />} />
-                <Route path="/admin/orders" element={<AdminAllOrdersList />} />
-              </Routes>
+                  {/* ========== 汎用パス ========== */}
+                  <Route
+                    path="/admin/products"
+                    element={<AdminProductList />}
+                  />
+                  <Route
+                    path="/admin/orders"
+                    element={<AdminAllOrdersList />}
+                  />
+                </Routes>
+              </div>
+              {!isHeaderVisible && <FloatingCartIcon />}
             </div>
-            {!isHeaderVisible && <FloatingCartIcon />}
-          </div>
-        </BrowserRouter>
+          </BrowserRouter>
+        </ToastProvider>
       </CartContextProvider>
     </UserContextProvider>
   );
