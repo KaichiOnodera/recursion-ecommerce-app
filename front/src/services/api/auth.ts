@@ -31,3 +31,15 @@ export async function resendVerificationEmail(): Promise<{
   );
   return response.data;
 }
+
+export async function verifyEmail(token: string): Promise<{
+  message: string;
+}> {
+  const response = await apiClient.get<{ message: string }>(
+    '/auth/verify-email',
+    {
+      params: { token },
+    },
+  );
+  return response.data;
+}

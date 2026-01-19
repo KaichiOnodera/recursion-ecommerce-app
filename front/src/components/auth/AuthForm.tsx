@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { login } from '../../services/api/auth';
 import { signup } from '../../services/api/users';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { useUser } from '../../contexts/UserContext';
 import { useRedirect } from '../../hooks/useRedirect';
 import { RedirectReason } from '../../constants/redirectReasons';
@@ -30,6 +30,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
   const [lastName, setLastName] = useState('');
   const [error, setError] = useState('');
   const redirect = useRedirect();
+  const navigate = useNavigate();
   const { setUser } = useUser();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -70,13 +71,15 @@ export const AuthForm: React.FC<AuthFormProps> = ({
             firstName: response.user.firstName,
             email: response.user.email,
             role: response.user.role,
+            emailVerified: false, // サインアップ直後は未認証
           });
         }
 
         if (onSuccess) {
           onSuccess();
         } else {
-          redirect(RedirectReason.SIGNUP_SUCCESS);
+          // メール認証待ち画面に遷移
+          navigate('/auth/verify-email/pending');
         }
       }
     } catch (err: any) {
