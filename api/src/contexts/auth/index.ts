@@ -3,11 +3,13 @@ import { LogoutController } from './controllers/LogoutController';
 import { MeController } from './controllers/MeController';
 import { SignupController } from './controllers/SignupController';
 import { ResignController } from './controllers/ResignController';
+import { EmailVerifyController } from './controllers/EmailVerifyController';
 import { LoginInteractor } from './interactors/LoginInteractor';
 import { VerifyUserInteractor } from './interactors/VerifyUserInteractor';
 import { GetMeInteractor } from './interactors/GetMeInteractor';
 import { SignupInteractor } from './interactors/SignupInteractor';
 import { ResignInteractor } from './interactors/ResignInteractor';
+import { EmailVerifyInteractor } from './interactors/EmailVerifyInteractor';
 import { UserRepository } from './infrastructures/repositories/UserRepository';
 import { prisma } from '../../libs/prisma';
 import express from 'express';
@@ -35,6 +37,10 @@ const signupInteractor = new SignupInteractor(
   verifyTokenInteractor,
 );
 const resignInteractor = new ResignInteractor(userRepository);
+const emailVerifyInteractor = new EmailVerifyInteractor(
+  userRepository,
+  emailVerificationRepository,
+);
 const loginController = new LoginController(loginInteractor);
 const logoutController = new LogoutController();
 const getMeInteractor = new GetMeInteractor(userRepository);
@@ -42,6 +48,7 @@ const meController = new MeController(getMeInteractor);
 const signupController = new SignupController(signupInteractor);
 const resignController = new ResignController(resignInteractor);
 const verifyTokenController = new VerifyTokenController(verifyTokenInteractor);
+const emailVerifyController = new EmailVerifyController(emailVerifyInteractor);
 
 authRouter.post('/signup', signupController.execute.bind(signupController));
 authRouter.post('/login', loginController.execute.bind(loginController));
@@ -57,9 +64,9 @@ authRouter.delete(
   resignController.execute.bind(resignController),
 );
 
-authRouter.post(
+authRouter.get(
   '/verify-email',
-  verifyUserInteractor.execute.bind(verifyUserInteractor),
+  emailVerifyController.execute.bind(emailVerifyController),
 );
 
 // 認証メール再送信エンドポイント
