@@ -19,13 +19,8 @@ export class VerifyTokenController {
         .json({ message: 'Verification email sent successfully' });
     } catch (error: unknown) {
       if (error instanceof Error) {
-        console.error(
-          '[VerifyTokenController] Failed to send verification email:',
-          error,
-        );
         return res.status(500).json({ message: error.message });
       }
-      console.error('[VerifyTokenController] Unknown error occurred:', error);
       return res
         .status(500)
         .json({ message: 'Failed to send verification email' });
