@@ -33,6 +33,9 @@ export const MyPage: React.FC = () => {
   const [resendEmailMessage, setResendEmailMessage] = useState<string | null>(
     null,
   );
+  const [resendEmailMessageType, setResendEmailMessageType] = useState<
+    'success' | 'error' | null
+  >(null);
   const redirect = useRedirect();
 
   if (!isLoggedIn()) {
@@ -101,11 +104,13 @@ export const MyPage: React.FC = () => {
                   onClick={async () => {
                     setIsResendingEmail(true);
                     setResendEmailMessage(null);
+                    setResendEmailMessageType(null);
                     try {
                       await resendVerificationEmail();
                       setResendEmailMessage(
                         '認証メールを送信しました。メールボックスをご確認ください。',
                       );
+                      setResendEmailMessageType('success');
                       // ユーザー情報を再取得
                       const response = await getMe();
                       if (response.user) {
@@ -119,10 +124,16 @@ export const MyPage: React.FC = () => {
                         });
                       }
                     } catch (error: any) {
-                      setResendEmailMessage(
-                        error.response?.data?.message ||
-                          '認証メールの送信に失敗しました。',
+                      console.error(
+                        'Failed to resend verification email:',
+                        error,
                       );
+                      const errorMessage =
+                        error.response?.data?.message ||
+                        error.message ||
+                        '認証メールの送信に失敗しました。';
+                      setResendEmailMessage(errorMessage);
+                      setResendEmailMessageType('error');
                     } finally {
                       setIsResendingEmail(false);
                     }
@@ -138,7 +149,7 @@ export const MyPage: React.FC = () => {
           {resendEmailMessage && (
             <div
               className={`text-sm mt-2 ${
-                resendEmailMessage.includes('失敗')
+                resendEmailMessageType === 'error'
                   ? 'text-red-600'
                   : 'text-green-600'
               }`}

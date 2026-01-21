@@ -17,6 +17,8 @@ import { UserLogin } from './pages/auth/UserLogin';
 import { UserSignup } from './pages/auth/UserSignup';
 import { AdminLogin } from './pages/auth/AdminLogin';
 import { AdminSignup } from './pages/auth/AdminSignup';
+import { EmailVerificationPending } from './pages/auth/EmailVerificationPending';
+import { EmailVerificationComplete } from './pages/auth/EmailVerificationComplete';
 import { AdminProductList } from './pages/admin/AdminProductList';
 import { AdminProductCreate } from './pages/admin/AdminProductCreate';
 import { AdminProductEdit } from './pages/admin/AdminProductEdit';
@@ -83,6 +85,14 @@ function App(): React.JSX.Element {
                   <Route path="/products" element={<ProductList />} />
                   <Route path="/auth/user/login" element={<UserLogin />} />
                   <Route path="/auth/user/signup" element={<UserSignup />} />
+                  <Route
+                    path="/auth/verify-email/pending"
+                    element={<EmailVerificationPending />}
+                  />
+                  <Route
+                    path="/auth/verify-email"
+                    element={<EmailVerificationComplete />}
+                  />
                   <Route path="/cart" element={<Cart />} />
                   <Route path="/mypage" element={<MyPage />} />
                   <Route path="/user/profile" element={<User />} />
