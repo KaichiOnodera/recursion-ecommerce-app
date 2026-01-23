@@ -1,6 +1,6 @@
 import { IVerifyTokenInteractor } from '../usecases/IVerifyTokenInteractor';
 import { IEmailAdapter } from '../domains/adapters/IEmailAdapter';
-import { IUserRepository } from '../../users/domains/repositories/IUserRepository';
+import { IUserRepository } from '../../auth/domains/repositories/IUserRepository';
 import { IEmailVerificationTokenRepository } from '../../auth/domains/repositories/IEmailVerificationTokenRepository';
 import { VERIFY_TOKEN_TEMPLATE } from './templates/VerifyTokenTemplate';
 import { generateverificationtoken } from '../../../utils/verificationtoken';

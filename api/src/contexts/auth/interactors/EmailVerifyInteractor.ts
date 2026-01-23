@@ -1,5 +1,5 @@
 import { IEmailVerifyInteractor } from '../usecases/IEmailVerifyInteractor';
-import { IUserRepository } from '../../users/domains/repositories/IUserRepository';
+import { IUserRepository } from '../domains/repositories/IUserRepository';
 import { IEmailVerificationTokenRepository } from '../domains/repositories/IEmailVerificationTokenRepository';
 
 export class EmailVerifyInteractor implements IEmailVerifyInteractor {
