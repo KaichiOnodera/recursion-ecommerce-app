@@ -1,9 +1,10 @@
 import { IVerifyTokenInteractor } from '../usecases/IVerifyTokenInteractor';
 import { IEmailAdapter } from '../domains/adapters/IEmailAdapter';
-import { IUserRepository } from '../../users/domains/repositories/IUserRepository';
+import { IUserRepository } from '../../auth/domains/repositories/IUserRepository';
 import { IEmailVerificationTokenRepository } from '../../auth/domains/repositories/IEmailVerificationTokenRepository';
 import { VERIFY_TOKEN_TEMPLATE } from './templates/VerifyTokenTemplate';
 import { generateverificationtoken } from '../../../utils/verificationtoken';
+import { EMAIL_VERIFICATION_PATH } from '../../../constants/routes';
 
 export class VerifyTokenInteractor implements IVerifyTokenInteractor {
   constructor(
@@ -27,12 +28,23 @@ export class VerifyTokenInteractor implements IVerifyTokenInteractor {
 
     const to = user.email;
 
-    const verificationUrl = `http://localhost:3000/auth/verify-email?token=${token}`;
+    const frontendBaseUrl = process.env.FRONTEND_BASE_URL;
+    if (!frontendBaseUrl) {
+      console.error('[VerifyTokenInteractor] FRONTEND_BASE_URL is not set');
+      throw new Error('FRONTEND_BASE_URL is not set');
+    }
+    const verificationUrl = `${frontendBaseUrl}${EMAIL_VERIFICATION_PATH}?token=${token}`;
 
     const message = {
       to,
       ...VERIFY_TOKEN_TEMPLATE(verificationUrl),
     };
-    await this.emailAdapter.send(message);
+
+    try {
+      await this.emailAdapter.send(message);
+    } catch (error) {
+      console.error(`[VerifyTokenInteractor] Failed to send email:`, error);
+      throw error;
+    }
   }
 }

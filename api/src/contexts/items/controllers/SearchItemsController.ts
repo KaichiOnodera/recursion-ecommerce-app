@@ -7,6 +7,7 @@ import {
   InventoryStatus,
 } from '@shared/schemas/item';
 import { AuthenticatedRequest } from '../../../middlewares';
+import { parseJsonToNumberArray } from '../../../utils/parseJson';
 
 type SearchParamsResult =
   | { success: true; params: SearchItemsParams }
@@ -43,6 +44,7 @@ export class SearchItemsController {
           : InventoryStatus.OUT_OF_STOCK,
       images: item.images,
       isFavorite: item.isFavorite ?? null,
+      tags: item.tags,
     }));
 
     res.status(200).json({ items: responseItems });
@@ -81,6 +83,19 @@ export class SearchItemsController {
           success: false,
           error: 'Invalid page parameter.',
         };
+      }
+    }
+
+    if (query.tagIds) {
+      const parsedTagIds = parseJsonToNumberArray(query.tagIds);
+      if (parsedTagIds === null) {
+        return {
+          success: false,
+          error: 'tagIds must be an array of integers',
+        };
+      }
+      if (parsedTagIds !== undefined) {
+        params.tagIds = parsedTagIds;
       }
     }
 

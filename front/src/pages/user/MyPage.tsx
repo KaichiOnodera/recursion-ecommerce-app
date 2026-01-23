@@ -1,26 +1,42 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router';
+import { Link } from 'react-router';
 import { useUser } from '../../contexts/UserContext';
+import { useRedirect } from '../../hooks/useRedirect';
+import { RedirectReason } from '../../constants/redirectReasons';
 import {
   CubeIcon,
   ClipboardDocumentListIcon,
   ChevronRightIcon,
-  ExclamationTriangleIcon,
   LockClosedIcon,
   ArrowRightIcon,
+  EnvelopeIcon,
+  UserIcon,
+  ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline';
 import { OrderHistoryPreview } from '../../components/user/OrderHistoryPreview';
 import { FavoritesPreview } from '../../components/user/FavoritesPreview';
+import { WishlistPreview } from '../../components/user/WishlistPreview';
 import { ORDER_HISTORY_PREVIEW_LIMIT } from '../../constants/order';
 import { ResignationModal } from '../../components/user/ResignationModal';
 import { resign } from '../../services/api/users';
-import { logout } from '../../services/api/auth';
+import {
+  logout,
+  resendVerificationEmail,
+  getMe,
+} from '../../services/api/auth';
 
 export const MyPage: React.FC = () => {
-  const { user, isAdmin, clearUser, isLoggedIn } = useUser();
+  const { user, isAdmin, clearUser, isLoggedIn, setUser } = useUser();
   const [totalOrderCount, setTotalOrderCount] = useState(0);
   const [isResignationModalOpen, setIsResignationModalOpen] = useState(false);
-  const navigate = useNavigate();
+  const [isResendingEmail, setIsResendingEmail] = useState(false);
+  const [resendEmailMessage, setResendEmailMessage] = useState<string | null>(
+    null,
+  );
+  const [resendEmailMessageType, setResendEmailMessageType] = useState<
+    'success' | 'error' | null
+  >(null);
+  const redirect = useRedirect();
 
   if (!isLoggedIn()) {
     return (
@@ -77,6 +93,70 @@ export const MyPage: React.FC = () => {
             <span className="text-gray-600">メールアドレス: </span>
             <span className="font-medium">{user.email || '-'}</span>
           </div>
+          <div>
+            <span className="text-gray-600">メール認証: </span>
+            {user.emailVerified ? (
+              <span className="font-medium text-green-600">認証済み</span>
+            ) : (
+              <div className="flex items-center space-x-2">
+                <span className="font-medium text-yellow-600">未認証</span>
+                <button
+                  onClick={async () => {
+                    setIsResendingEmail(true);
+                    setResendEmailMessage(null);
+                    setResendEmailMessageType(null);
+                    try {
+                      await resendVerificationEmail();
+                      setResendEmailMessage(
+                        '認証メールを送信しました。メールボックスをご確認ください。',
+                      );
+                      setResendEmailMessageType('success');
+                      // ユーザー情報を再取得
+                      const response = await getMe();
+                      if (response.user) {
+                        setUser({
+                          id: response.user.id,
+                          lastName: response.user.lastName,
+                          firstName: response.user.firstName,
+                          email: response.user.email,
+                          role: response.user.role,
+                          emailVerified: response.user.emailVerified ?? null,
+                        });
+                      }
+                    } catch (error: any) {
+                      console.error(
+                        'Failed to resend verification email:',
+                        error,
+                      );
+                      const errorMessage =
+                        error.response?.data?.message ||
+                        error.message ||
+                        '認証メールの送信に失敗しました。';
+                      setResendEmailMessage(errorMessage);
+                      setResendEmailMessageType('error');
+                    } finally {
+                      setIsResendingEmail(false);
+                    }
+                  }}
+                  disabled={isResendingEmail}
+                  className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                >
+                  {isResendingEmail ? '送信中...' : '再送信'}
+                </button>
+              </div>
+            )}
+          </div>
+          {resendEmailMessage && (
+            <div
+              className={`text-sm mt-2 ${
+                resendEmailMessageType === 'error'
+                  ? 'text-red-600'
+                  : 'text-green-600'
+              }`}
+            >
+              {resendEmailMessage}
+            </div>
+          )}
           {isAdmin() && (
             <div>
               <span className="text-gray-600">権限: </span>
@@ -92,6 +172,14 @@ export const MyPage: React.FC = () => {
           <h2 className="text-xl font-bold">お気に入り</h2>
         </div>
         <FavoritesPreview />
+      </div>
+
+      {/* ウィッシュリストセクション */}
+      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold">ウィッシュリスト</h2>
+        </div>
+        <WishlistPreview />
       </div>
 
       {/* 購入履歴セクション */}
@@ -153,25 +241,49 @@ export const MyPage: React.FC = () => {
         </div>
       )}
 
-      {/* 退会セクション */}
-      <div className="bg-white rounded-lg shadow-md p-6 border-t-2 border-red-100">
-        <div className="flex items-start space-x-3 mb-4">
-          <ExclamationTriangleIcon className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" />
-          <div className="flex-1">
-            <h2 className="text-xl font-bold text-gray-900 mb-2">
-              アカウント設定
-            </h2>
-            <p className="text-gray-600 text-sm mb-4">
+      {/* アカウント設定セクション */}
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h2 className="text-xl font-bold text-gray-900 mb-6">アカウント設定</h2>
+        <div className="flex flex-col space-y-3 mb-6">
+          <Link
+            to="/user/profile"
+            className="self-start flex items-center space-x-2 py-2 text-gray-700 hover:text-gray-900 transition-colors text-sm font-medium"
+          >
+            <UserIcon className="w-5 h-5 text-gray-500" />
+            <span>プロフィールを編集</span>
+          </Link>
+          <button
+            onClick={() => {
+              // ハリボテ実装: 将来的にメールアドレス変更モーダルを表示
+              alert('メールアドレス変更機能は準備中です');
+            }}
+            className="self-start flex items-center space-x-2 py-2 text-gray-700 hover:text-gray-900 transition-colors text-sm font-medium"
+          >
+            <EnvelopeIcon className="w-5 h-5 text-gray-500" />
+            <span>メールアドレスを変更</span>
+          </button>
+        </div>
+
+        {/* Danger Zone */}
+        <div className="border-t border-red-200 pt-6 mt-6">
+          <div className="mb-4">
+            <div className="flex items-center space-x-2 mb-2">
+              <ExclamationTriangleIcon className="w-5 h-5 text-red-600 flex-shrink-0" />
+              <h3 className="text-lg font-semibold text-red-600">
+                アカウントの削除
+              </h3>
+            </div>
+            <p className="text-gray-600 text-sm ml-7">
               アカウントを削除すると、すべてのデータが永久に削除され、復元できません。
             </p>
           </div>
+          <button
+            onClick={() => setIsResignationModalOpen(true)}
+            className="px-4 py-2 text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition-colors font-medium text-sm whitespace-nowrap"
+          >
+            退会する
+          </button>
         </div>
-        <button
-          onClick={() => setIsResignationModalOpen(true)}
-          className="px-4 py-2 text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition-colors font-medium text-sm"
-        >
-          アカウントを退会する
-        </button>
       </div>
 
       {/* 退会確認モーダル */}
@@ -188,7 +300,7 @@ export const MyPage: React.FC = () => {
             console.warn('Logout failed after resignation:', error);
           }
           clearUser();
-          navigate('/products');
+          redirect(RedirectReason.RESIGNATION_SUCCESS);
         }}
       />
     </div>

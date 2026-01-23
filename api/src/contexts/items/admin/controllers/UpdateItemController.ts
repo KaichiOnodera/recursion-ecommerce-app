@@ -3,6 +3,8 @@ import { PatchRes } from '@shared/types/patches';
 import { IUpdateItemInteractor } from '../usecases/IUpdateItemInteractor';
 import { InventoryStatus } from '@shared/schemas/item';
 import multer from 'multer';
+import { parseJsonToNumberArray } from '../../../../utils/parseJson';
+import { AuthenticatedRequest } from '../../../../middlewares/verifyAccessToken';
 
 // multerの設定（メモリストレージを使用）
 const upload = multer({
@@ -12,10 +14,12 @@ const upload = multer({
   },
 });
 
-interface UpdateItemRequest extends express.Request {
-  files?: {
-    images?: Express.Multer.File[];
-  };
+interface UpdateItemRequest extends AuthenticatedRequest<any, { id: string }> {
+  files?:
+    | {
+        [fieldname: string]: Express.Multer.File[];
+      }
+    | Express.Multer.File[];
 }
 
 export class UpdateItemController {
@@ -29,9 +33,11 @@ export class UpdateItemController {
   }
 
   async execute(
-    req: express.Request<{ id: string }>,
+    req: UpdateItemRequest,
     res: express.Response<PatchRes['/admin/items/:id'] | { message: string }>,
-  ) {
+  ): Promise<
+    express.Response<PatchRes['/admin/items/:id'] | { message: string }>
+  > {
     try {
       const itemId = parseInt(req.params.id);
 
@@ -39,8 +45,16 @@ export class UpdateItemController {
         return res.status(400).json({ message: 'Invalid item ID' });
       }
 
-      const { name, description, type, price, inventoryAmount, displayStatus } =
-        req.body;
+      const {
+        name,
+        description,
+        type,
+        price,
+        inventoryAmount,
+        displayStatus,
+        imageIds,
+        tagIds,
+      } = req.body;
 
       // 少なくとも1つのフィールドが更新されるか確認する
       if (
@@ -49,11 +63,16 @@ export class UpdateItemController {
         type === undefined &&
         price === undefined &&
         inventoryAmount === undefined &&
-        displayStatus === undefined
+        displayStatus === undefined &&
+        imageIds === undefined &&
+        tagIds === undefined
       ) {
-        const typedReq = req as UpdateItemRequest;
+        const filesObj =
+          req.files && !Array.isArray(req.files) ? req.files : null;
         const hasFiles =
-          typedReq.files?.images && typedReq.files.images.length > 0;
+          filesObj?.images &&
+          Array.isArray(filesObj.images) &&
+          filesObj.images.length > 0;
 
         if (!hasFiles) {
           return res.status(400).json({
@@ -62,8 +81,23 @@ export class UpdateItemController {
         }
       }
 
-      const typedReq = req as UpdateItemRequest;
-      const files = typedReq.files?.images;
+      const filesObj =
+        req.files && !Array.isArray(req.files) ? req.files : null;
+      const files = filesObj?.images;
+
+      const parsedImageIds = parseJsonToNumberArray(imageIds);
+      if (parsedImageIds === null) {
+        return res.status(400).json({
+          message: 'imageIds must be an array of integers',
+        });
+      }
+
+      const parsedTagIds = parseJsonToNumberArray(tagIds);
+      if (parsedTagIds === null && tagIds !== undefined) {
+        return res.status(400).json({
+          message: 'tagIds must be an array of integers',
+        });
+      }
 
       const result = await this.updateItemInteractor.execute(
         itemId,
@@ -74,6 +108,8 @@ export class UpdateItemController {
         inventoryAmount !== undefined ? Number(inventoryAmount) : undefined,
         files,
         displayStatus as 'public' | 'private' | undefined,
+        parsedImageIds,
+        parsedTagIds ?? undefined,
       );
 
       if (!result) {
@@ -112,7 +148,8 @@ export class UpdateItemController {
       if (error instanceof Error) {
         if (
           error.message.includes('Maximum') ||
-          error.message.includes('Unsupported')
+          error.message.includes('Unsupported') ||
+          error.message.includes('Invalid image ID')
         ) {
           return res.status(400).json({ message: error.message });
         }

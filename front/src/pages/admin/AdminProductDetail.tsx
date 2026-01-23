@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { AdminItemDetail } from '@shared/schemas/item';
 import { getAdminItem } from '../../services/api/items';
+import { TagBadgeList } from '../../components/product/TagBadge';
 
 export const AdminProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -34,6 +35,7 @@ export const AdminProductDetail: React.FC = () => {
         </div>
 
         <h2 className="text-2xl font-semibold mb-4">{item.name}</h2>
+        <TagBadgeList tags={item.tags} className="mb-4" />
         <p className="mb-4 text-gray-700">{item.description}</p>
         <div className="flex justify-between mb-2">
           <span className="text-sm text-gray-500">タイプ</span>

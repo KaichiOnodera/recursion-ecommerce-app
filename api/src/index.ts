@@ -1,5 +1,7 @@
+// 環境変数を最初に読み込む（他のモジュールより先に実行される必要がある）
+import './config/env';
+
 import express, { Request, Response } from 'express';
-import { config } from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import * as path from 'path';
@@ -20,11 +22,10 @@ if (fs.existsSync(sharedDistPath)) {
   moduleAlias.addAlias('@shared', sharedDistPath);
 }
 
-// Load environment variables from .env file
-config();
-
 import { itemsRouter } from './contexts/items';
 import { adminItemsRouter } from './contexts/items/admin';
+import { tagsRouter } from './contexts/tags';
+import { adminTagsRouter } from './contexts/tags/admin';
 import { authRouter } from './contexts/auth';
 import { prisma } from './libs/prisma';
 import { UsersRouter as usersRouter } from './contexts/users';
@@ -34,6 +35,7 @@ import { ordersRouter } from './contexts/orders';
 import { adminOrdersRouter } from './contexts/orders/admin';
 import { reviewsRouter } from './contexts/reviews';
 import { favoritesRouter } from './contexts/favorites';
+import { wishlistRouter } from './contexts/wishlist';
 import { StripeWebhookController } from './contexts/checkout/controllers/StripeWebhookController';
 import { HandleStripeWebhookInteractor } from './contexts/checkout/interactors/HandleStripeWebhookInteractor';
 import { StripeAdapter } from './contexts/checkout/infrastructures/adapters/StripeAdapter';
@@ -41,6 +43,10 @@ import { OrderRepository } from './contexts/orders/infrastructures/repositories/
 import { InventoryRepository } from './contexts/items/infrastructures/repositories/InventoryRepository';
 import { CartRepository } from './contexts/cart/infrastructures/repositories/CartRepository';
 import { CartItemRepository } from './contexts/cart/infrastructures/repositories/CartItemRepository';
+import { ItemRepository } from './contexts/items/infrastructures/repositories/ItemRepository';
+import { ItemImageRepository } from './contexts/items/infrastructures/repositories/ItemImageRepository';
+import { ItemStripeMappingRepository } from './contexts/items/infrastructures/repositories/ItemStripeMappingRepository';
+import { createImageStorageAdapter } from './contexts/items/infrastructures/adapters/createImageStorageAdapter';
 
 const app = express();
 
@@ -70,6 +76,20 @@ const inventoryRepository = new InventoryRepository(prisma);
 const cartRepository = new CartRepository(prisma);
 const cartItemRepository = new CartItemRepository(prisma);
 
+// ItemRepositoryの依存関係を準備
+// Webhook処理ではお気に入り情報は不要のため、favoriteRepositoryは渡さない
+const itemImageRepository = new ItemImageRepository(prisma);
+const imageStorageAdapter = createImageStorageAdapter();
+const itemStripeMappingRepository = new ItemStripeMappingRepository(prisma);
+const itemRepository = new ItemRepository(
+  prisma,
+  itemImageRepository,
+  imageStorageAdapter,
+  undefined, // favoriteRepository（Webhook処理では不要）
+  undefined, // tagRepository（Webhook処理では不要）
+  itemStripeMappingRepository,
+);
+
 const secretKey = process.env.STRIPE_SECRET_KEY;
 if (!secretKey) {
   throw new Error('STRIPE_SECRET_KEY is not set');
@@ -87,6 +107,7 @@ const handleStripeWebhookInteractor = new HandleStripeWebhookInteractor(
   stripeAdapter,
   cartRepository,
   cartItemRepository,
+  itemRepository,
 );
 const stripeWebhookController = new StripeWebhookController(
   handleStripeWebhookInteractor,
@@ -112,7 +133,9 @@ app.get(`${apiPrefix}/`, async (_req: Request, res: Response) => {
 
 app.use(`${apiPrefix}/auth`, authRouter);
 app.use(`${apiPrefix}/items`, itemsRouter);
+app.use(`${apiPrefix}/tags`, tagsRouter);
 app.use(`${apiPrefix}/admin/items`, adminItemsRouter);
+app.use(`${apiPrefix}/admin/tags`, adminTagsRouter);
 
 app.use(`${apiPrefix}/users`, usersRouter);
 app.use(`${apiPrefix}/cart`, cartRouter);
@@ -121,12 +144,11 @@ app.use(`${apiPrefix}/orders`, ordersRouter);
 app.use(`${apiPrefix}/admin/orders`, adminOrdersRouter);
 app.use(`${apiPrefix}/reviews`, reviewsRouter);
 app.use(`${apiPrefix}/favorites`, favoritesRouter);
+app.use(`${apiPrefix}/wishlist`, wishlistRouter);
 
 app.listen(8000, '0.0.0.0', () => {
   // eslint-disable-next-line no-console
   console.log('Server running on port 8000');
-  // eslint-disable-next-line no-console
-  console.log('Database URL:', process.env.DATABASE_URL);
 });
 
 // Graceful shutdown

@@ -23,12 +23,6 @@ export function createImageStorageAdapter(): IImageStorageAdapter {
       );
     }
 
-    // eslint-disable-next-line no-console
-    console.log('Using S3ImageStorageAdapter:', {
-      region,
-      bucketName,
-    });
-
     return new S3ImageStorageAdapter(
       region,
       bucketName,
@@ -38,7 +32,5 @@ export function createImageStorageAdapter(): IImageStorageAdapter {
   }
 
   const uploadDir = path.join(process.cwd(), 'uploads', 'items');
-  // eslint-disable-next-line no-console
-  console.log('Using LocalImageStorageAdapter:', { uploadDir });
   return new LocalImageStorageAdapter(uploadDir);
 }

@@ -3,6 +3,8 @@ import { AdminItem } from '../schemas/item';
 import { CartItem } from '../schemas/cart';
 import { Review } from '../schemas/review';
 import { Favorite } from '../schemas/favorite';
+import { Wishlist, WishlistItemSimple } from '../schemas/wishlist';
+import { Tag } from '../schemas/tag';
 
 export type PostReq = {
   '/auth/login': {
@@ -15,6 +17,7 @@ export type PostReq = {
     type: number;
     price: number;
     displayStatus?: 'public' | 'private';
+    tagIds?: number[];
   };
   '/auth/signup': {
     lastName: string;
@@ -35,6 +38,16 @@ export type PostReq = {
     rating: number;
   };
   '/favorites': {
+    itemId: number;
+  };
+  '/admin/tags': {
+    name: string;
+  };
+  '/wishlist': {
+    name?: string | null;
+    isPublic?: boolean;
+  };
+  '/wishlist/:wishlistId/items': {
     itemId: number;
   };
 };
@@ -61,5 +74,14 @@ export type PostRes = {
   };
   '/favorites': {
     favorite: Favorite;
+  };
+  '/admin/tags': {
+    tag: Tag;
+  };
+  '/wishlist': {
+    wishlist: Wishlist;
+  };
+  '/wishlist/:wishlistId/items': {
+    wishlistItem: WishlistItemSimple;
   };
 };

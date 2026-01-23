@@ -1,5 +1,7 @@
 import { User } from '../schemas/user';
 import { AdminItem } from '../schemas/item';
+import { Tag } from '../schemas/tag';
+import { Wishlist } from '../schemas/wishlist';
 
 export type PatchReq = {
   '/admin/items/:id': {
@@ -9,11 +11,19 @@ export type PatchReq = {
     price?: number;
     inventoryAmount?: number;
     displayStatus?: 'public' | 'private';
+    imageIds?: number[];
+    tagIds?: number[];
   };
   '/users/profile': {
     lastName: string;
     firstName: string;
-    email: string;
+  };
+  '/admin/tags/:id': {
+    name: string;
+  };
+  '/wishlist/:wishlistId': {
+    name?: string | null;
+    isPublic?: boolean;
   };
 };
 
@@ -23,5 +33,11 @@ export type PatchRes = {
   };
   '/users/profile': {
     user: User;
+  };
+  '/admin/tags/:id': {
+    tag: Tag;
+  };
+  '/wishlist/:wishlistId': {
+    wishlist: Wishlist;
   };
 };

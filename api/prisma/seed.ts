@@ -43,6 +43,7 @@ export async function seedTestData(prismaClient?: PrismaClient) {
       firstName: 'ユーザー',
       role: UserRole.USER,
       isResigned: false,
+      emailVerified: true,
     },
     create: {
       email: 'test-user@example.com',
@@ -51,6 +52,7 @@ export async function seedTestData(prismaClient?: PrismaClient) {
       firstName: 'ユーザー',
       role: UserRole.USER,
       isResigned: false,
+      emailVerified: true,
     },
   });
 
@@ -62,6 +64,7 @@ export async function seedTestData(prismaClient?: PrismaClient) {
       firstName: '管理者',
       role: UserRole.ADMIN,
       isResigned: false,
+      emailVerified: true,
     },
     create: {
       email: 'test-admin@example.com',
@@ -70,6 +73,7 @@ export async function seedTestData(prismaClient?: PrismaClient) {
       firstName: '管理者',
       role: UserRole.ADMIN,
       isResigned: false,
+      emailVerified: true,
     },
   });
 
@@ -82,6 +86,7 @@ export async function seedTestData(prismaClient?: PrismaClient) {
       firstName: '管理者2',
       role: UserRole.ADMIN,
       isResigned: false,
+      emailVerified: true,
     },
     create: {
       email: 'test-admin2@example.com',
@@ -90,6 +95,7 @@ export async function seedTestData(prismaClient?: PrismaClient) {
       firstName: '管理者2',
       role: UserRole.ADMIN,
       isResigned: false,
+      emailVerified: true,
     },
   });
 
@@ -101,6 +107,7 @@ export async function seedTestData(prismaClient?: PrismaClient) {
       firstName: '管理者3',
       role: UserRole.ADMIN,
       isResigned: false,
+      emailVerified: true,
     },
     create: {
       email: 'test-admin3@example.com',
@@ -109,6 +116,7 @@ export async function seedTestData(prismaClient?: PrismaClient) {
       firstName: '管理者3',
       role: UserRole.ADMIN,
       isResigned: false,
+      emailVerified: true,
     },
   });
 

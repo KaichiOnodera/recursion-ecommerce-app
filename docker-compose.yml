@@ -5,7 +5,7 @@ services:
     image: mysql:8.0
     volumes:
       - mysql_data:/var/lib/mysql/
-    # MUST: 本番デプロイ前に機密情報は環境変数化する
+    # NOTE: 以下のパスワードはローカル開発環境専用です。
     environment:
       MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: ecommerce

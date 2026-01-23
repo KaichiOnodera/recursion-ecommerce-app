@@ -34,18 +34,17 @@ model CartItems {
   @@index([itemId])
 }
 
-model DownloadToken{
-    id  Int @id @default(autoincrement())
-    orderId Int @unique
-    userId  Int?    @unique
-    token   String
-    usedAmount  Int
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+model DownloadToken {
+  id         Int      @id @default(autoincrement())
+  orderId    Int      @unique
+  userId     Int?     @unique
+  token      String
+  usedAmount Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-    order Orders @relation(fields: [orderId], references: [id], onDelete: Cascade)
-    user Users? @relation(fields: [userId], references: [id],  onDelete: Cascade)
-    
+  order Orders @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  user  Users? @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Inventory {
@@ -60,38 +59,17 @@ model Inventory {
   @@index([itemId])
 }
 
-model Items {
-  id            Int      @id @default(autoincrement())
-  name          String
-  description   String
-  type          Int      @default(1)
-  displayStatus String   @default("private")
-  price         Int      @default(0)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  ItemImages ItemImages[]
-  ItemFiles  ItemFiles[]
-  Inventory  Inventory[]
-  CartItems  CartItems[]
-  OrderItems OrderItems[]
-  OrderItemFiles OrderItemFiles[]
-  Reviews    Reviews[]
-  Favorites  Favorites[]
-}
-
 model ItemFiles {
-    id      Int @id @default(autoincrement())
-    itemId  Int @unique
-    filename String
-    path    String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id        Int      @id @default(autoincrement())
+  itemId    Int      @unique
+  filename  String
+  path      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    item Items @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  item Items @relation(fields: [itemId], references: [id], onDelete: Cascade)
 
-
-    @@index([itemId])
+  @@index([itemId])
 }
 
 model ItemImages {
@@ -107,6 +85,44 @@ model ItemImages {
   @@index([itemId])
 }
 
+model ItemTags {
+  id        Int      @id @default(autoincrement())
+  itemId    Int
+  tagId     Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  item Items @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  tag  Tags  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([itemId, tagId])
+  @@index([itemId])
+  @@index([tagId])
+}
+
+model Items {
+  id            Int      @id @default(autoincrement())
+  name          String
+  description   String
+  type          Int      @default(1)
+  displayStatus String   @default("private")
+  price         Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  ItemImages       ItemImages[]
+  ItemFiles        ItemFiles[]
+  Inventory        Inventory[]
+  CartItems        CartItems[]
+  OrderItems       OrderItems[]
+  OrderItemFiles   OrderItemFiles[]
+  Reviews          Reviews[]
+  Favorites        Favorites[]
+  WishlistItem     WishlistItem[]
+  ItemTags         ItemTags[]
+  stripeMapping    ItemStripeMapping?
+}
+
 model Orders {
   id             Int         @id @default(autoincrement())
   userId         Int?
@@ -120,9 +136,9 @@ model Orders {
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
 
-  user               Users?                    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user Users? @relation(fields: [userId], references: [id], onDelete: SetNull)
 
-  downloadtoken     DownloadToken[]
+  downloadtoken      DownloadToken[]
   orderItems         OrderItems[]
   orderItemFiles     OrderItemFiles[]
   paymentExternalIds OrderPaymentExternalIds[]
@@ -144,13 +160,11 @@ model OrderPaymentExternalIds {
 
   order Orders @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
-
   @@unique([provider, paymentSessionId])
   @@unique([provider, paymentId])
   @@index([orderId])
   @@index([provider])
 }
-
 
 model OrderItems {
   id        Int      @id @default(autoincrement())
@@ -169,18 +183,17 @@ model OrderItems {
   @@index([orderId])
 }
 
-model OrderItemFiles{
-    id      Int @id @default(autoincrement())
-    orderId Int 
-    itemId  Int?
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt()
+model OrderItemFiles {
+  id        Int      @id @default(autoincrement())
+  orderId   Int
+  itemId    Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
 
-    order Orders @relation(fields: [orderId], references: [id], onDelete: Cascade)
-    item  Items? @relation(fields: [itemId], references: [id], onDelete: SetNull)
+  order Orders @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  item  Items? @relation(fields: [itemId], references: [id], onDelete: SetNull)
 
-    @@unique([orderId,itemId])
-
+  @@unique([orderId, itemId])
 }
 
 model Reviews {
@@ -204,6 +217,17 @@ model Reviews {
   @@index([itemId, postedAt])
 }
 
+model Tags {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique @db.VarChar(50)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  itemTags ItemTags[]
+
+  @@index([name])
+}
+
 model Favorites {
   id        Int      @id @default(autoincrement())
   userId    Int
@@ -217,6 +241,50 @@ model Favorites {
   @@unique([userId, itemId])
   @@index([userId])
   @@index([itemId])
+}
+
+model Wishlist {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  name      String?
+  isPublic  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user  Users          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items WishlistItem[]
+
+  @@index([userId])
+  @@index([userId, isPublic])
+}
+
+model WishlistItem {
+  id         Int      @id @default(autoincrement())
+  wishlistId Int
+  itemId     Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  wishlist Wishlist @relation(fields: [wishlistId], references: [id], onDelete: Cascade)
+  item     Items    @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@unique([wishlistId, itemId])
+  @@index([wishlistId])
+  @@index([itemId])
+}
+
+model ItemStripeMapping {
+  id              Int      @id @default(autoincrement())
+  itemId          Int      @unique
+  stripeProductId String   @unique
+  stripePriceId   String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  item Items @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@index([itemId])
+  @@index([stripeProductId])
 }
 
 model Users {
@@ -237,6 +305,7 @@ model Users {
   orders                 Orders[]
   reviews                Reviews[]
   favorites              Favorites[]
+  wishlists              Wishlist[]
 }
 
 enum UserRole {

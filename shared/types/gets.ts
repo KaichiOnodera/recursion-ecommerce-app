@@ -3,6 +3,8 @@ import { User } from '../schemas/user';
 import { CartItem } from '../schemas/cart';
 import { Review } from '../schemas/review';
 import { FavoriteItem } from '../schemas/favorite';
+import { Tag } from '../schemas/tag';
+import { Wishlist, WishlistItem } from '../schemas/wishlist';
 
 export type GetRes = {
   '/items': {
@@ -100,5 +102,20 @@ export type GetRes = {
   '/favorites': {
     favorites: FavoriteItem[];
     total: number;
+  };
+  '/wishlist': {
+    wishlists: Wishlist[];
+  };
+  '/wishlist/:wishlistId/items': {
+    items: WishlistItem[];
+  };
+  '/admin/tags': {
+    tags: Tag[];
+  };
+  '/admin/tags/:id/usage-count': {
+    count: number;
+  };
+  '/tags': {
+    tags: Tag[];
   };
 };

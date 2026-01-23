@@ -5,6 +5,8 @@ import { DisplayStatus, Item } from '../../domains/entities/Item';
 import { IItemImageRepository } from '../../domains/repositories/IItemImageRepository';
 import { IImageStorageAdapter } from '../../domains/adapters/IImageStorageAdapter';
 import { IFavoriteRepository } from '../../../favorites/domains/repositories/IFavoriteRepository';
+import { ITagRepository } from '../../../tags/domains/repositories/ITagRepository';
+import { IItemStripeMappingRepository } from '../../domains/repositories/IItemStripeMappingRepository';
 
 export class ItemRepository implements IItemRepository {
   constructor(
@@ -12,6 +14,8 @@ export class ItemRepository implements IItemRepository {
     private readonly itemImageRepository: IItemImageRepository,
     private readonly imageStorageAdapter: IImageStorageAdapter,
     private readonly favoriteRepository?: IFavoriteRepository,
+    private readonly tagRepository?: ITagRepository,
+    private readonly itemStripeMappingRepository?: IItemStripeMappingRepository,
   ) {}
 
   async findAll(
@@ -45,6 +49,11 @@ export class ItemRepository implements IItemRepository {
           isFavorite = favorite !== null;
         }
 
+        let tags = undefined;
+        if (this.tagRepository) {
+          tags = await this.tagRepository.findByItemId(item.id);
+        }
+
         return {
           id: item.id,
           name: item.name,
@@ -61,6 +70,7 @@ export class ItemRepository implements IItemRepository {
           createdAt: item.createdAt,
           updatedAt: item.updatedAt,
           isFavorite,
+          tags,
         };
       }),
     );
@@ -93,6 +103,11 @@ export class ItemRepository implements IItemRepository {
           isFavorite = favorite !== null;
         }
 
+        let tags = undefined;
+        if (this.tagRepository) {
+          tags = await this.tagRepository.findByItemId(item.id);
+        }
+
         return {
           id: item.id,
           name: item.name,
@@ -109,6 +124,7 @@ export class ItemRepository implements IItemRepository {
           createdAt: item.createdAt,
           updatedAt: item.updatedAt,
           isFavorite,
+          tags,
         };
       }),
     );
@@ -129,6 +145,21 @@ export class ItemRepository implements IItemRepository {
           not: query.where.displayStatus.not,
         };
       }
+      if (query.where.tagIds && query.where.tagIds.length > 0) {
+        const tagConditions = query.where.tagIds.map((tagId) => ({
+          ItemTags: {
+            some: {
+              tagId,
+            },
+          },
+        }));
+        const existingAnd = Array.isArray(prismaQuery.where.AND)
+          ? prismaQuery.where.AND
+          : prismaQuery.where.AND
+            ? [prismaQuery.where.AND]
+            : [];
+        prismaQuery.where.AND = [...existingAnd, ...tagConditions];
+      }
     }
 
     if (query?.orderBy) {
@@ -143,6 +174,75 @@ export class ItemRepository implements IItemRepository {
     }
 
     return prismaQuery;
+  }
+
+  async findByTagIds(tagIds: number[], userId?: number): Promise<Item[]> {
+    if (!this.tagRepository) {
+      throw new Error('TagRepository is not provided');
+    }
+
+    if (tagIds.length === 0) {
+      return [];
+    }
+
+    const items = await this.prisma.items.findMany({
+      where: {
+        AND: tagIds.map((tagId) => ({
+          ItemTags: {
+            some: {
+              tagId,
+            },
+          },
+        })),
+      },
+      include: {
+        Inventory: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return Promise.all(
+      items.map(async (item) => {
+        const images = await this.itemImageRepository.findByItemId(item.id);
+        const imagesWithUrl = images.map((image) => ({
+          ...image,
+          src: this.imageStorageAdapter.getUrl(image.src, item.id),
+        }));
+
+        let isFavorite: boolean | null = null;
+        if (userId && this.favoriteRepository) {
+          const favorite = await this.favoriteRepository.findByUserIdAndItemId(
+            userId,
+            item.id,
+          );
+          isFavorite = favorite !== null;
+        }
+
+        let tags = undefined;
+        if (this.tagRepository) {
+          tags = await this.tagRepository.findByItemId(item.id);
+        }
+
+        return {
+          id: item.id,
+          name: item.name,
+          description: item.description,
+          type: item.type,
+          price: item.price,
+          displayStatus: this.isDisplayStatus(item.displayStatus)
+            ? item.displayStatus
+            : DisplayStatus.PRIVATE,
+          inventory: {
+            amount: item.Inventory?.[0]?.amount ?? 0,
+          },
+          images: imagesWithUrl,
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
+          isFavorite,
+          tags,
+        };
+      }),
+    );
   }
 
   async create(name: string, description: string, type: number): Promise<Item> {
@@ -257,6 +357,59 @@ export class ItemRepository implements IItemRepository {
     };
   }
 
+  async findByStripeProductId(
+    stripeProductId: string,
+    displayStatus?: DisplayStatus,
+    userId?: number,
+  ): Promise<Item | null> {
+    // ItemStripeMappingからitemIdを取得
+    if (!this.itemStripeMappingRepository) {
+      return null;
+    }
+
+    const mapping =
+      await this.itemStripeMappingRepository.findByStripeProductId(
+        stripeProductId,
+      );
+
+    if (!mapping) {
+      return null;
+    }
+
+    // itemIdでItemを取得
+    return this.findById(mapping.itemId, displayStatus, userId);
+  }
+
+  async updateStripeIds(
+    id: number,
+    stripeProductId: string,
+    stripePriceId?: string,
+  ): Promise<void> {
+    if (!this.itemStripeMappingRepository) {
+      throw new Error('ItemStripeMappingRepository is not available');
+    }
+
+    // 既存のマッピングを確認
+    const existingMapping =
+      await this.itemStripeMappingRepository.findByItemId(id);
+
+    if (existingMapping) {
+      // 既に存在する場合は更新
+      await this.itemStripeMappingRepository.update(
+        id,
+        stripeProductId,
+        stripePriceId,
+      );
+    } else {
+      // 存在しない場合は作成
+      await this.itemStripeMappingRepository.create(
+        id,
+        stripeProductId,
+        stripePriceId,
+      );
+    }
+  }
+
   async delete(id: number): Promise<boolean> {
     const existingItem = await this.findById(id);
 
@@ -318,6 +471,11 @@ export class ItemRepository implements IItemRepository {
       isFavorite = favorite !== null;
     }
 
+    let tags = undefined;
+    if (this.tagRepository) {
+      tags = await this.tagRepository.findByItemId(item.id);
+    }
+
     return {
       id: item.id,
       name: item.name,
@@ -334,6 +492,7 @@ export class ItemRepository implements IItemRepository {
       createdAt: item.createdAt,
       updatedAt: item.updatedAt,
       isFavorite,
+      tags,
     };
   }
 

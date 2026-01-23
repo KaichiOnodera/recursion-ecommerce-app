@@ -6,20 +6,31 @@ import { EmailMessage } from '../../domains/entities/EmailMessage';
 export class EmailAdapter implements IEmailAdapter {
   constructor() {
     const key = process.env.SENDGRID_API_KEY;
-    if (!key) throw new Error('SENDGRID_API_KEY is missing');
+    if (!key) {
+      console.error('[EmailAdapter] SENDGRID_API_KEY is missing');
+      throw new Error('SENDGRID_API_KEY is missing');
+    }
     sgMail.setApiKey(key);
   }
 
   async send(message: EmailMessage): Promise<void> {
     const from = process.env.SENDGRID_FROM_EMAIL;
-    if (!from) throw new Error('SENDGRID_FROM_EMAIL is missing');
+    if (!from) {
+      console.error('[EmailAdapter] SENDGRID_FROM_EMAIL is missing');
+      throw new Error('SENDGRID_FROM_EMAIL is missing');
+    }
 
-    await sgMail.send({
-      to: message.to,
-      from,
-      subject: message.subject,
-      text: message.text ?? '',
-      html: message.html ?? '',
-    });
+    try {
+      await sgMail.send({
+        to: message.to,
+        from,
+        subject: message.subject,
+        text: message.text ?? '',
+        html: message.html ?? '',
+      });
+    } catch (error) {
+      console.error(`[EmailAdapter] Failed to send email:`, error);
+      throw error;
+    }
   }
 }
