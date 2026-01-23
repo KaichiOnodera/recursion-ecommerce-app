@@ -15,6 +15,7 @@ export interface UserInfo {
   firstName: string | null;
   email: string | null;
   role: 'USER' | 'ADMIN' | null;
+  emailVerified?: boolean | null;
 }
 
 interface UserContextType {
@@ -41,6 +42,7 @@ export const UserContextProvider: React.FC<UserContextProviderProps> = ({
     firstName: null,
     email: null,
     role: null,
+    emailVerified: null,
   });
 
   useEffect(() => {
@@ -54,6 +56,7 @@ export const UserContextProvider: React.FC<UserContextProviderProps> = ({
             firstName: response.user.firstName,
             email: response.user.email,
             role: response.user.role,
+            emailVerified: response.user.emailVerified ?? null,
           });
         }
       } catch (error) {
@@ -75,6 +78,7 @@ export const UserContextProvider: React.FC<UserContextProviderProps> = ({
       firstName: null,
       email: null,
       role: null,
+      emailVerified: null,
     });
   }, []);
 

@@ -13,6 +13,7 @@ export async function cleanDatabase(): Promise<void> {
   await prismaTest.orders.deleteMany();
   await prismaTest.cart.deleteMany();
   await prismaTest.items.deleteMany();
+  await prismaTest.emailVerificationToken.deleteMany();
   await prismaTest.users.deleteMany();
 }
 

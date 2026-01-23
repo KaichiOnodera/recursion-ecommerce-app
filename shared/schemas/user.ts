@@ -4,5 +4,6 @@ export type User = {
   firstName: string;
   email: string;
   role: 'USER' | 'ADMIN';
+  emailVerified?: boolean;
   isResigned?: boolean;
 };

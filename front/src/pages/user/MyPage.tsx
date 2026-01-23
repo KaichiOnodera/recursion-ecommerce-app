@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router';
+import { Link } from 'react-router';
 import { useUser } from '../../contexts/UserContext';
+import { useRedirect } from '../../hooks/useRedirect';
+import { RedirectReason } from '../../constants/redirectReasons';
 import {
   CubeIcon,
   ClipboardDocumentListIcon,
@@ -17,13 +19,24 @@ import { WishlistPreview } from '../../components/user/WishlistPreview';
 import { ORDER_HISTORY_PREVIEW_LIMIT } from '../../constants/order';
 import { ResignationModal } from '../../components/user/ResignationModal';
 import { resign } from '../../services/api/users';
-import { logout } from '../../services/api/auth';
+import {
+  logout,
+  resendVerificationEmail,
+  getMe,
+} from '../../services/api/auth';
 
 export const MyPage: React.FC = () => {
-  const { user, isAdmin, clearUser, isLoggedIn } = useUser();
+  const { user, isAdmin, clearUser, isLoggedIn, setUser } = useUser();
   const [totalOrderCount, setTotalOrderCount] = useState(0);
   const [isResignationModalOpen, setIsResignationModalOpen] = useState(false);
-  const navigate = useNavigate();
+  const [isResendingEmail, setIsResendingEmail] = useState(false);
+  const [resendEmailMessage, setResendEmailMessage] = useState<string | null>(
+    null,
+  );
+  const [resendEmailMessageType, setResendEmailMessageType] = useState<
+    'success' | 'error' | null
+  >(null);
+  const redirect = useRedirect();
 
   if (!isLoggedIn()) {
     return (
@@ -80,6 +93,70 @@ export const MyPage: React.FC = () => {
             <span className="text-gray-600">メールアドレス: </span>
             <span className="font-medium">{user.email || '-'}</span>
           </div>
+          <div>
+            <span className="text-gray-600">メール認証: </span>
+            {user.emailVerified ? (
+              <span className="font-medium text-green-600">認証済み</span>
+            ) : (
+              <div className="flex items-center space-x-2">
+                <span className="font-medium text-yellow-600">未認証</span>
+                <button
+                  onClick={async () => {
+                    setIsResendingEmail(true);
+                    setResendEmailMessage(null);
+                    setResendEmailMessageType(null);
+                    try {
+                      await resendVerificationEmail();
+                      setResendEmailMessage(
+                        '認証メールを送信しました。メールボックスをご確認ください。',
+                      );
+                      setResendEmailMessageType('success');
+                      // ユーザー情報を再取得
+                      const response = await getMe();
+                      if (response.user) {
+                        setUser({
+                          id: response.user.id,
+                          lastName: response.user.lastName,
+                          firstName: response.user.firstName,
+                          email: response.user.email,
+                          role: response.user.role,
+                          emailVerified: response.user.emailVerified ?? null,
+                        });
+                      }
+                    } catch (error: any) {
+                      console.error(
+                        'Failed to resend verification email:',
+                        error,
+                      );
+                      const errorMessage =
+                        error.response?.data?.message ||
+                        error.message ||
+                        '認証メールの送信に失敗しました。';
+                      setResendEmailMessage(errorMessage);
+                      setResendEmailMessageType('error');
+                    } finally {
+                      setIsResendingEmail(false);
+                    }
+                  }}
+                  disabled={isResendingEmail}
+                  className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                >
+                  {isResendingEmail ? '送信中...' : '再送信'}
+                </button>
+              </div>
+            )}
+          </div>
+          {resendEmailMessage && (
+            <div
+              className={`text-sm mt-2 ${
+                resendEmailMessageType === 'error'
+                  ? 'text-red-600'
+                  : 'text-green-600'
+              }`}
+            >
+              {resendEmailMessage}
+            </div>
+          )}
           {isAdmin() && (
             <div>
               <span className="text-gray-600">権限: </span>
@@ -223,7 +300,7 @@ export const MyPage: React.FC = () => {
             console.warn('Logout failed after resignation:', error);
           }
           clearUser();
-          navigate('/products');
+          redirect(RedirectReason.RESIGNATION_SUCCESS);
         }}
       />
     </div>

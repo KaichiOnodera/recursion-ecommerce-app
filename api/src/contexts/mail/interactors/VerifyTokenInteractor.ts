@@ -30,6 +30,7 @@ export class VerifyTokenInteractor implements IVerifyTokenInteractor {
 
     const frontendBaseUrl = process.env.FRONTEND_BASE_URL;
     if (!frontendBaseUrl) {
+      console.error('[VerifyTokenInteractor] FRONTEND_BASE_URL is not set');
       throw new Error('FRONTEND_BASE_URL is not set');
     }
     const verificationUrl = `${frontendBaseUrl}${EMAIL_VERIFICATION_PATH}?token=${token}`;
@@ -38,6 +39,12 @@ export class VerifyTokenInteractor implements IVerifyTokenInteractor {
       to,
       ...VERIFY_TOKEN_TEMPLATE(verificationUrl),
     };
-    await this.emailAdapter.send(message);
+
+    try {
+      await this.emailAdapter.send(message);
+    } catch (error) {
+      console.error(`[VerifyTokenInteractor] Failed to send email:`, error);
+      throw error;
+    }
   }
 }

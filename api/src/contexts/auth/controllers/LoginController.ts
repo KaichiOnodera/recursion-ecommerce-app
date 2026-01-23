@@ -17,16 +17,23 @@ export class LoginController {
         .json({ message: 'Email and password are required' });
     }
 
-    const result = await this.loginInteractor.execute(email, password);
+    try {
+      const result = await this.loginInteractor.execute(email, password);
 
-    res.cookie('token', result.token, {
-      httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
-      maxAge: 86400000,
-      path: '/',
-    });
+      res.cookie('token', result.token, {
+        httpOnly: true,
+        secure: false,
+        sameSite: 'lax',
+        maxAge: 86400000,
+        path: '/',
+      });
 
-    res.status(200).json({ user: result.user });
+      res.status(200).json({ user: result.user });
+    } catch (error) {
+      if (error instanceof Error) {
+        return res.status(401).json({ message: error.message });
+      }
+      throw error;
+    }
   }
 }

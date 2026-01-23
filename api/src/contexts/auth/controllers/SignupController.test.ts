@@ -6,15 +6,25 @@ import { SignupInteractor } from '../interactors/SignupInteractor';
 import { UserRepository } from '../infrastructures/repositories/UserRepository';
 import { prismaTest } from '../../../libs/prisma-test';
 import { cleanDatabase } from '../../../tests/helpers/database';
+import { IVerifyTokenInteractor } from '../../mail/usecases/IVerifyTokenInteractor';
 
 describe('SignupController', () => {
   let app: ReturnType<typeof createTestApp>;
+  let mockVerifyTokenInteractor: jest.Mocked<IVerifyTokenInteractor>;
 
   beforeEach(async () => {
     await cleanDatabase();
 
+    // メール送信機能のモックを作成
+    mockVerifyTokenInteractor = {
+      VerifyToken: jest.fn().mockResolvedValue(undefined),
+    };
+
     const userRepository = new UserRepository(prismaTest);
-    const signupInteractor = new SignupInteractor(userRepository);
+    const signupInteractor = new SignupInteractor(
+      userRepository,
+      mockVerifyTokenInteractor,
+    );
     const signupController = new SignupController(signupInteractor);
     const router = createRouter('POST', '/signup', signupController);
 
