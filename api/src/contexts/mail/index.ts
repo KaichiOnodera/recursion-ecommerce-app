@@ -2,7 +2,7 @@ import express from 'express';
 import { prisma } from '../../libs/prisma';
 import { OrderCompletedController } from './controllers/OrderCompletedController';
 import { OrderCompletedInteractor } from './interactors/OrderCompletedInteractor';
-import { UserRepository } from '../users/infrastructures/repositories/UserRepository';
+import { UserRepository } from '../auth/infrastructures/repositories/UserRepository';
 import { OrderRepository } from 'src/contexts/orders/infrastructures/repositories/OrderRepository';
 import { EmailVerificationRepository } from '../auth/infrastructures/repositories/EmailVerificationRepository';
 import { EmailAdapter } from './infrastructures/adapters/EmailAdapter';
